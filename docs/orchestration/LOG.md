@@ -53,3 +53,16 @@ All dispatches, verification gates, integration merges, and gate approvals are r
   - Added database migration `20261122010000_create_auth_tables.ts`.
   - Full test suite verified: 11/11 tests pass across health, modules, and auth (0 failures).
   - Completed all 8 standard documentation files in `docs/modules/02-auth/`.
+
+### [2026-11-22T08:27:00Z] WAVE 4 (V3: User & Role Management) FREEZE
+- **Module:** V3 User & Role Management
+- **Status:** FROZEN (`v3.0.0-users`)
+- **Actions:**
+  - Implemented 6 canonical roles (`SUPER_ADMIN`, `ADMIN`, `TEACHER`, `STAFF`, `STUDENT`, `PARENT`) and 19 permissions.
+  - Implemented user CRUD API with pagination, role filtering, search, and validation.
+  - Implemented instant session revocation upon deactivation and self-deactivation safeguards.
+  - Implemented admin-initiated password reset.
+  - Implemented `requireRole` authorization middleware.
+  - Added migration `20261122020000_create_roles_permissions.ts`.
+  - Full test suite verified: 20/20 tests pass across health, modules, auth, and users (0 failures).
+  - Completed all 8 standard documentation files in `docs/modules/03-users/`.

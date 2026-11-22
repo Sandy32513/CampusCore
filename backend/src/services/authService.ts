@@ -1,47 +1,11 @@
 import { UserDto } from "@campuscore/shared";
 import { getDb } from "../db/connection.js";
-import { hashPassword, verifyPassword, generateSessionToken, hashToken } from "../utils/crypto.js";
-
-// In-memory test store fallback for sandboxed tests
-const testUsers: Array<{
-  id: string;
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  role: UserDto["role"];
-  isActive: boolean;
-  createdAt: string;
-}> = [];
-
-const testSessions: Array<{
-  id: string;
-  userId: string;
-  tokenHash: string;
-  expiresAt: Date;
-}> = [];
-
-// Seed default administrator into memory store
-let defaultAdminSeeded = false;
-async function ensureDefaultAdmin() {
-  if (defaultAdminSeeded) return;
-  const adminPasswordHash = await hashPassword("Admin@123456");
-  testUsers.push({
-    id: "1",
-    email: "admin@campuscore.edu",
-    passwordHash: adminPasswordHash,
-    firstName: "System",
-    lastName: "Administrator",
-    role: "SUPER_ADMIN",
-    isActive: true,
-    createdAt: new Date().toISOString()
-  });
-  defaultAdminSeeded = true;
-}
+import { inMemoryUsers, inMemorySessions, ensureSharedSeed } from "../db/userRepository.js";
+import { verifyPassword, generateSessionToken, hashToken } from "../utils/crypto.js";
 
 export class AuthService {
   static async login(email: string, password: string): Promise<{ user: UserDto; rawToken: string; expiresAt: Date } | null> {
-    await ensureDefaultAdmin();
+    await ensureSharedSeed();
     const normalizedEmail = email.trim().toLowerCase();
 
     // 1. Try DB first if connected
@@ -54,7 +18,7 @@ export class AuthService {
         if (!valid) return null;
 
         const { rawToken, tokenHash } = generateSessionToken();
-        const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 hours
+        const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
         await db("sessions").insert({
           user_id: user.id,
@@ -75,11 +39,11 @@ export class AuthService {
         return { user: userDto, rawToken, expiresAt };
       }
     } catch {
-      // Fallback to test store
+      // Memory fallback
     }
 
     // 2. Memory store fallback
-    const user = testUsers.find((u) => u.email === normalizedEmail);
+    const user = inMemoryUsers.find((u) => u.email === normalizedEmail);
     if (!user || !user.isActive) return null;
 
     const valid = await verifyPassword(password, user.passwordHash);
@@ -88,7 +52,7 @@ export class AuthService {
     const { rawToken, tokenHash } = generateSessionToken();
     const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000);
 
-    testSessions.push({
+    inMemorySessions.push({
       id: String(Date.now()),
       userId: user.id,
       tokenHash,
@@ -131,14 +95,14 @@ export class AuthService {
         }
       }
     } catch {
-      // Fallback to test store
+      // Memory fallback
     }
 
     // 2. Check Memory store
-    const session = testSessions.find((s) => s.tokenHash === tokenHash && s.expiresAt > new Date());
+    const session = inMemorySessions.find((s) => s.tokenHash === tokenHash && s.expiresAt > new Date());
     if (!session) return null;
 
-    const user = testUsers.find((u) => u.id === session.userId);
+    const user = inMemoryUsers.find((u) => u.id === session.userId);
     if (!user || !user.isActive) return null;
 
     return {
@@ -163,9 +127,9 @@ export class AuthService {
       // Ignore
     }
 
-    const idx = testSessions.findIndex((s) => s.tokenHash === tokenHash);
+    const idx = inMemorySessions.findIndex((s) => s.tokenHash === tokenHash);
     if (idx !== -1) {
-      testSessions.splice(idx, 1);
+      inMemorySessions.splice(idx, 1);
     }
 
     return true;

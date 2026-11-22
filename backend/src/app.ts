@@ -4,6 +4,8 @@ import helmet from "helmet";
 import { healthRouter } from "./routes/health.js";
 import { modulesRouter } from "./routes/modules.js";
 import { authRouter } from "./routes/auth.js";
+import { usersRouter } from "./routes/users.js";
+import { rolesRouter, permissionsRouter } from "./routes/roles.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
@@ -22,6 +24,11 @@ export function createApp() {
 
   // Authentication routes
   app.use("/api/v1/auth", authRouter);
+
+  // User & Role Management routes
+  app.use("/api/v1/users", usersRouter);
+  app.use("/api/v1/roles", rolesRouter);
+  app.use("/api/v1/permissions", permissionsRouter);
 
   // Central error handling
   app.use(errorHandler);

@@ -2,5 +2,8 @@ export * from "./types/response.js";
 export * from "./types/health.js";
 export * from "./types/manifest.js";
 export * from "./types/auth.js";
+export * from "./constants/roles.js";
+export * from "./constants/permissions.js";
 export * from "./schemas/auth.js";
+export * from "./schemas/user.js";
 export * from "./registry/modules.js";
