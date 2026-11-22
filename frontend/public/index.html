@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusCore - Student Management System (V0 Foundation)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --primary: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      padding: 2rem;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .title-group h1 { font-size: 1.5rem; font-weight: 700; }
+    .title-group p { font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 480px) {
+      .status-grid { grid-template-columns: 1fr; }
+    }
+    .status-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .status-card .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-card .value {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.green { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .dot.yellow { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
+    .dot.red { background: var(--error); box-shadow: 0 0 8px var(--error); }
+    .metadata {
+      background: #111827;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title-group">
+        <h1>🎓 CampusCore SMS</h1>
+        <p>Student Management System Foundation</p>
+      </div>
+      <span class="badge">V0 FOUNDATION</span>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="label">Backend API Status</div>
+        <div class="value" id="api-status">
+          <span class="dot green"></span>
+          <span>Checking...</span>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="label">MySQL Database Status</div>
+        <div class="value" id="db-status">
+          <span class="dot green"></span>
+          <span>Checking...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metadata" id="meta-info">
+      <div>System: CampusCore SMS Platform</div>
+      <div>Stage: V0 Project Foundation</div>
+      <div id="api-time">Last Checked: -</div>
+    </div>
+
+    <div class="footer">
+      CampusCore SMS · Modular, Secure & Tested
+    </div>
+  </div>
+
+  <script>
+    async function refreshHealth() {
+      try {
+        const res = await fetch("http://localhost:5000/api/v1/health");
+        const json = await res.json();
+        if (json.success) {
+          const apiEl = document.getElementById("api-status");
+          apiEl.innerHTML = `<span class="dot green"></span><span>Healthy (Port 5000)</span>`;
+          
+          const dbEl = document.getElementById("db-status");
+          if (json.data.database === "connected") {
+            dbEl.innerHTML = `<span class="dot green"></span><span>Connected (MySQL 8.4)</span>`;
+          } else {
+            dbEl.innerHTML = `<span class="dot yellow"></span><span>Disconnected / Standby</span>`;
+          }
+
+          document.getElementById("api-time").textContent = "Last Checked: " + new Date().toLocaleTimeString();
+        }
+      } catch (err) {
+        document.getElementById("api-status").innerHTML = `<span class="dot red"></span><span>Offline</span>`;
+        document.getElementById("db-status").innerHTML = `<span class="dot yellow"></span><span>Unreachable</span>`;
+      }
+    }
+    refreshHealth();
+    setInterval(refreshHealth, 10000);
+  </script>
+</body>
+</html>
