@@ -6,6 +6,9 @@ import { modulesRouter } from "./routes/modules.js";
 import { authRouter } from "./routes/auth.js";
 import { usersRouter } from "./routes/users.js";
 import { rolesRouter, permissionsRouter } from "./routes/roles.js";
+import { departmentsRouter } from "./routes/departments.js";
+import { academicYearsRouter, semestersRouter } from "./routes/academic.js";
+import { auditRouter } from "./routes/audit.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
@@ -29,6 +32,12 @@ export function createApp() {
   app.use("/api/v1/users", usersRouter);
   app.use("/api/v1/roles", rolesRouter);
   app.use("/api/v1/permissions", permissionsRouter);
+
+  // Wave 5 routes
+  app.use("/api/v1/departments", departmentsRouter);
+  app.use("/api/v1/academic-years", academicYearsRouter);
+  app.use("/api/v1/semesters", semestersRouter);
+  app.use("/api/v1/audit-logs", auditRouter);
 
   // Central error handling
   app.use(errorHandler);
