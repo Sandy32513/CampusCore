@@ -21,7 +21,7 @@ export const config: AppConfig = {
   db: {
     host: process.env.DB_HOST || "127.0.0.1",
     port: parseInt(process.env.DB_PORT || "3306", 10),
-    database: process.env.DB_NAME || "sms_dev",
+    database: (process.env.NODE_ENV === "test" ? process.env.DB_TEST_NAME : process.env.DB_NAME) || (process.env.NODE_ENV === "test" ? "sms_test" : "sms_dev"),
     user: process.env.DB_APP_USER || "sms_app",
     password: process.env.DB_APP_PASSWORD || ""
   }

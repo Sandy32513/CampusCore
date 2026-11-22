@@ -345,8 +345,8 @@ export class CourseService {
       if (!dept) return { error: "DEPARTMENT_NOT_FOUND" };
     }
 
-    const updates: Partial<CourseRow> = {
-      updated_at: new Date().toISOString()
+    const updates: any = {
+      updated_at: new Date()
     };
     if (input.departmentId !== undefined) updates.department_id = Number(input.departmentId);
     if (input.name !== undefined) updates.name = input.name.trim();

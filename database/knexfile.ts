@@ -1,6 +1,9 @@
 import type { Knex } from "knex";
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 const config: { [key: string]: Knex.Config } = {
   development: {
@@ -34,6 +37,10 @@ const config: { [key: string]: Knex.Config } = {
     },
     migrations: {
       directory: "./migrations",
+      extension: "ts"
+    },
+    seeds: {
+      directory: "./seeds",
       extension: "ts"
     }
   }

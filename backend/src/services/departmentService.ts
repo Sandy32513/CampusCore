@@ -268,8 +268,8 @@ export class DepartmentService {
     const existing = await this.getDepartmentById(id);
     if (!existing) return { error: "NOT_FOUND" };
 
-    const updates: Partial<DepartmentRow> = {
-      updated_at: new Date().toISOString()
+    const updates: any = {
+      updated_at: new Date()
     };
     if (input.name !== undefined) updates.name = input.name.trim();
     if (input.description !== undefined) updates.description = input.description;

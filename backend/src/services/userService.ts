@@ -128,6 +128,25 @@ export class UserService {
 
   static async getUserById(id: string): Promise<UserDto | null> {
     await ensureSharedSeed();
+
+    try {
+      const db = getDb();
+      const r = await db("users").where({ id }).first();
+      if (r) {
+        return {
+          id: String(r.id),
+          email: r.email,
+          firstName: r.first_name,
+          lastName: r.last_name,
+          role: r.role,
+          isActive: Boolean(r.is_active),
+          createdAt: new Date(r.created_at).toISOString()
+        };
+      }
+    } catch {
+      // Memory fallback
+    }
+
     const user = inMemoryUsers.find((u) => u.id === id);
     if (!user) return null;
     return {

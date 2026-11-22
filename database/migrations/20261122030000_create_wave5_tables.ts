@@ -44,7 +44,7 @@ export async function up(knex: Knex): Promise<void> {
   // 4. Audit Logs table (V38)
   await knex.schema.createTable("audit_logs", (table) => {
     table.increments("id").primary();
-    table.integer("user_id").unsigned().nullable()
+    table.bigInteger("user_id").unsigned().nullable()
       .references("id").inTable("users").onDelete("SET NULL");
     table.string("user_email", 255).nullable();
     table.string("role", 50).nullable();
