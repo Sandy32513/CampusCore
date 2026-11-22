@@ -153,3 +153,45 @@ Use this instruction when starting Codex in the repository:
 - [ ] Wave 6 contracts approved before implementation begins.
 
 **Success condition:** Codex continues the existing CampusCore project from verified repository state, with no lost work, no architectural drift and no unsupported completion claims.
+
+
+---
+
+## 10. Additional Codex verification notes (2026-11-22)
+
+### Root scripts observed on GitHub
+
+The root `package.json` declares npm workspaces `shared`, `backend`, `frontend` and scripts:
+- `npm run build`
+- `npm test`
+- `npm run lint`
+- `npm run typecheck`
+- `npm run start:backend`
+- `npm run dev:backend`
+
+Verify each workspace script exists before assuming the root command performs work; the root scripts use `--if-present` for workspaces.
+
+### Wave 5 historical evidence in the orchestration log
+
+The remote `docs/orchestration/LOG.md` records Wave 5 (V7, V10, V38) as frozen and claims 41/41 Vitest integration tests passed. The status board records tags:
+- `v7.0.0-departments`
+- `v10.0.0-academic-years`
+- `v38.0.0-audit-logs`
+
+These are reported historical outcomes. Confirm the tags exist and point to the intended commits, inspect their source, and rerun tests. Do not infer successful CI from a log entry.
+
+### V44–V48 scope conflict — master plan governs
+
+The updated master plan roadmap says:
+- V44 Responsive / Mobile Optimization
+- V45 API Platform
+- V46 Integration Layer
+- V47 Production Deployment
+- V48 Monitoring & Observability
+- V49 Final Production Certification
+
+The remote status board uses conflicting names for some of these versions. Treat the master plan as the scope authority. Correct the status board and dependency artifacts through a documented, approved reconciliation before those versions are scheduled or implemented. Do not silently reinterpret the roadmap.
+
+### NDA approval gate
+
+The reviewed NDA is a draft and Schedule 2 contains a placeholder rather than an explicit Codex approval. The project owner/legal parties must confirm approval before confidential material is submitted to Codex. Do not upload the NDA itself or other confidential documents to an AI service unless that use is approved under the executed agreement.
