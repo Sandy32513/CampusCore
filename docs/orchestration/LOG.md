@@ -79,3 +79,15 @@ All dispatches, verification gates, integration merges, and gate approvals are r
   - Implemented universal `AuditService.log()` and `/api/v1/audit-logs` read-only administrative inspection API.
   - Verified 41/41 passing Vitest integration tests (0 failures, 100% test pass rate across all active modules).
   - Completed all 8 standard documentation files for V7, V10, and V38 in `docs/modules/`.
+
+
+### [2026-11-22T09:03:00Z] WAVE 6 (V8: Course Management, V39: System Settings) FREEZE
+- **Modules:** V8 Course Management, V39 System Settings
+- **Status:** BOTH MODULES FROZEN (`v8.0.0-courses`, `v39.0.0-system-settings`)
+- **Actions:**
+  - Added MySQL migration `20261122040000_create_wave6_tables.ts` creating `courses` and `system_settings` tables with constraints, indexes, and seeded institutional defaults.
+  - Implemented `@campuscore/shared` schemas and types for courses and system settings.
+  - Implemented `CourseService` and `/api/v1/courses` endpoints (list, get, create, update, toggle status).
+  - Implemented `SettingsService` and `/api/v1/settings/public`, `/api/v1/settings` endpoints with role guards and V38 audit logging.
+  - Verified 53/53 passing Vitest integration tests (0 failures, 100% test pass rate across all active modules).
+  - Completed all 8 standard documentation files for V8 and V39 in `docs/modules/`.
