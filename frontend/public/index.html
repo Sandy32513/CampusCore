@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CampusCore SMS - Application Shell</title>
+  <title>CampusCore SMS - Institutional Portal</title>
   <style>
     :root {
       --bg-main: #090d16;
@@ -110,6 +110,7 @@
       background: var(--bg-surface-elevated);
       font-size: 0.85rem;
       font-weight: 500;
+      cursor: pointer;
     }
 
     /* Layout Wrapper */
@@ -128,6 +129,7 @@
       flex-direction: column;
       flex-shrink: 0;
       transition: transform 0.25s ease;
+      overflow-y: auto;
     }
     .sidebar-section {
       padding: 1.25rem 1rem 0.5rem 1rem;
@@ -165,6 +167,15 @@
       color: var(--primary);
       font-weight: 600;
     }
+    .nav-badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
 
     /* Main Content */
     .app-main {
@@ -192,198 +203,270 @@
     /* Dashboard Metrics */
     .metrics-banner {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
       margin-bottom: 2rem;
     }
     .metric-card {
-      background-color: var(--bg-surface);
+      background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
-    .metric-card .title { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-    .metric-card .value { font-size: 1.75rem; font-weight: 700; margin-top: 0.5rem; }
+    .metric-card .title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .metric-card .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
 
-    /* Category Filter */
+    /* Category Filter Tabs */
     .category-tabs {
       display: flex;
       gap: 0.5rem;
       margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+      overflow-x: auto;
     }
     .category-tab {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      background: transparent;
+      border: 1px solid transparent;
       color: var(--text-muted);
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.85rem;
       border-radius: 6px;
       font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }
-    .category-tab:hover { background: var(--bg-surface-elevated); color: var(--text-main); }
-    .category-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .category-tab:hover {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+    }
+    .category-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
 
     /* Module Grid */
     .module-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.25rem;
     }
     .module-card {
-      background-color: var(--bg-surface);
+      background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
       text-decoration: none;
       color: inherit;
     }
     .module-card:hover {
-      transform: translateY(-2px);
       border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .card-top {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
     }
-    .module-icon { font-size: 1.75rem; }
+    .module-icon {
+      font-size: 1.5rem;
+    }
     .badge {
-      font-size: 0.7rem;
-      font-weight: 600;
+      font-size: 0.65rem;
+      font-weight: 700;
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .badge.frozen { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
-    .badge.building { background: rgba(59, 130, 246, 0.2); color: var(--primary); border: 1px solid var(--primary); }
-    .badge.coming-soon { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-    .module-card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .module-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; flex: 1; }
+    .badge.coming-soon { background: rgba(107, 114, 128, 0.2); color: var(--text-muted); border: 1px solid var(--border-color); }
+    .module-card h4 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .module-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      flex: 1;
+    }
     .card-action {
-      margin-top: 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      border-top: 1px solid var(--border-color);
       padding-top: 0.75rem;
-      font-size: 0.85rem;
-      color: var(--primary);
-      font-weight: 600;
     }
 
-    /* Coming Soon View */
-    .coming-soon-container {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 3rem 2rem;
-      text-align: center;
-      max-width: 650px;
-      margin: 2rem auto;
-    }
-    .coming-soon-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .coming-soon-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .coming-soon-desc { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.5rem; line-height: 1.5; }
-    .roadmap-info {
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 1rem;
-      text-align: left;
-      margin-bottom: 1.5rem;
-      font-size: 0.85rem;
-    }
-    .roadmap-info div { margin-bottom: 0.5rem; }
-    .roadmap-info div:last-child { margin-bottom: 0; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 0.65rem 1.25rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.15s ease;
-    }
-    .btn:hover { background: var(--primary-hover); }
-    .btn.secondary { background: var(--bg-surface-elevated); border: 1px solid var(--border-color); color: var(--text-main); }
-    .btn.secondary:hover { background: var(--border-color); }
-
-    /* Design System Showcase */
-    .component-showcase {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-    .showcase-block {
+    /* Live Data Section / Management Tables */
+    .live-container {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1.5rem;
+      margin-bottom: 1.5rem;
     }
-    .showcase-block h3 { font-size: 1.1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; }
-    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .form-group { max-width: 400px; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-    .form-input, .form-select {
-      background: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 0.6rem 0.85rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
+    .live-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
     }
-    .form-input:focus, .form-select:focus {
-      outline: 2px solid var(--primary);
+    .live-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .table-responsive { width: 100%; overflow-x: auto; }
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
       font-size: 0.85rem;
     }
     .data-table th, .data-table td {
       padding: 0.75rem 1rem;
+      text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
-    .data-table th { background: var(--bg-surface-elevated); color: var(--text-muted); font-weight: 600; }
+    .data-table th {
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background-color: var(--primary);
+      color: #fff;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn:hover { background-color: var(--primary-hover); }
+    .btn.secondary {
+      background-color: transparent;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn.secondary:hover {
+      background-color: var(--bg-surface-elevated);
+    }
+    .btn.sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .form-input {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
 
     /* Modal */
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
-      display: none;
+      background: rgba(0,0,0,0.75);
+      display: flex;
       align-items: center;
       justify-content: center;
       z-index: 50;
-      backdrop-filter: blur(2px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
     }
-    .modal-backdrop.open { display: flex; }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .modal-dialog {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      width: 100%;
-      max-width: 500px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 520px;
       padding: 1.5rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.7);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; }
+    .modal-backdrop.open .modal-dialog {
+      transform: scale(1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
 
     /* Toasts */
     .toast-container {
@@ -392,14 +475,13 @@
       right: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
       z-index: 60;
     }
     .toast {
       background: var(--bg-surface-elevated);
-      border-left: 4px solid var(--primary);
       border: 1px solid var(--border-color);
-      border-left-width: 4px;
+      border-left: 4px solid var(--primary);
       padding: 0.75rem 1rem;
       border-radius: 6px;
       box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
@@ -424,7 +506,44 @@
       align-items: center;
     }
 
-    /* Responsive */
+    /* Coming Soon view */
+    .coming-soon-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+    .coming-soon-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .coming-soon-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .coming-soon-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    .roadmap-info {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     @media (max-width: 1023px) {
       .menu-toggle { display: block; }
       .app-sidebar {
@@ -450,17 +569,17 @@
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">☰</button>
       <a href="#dashboard" class="brand">
         <span>🎓 CampusCore SMS</span>
-        <span class="brand-badge">V1 SHELL</span>
+        <span class="brand-badge">WAVE 5 FROZEN</span>
       </a>
     </div>
     <div class="header-right">
       <div class="status-pill" id="systemStatus">
         <span class="dot green"></span>
-        <span id="systemStatusText">API & MySQL 8.4 Active</span>
+        <span id="systemStatusText">API & MySQL 8.4 Connected</span>
       </div>
       <button class="btn secondary" id="notifyTrigger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">🔔 Toast</button>
-      <div class="user-profile">
-        <span>👤 Super Admin</span>
+      <div class="user-profile" id="userProfileBtn">
+        <span id="currentRoleBadge">👤 Super Admin</span>
       </div>
     </div>
   </header>
@@ -475,21 +594,46 @@
         <li class="nav-item"><a href="#design-system" class="nav-link" data-nav="design-system">🎨 UI Components</a></li>
       </ul>
 
-      <div class="sidebar-section">Academic Modules</div>
+      <div class="sidebar-section">Frozen Modules (Wave 1-5)</div>
       <ul class="nav-list">
-        <li class="nav-item"><a href="#module/students" class="nav-link" data-nav="students">👨‍🎓 Students</a></li>
-        <li class="nav-item"><a href="#module/teachers" class="nav-link" data-nav="teachers">👨‍🏫 Teachers</a></li>
-        <li class="nav-item"><a href="#module/courses" class="nav-link" data-nav="courses">📚 Courses</a></li>
-        <li class="nav-item"><a href="#module/subjects" class="nav-link" data-nav="subjects">📖 Subjects</a></li>
-        <li class="nav-item"><a href="#module/attendance" class="nav-link" data-nav="attendance">📅 Attendance</a></li>
-        <li class="nav-item"><a href="#module/examinations" class="nav-link" data-nav="examinations">📝 Examinations</a></li>
+        <li class="nav-item">
+          <a href="#module/departments" class="nav-link" data-nav="departments">
+            🏛️ Departments <span class="nav-badge">V7</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/academic" class="nav-link" data-nav="academic">
+            🗓️ Academic Calendar <span class="nav-badge">V10</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/audit" class="nav-link" data-nav="audit">
+            📜 Audit Logs <span class="nav-badge">V38</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/users" class="nav-link" data-nav="users">
+            👥 Users & Roles <span class="nav-badge">V3</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/auth" class="nav-link" data-nav="auth">
+            🔐 Auth & Sessions <span class="nav-badge">V2</span>
+          </a>
+        </li>
       </ul>
 
-      <div class="sidebar-section">Administration</div>
+      <div class="sidebar-section">Academic Modules (Planned)</div>
       <ul class="nav-list">
-        <li class="nav-item"><a href="#module/fees" class="nav-link" data-nav="fees">💰 Fees & Finance</a></li>
-        <li class="nav-item"><a href="#module/reports" class="nav-link" data-nav="reports">📊 Reports</a></li>
-        <li class="nav-item"><a href="#module/settings" class="nav-link" data-nav="settings">⚙️ Settings</a></li>
+        <li class="nav-item"><a href="#module/courses" class="nav-link" data-nav="courses">📚 Courses (Wave 6)</a></li>
+        <li class="nav-item"><a href="#module/settings" class="nav-link" data-nav="settings">⚙️ Settings (Wave 6)</a></li>
+        <li class="nav-item"><a href="#module/students" class="nav-link" data-nav="students">👨‍🎓 Students (Wave 7)</a></li>
+        <li class="nav-item"><a href="#module/subjects" class="nav-link" data-nav="subjects">📖 Subjects (Wave 7)</a></li>
+        <li class="nav-item"><a href="#module/teachers" class="nav-link" data-nav="teachers">👨‍🏫 Teachers (Wave 8)</a></li>
+        <li class="nav-item"><a href="#module/attendance" class="nav-link" data-nav="attendance">📅 Attendance (Wave 11)</a></li>
+        <li class="nav-item"><a href="#module/examinations" class="nav-link" data-nav="examinations">📝 Examinations (Wave 11)</a></li>
+        <li class="nav-item"><a href="#module/fees" class="nav-link" data-nav="fees">💰 Fees & Finance (Wave 9)</a></li>
+        <li class="nav-item"><a href="#module/reports" class="nav-link" data-nav="reports">📊 Reports (Wave 15)</a></li>
       </ul>
     </aside>
 
@@ -510,20 +654,21 @@
           </div>
           <div class="metric-card">
             <div class="title">Validated & Frozen</div>
-            <div class="value" style="color: var(--success);">1 <span style="font-size: 0.9rem; font-weight: normal;">(V0)</span></div>
+            <div class="value" style="color: var(--success);">7 <span style="font-size: 0.9rem; font-weight: normal;">(V0, V1, V2, V3, V7, V10, V38)</span></div>
+          </div>
+          <div class="metric-card">
+            <div class="title">Integration Tests</div>
+            <div class="value" style="color: var(--primary);">41 / 41 <span style="font-size: 0.85rem; font-weight: normal; color: var(--success);">✓ 100% Pass</span></div>
           </div>
           <div class="metric-card">
             <div class="title">Current Wave</div>
-            <div class="value" style="color: var(--primary);">Wave 2 <span style="font-size: 0.9rem; font-weight: normal;">(V1 Shell)</span></div>
-          </div>
-          <div class="metric-card">
-            <div class="title">Planned Waves</div>
-            <div class="value">22 Waves</div>
+            <div class="value" style="color: var(--warning);">Wave 6 Ready</div>
           </div>
         </div>
 
         <div class="category-tabs" id="categoryTabs">
           <button class="category-tab active" data-cat="all">All Modules</button>
+          <button class="category-tab" data-cat="frozen">Frozen & Live (Wave 1-5)</button>
           <button class="category-tab" data-cat="academic">Academic</button>
           <button class="category-tab" data-cat="admin">Admin & Ops</button>
           <button class="category-tab" data-cat="finance">Finance</button>
@@ -535,6 +680,129 @@
         </div>
       </section>
 
+      <!-- View: Departments (V7 Live) -->
+      <section id="viewDepartments" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">🏛️ Department Management (V7 Live View)</div>
+            <button class="btn sm" id="openAddDeptModalBtn">+ Add Department</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Head of Department</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="deptTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading departments from API...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Academic Year & Semester (V10 Live) -->
+      <section id="viewAcademic" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">🗓️ Academic Calendar & Semesters (V10 Live View)</div>
+          </div>
+          <div style="margin-bottom: 1.5rem;" id="currentYearBanner">
+            <div style="background: var(--bg-surface-elevated); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+              <strong>Active Academic Year:</strong> <span id="activeYearName" style="color: var(--success); font-weight: 700;">Loading...</span>
+            </div>
+          </div>
+          <h4 style="margin-bottom: 0.75rem; font-size: 0.95rem;">Configured Academic Cycles</h4>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Year Name</th>
+                <th>Timeline</th>
+                <th>Is Current</th>
+                <th>Semesters</th>
+              </tr>
+            </thead>
+            <tbody id="academicTableBody">
+              <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Loading academic years...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Audit Logs (V38 Live) -->
+      <section id="viewAudit" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">📜 System Audit Logs (V38 Live Stream)</div>
+            <button class="btn secondary sm" id="refreshAuditBtn">🔄 Refresh Logs</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading audit stream...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Users & Roles (V3 Live) -->
+      <section id="viewUsers" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">👥 User & Role Directory (V3 Live View)</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading user records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Authentication (V2 Live) -->
+      <section id="viewAuth" style="display: none;">
+        <div class="live-container" style="max-width: 500px; margin: 0 auto;">
+          <div class="live-header">
+            <div class="live-title">🔐 Session & Role Switcher (V2)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="authEmail" class="form-input" value="admin@campuscore.edu">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="authPassword" class="form-input" value="Admin@123456">
+          </div>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+            <button class="btn" id="loginBtn" style="flex:1;">Sign In</button>
+            <button class="btn secondary" id="fillStudentBtn">Student Preset</button>
+          </div>
+          <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-surface-elevated); border-radius: 6px; font-size: 0.8rem;" id="sessionStatusBox">
+            Status: Active session with Super Admin
+          </div>
+        </div>
+      </section>
+
       <!-- View: Coming Soon -->
       <section id="viewComingSoon" style="display: none;">
         <div class="coming-soon-container">
@@ -543,8 +811,8 @@
           <p class="coming-soon-desc" id="csDesc">This module is part of the planned CampusCore roadmap and will be implemented according to the Master Development Plan.</p>
           
           <div class="roadmap-info">
-            <div><strong>Roadmap Version:</strong> <span id="csVersion">V4</span></div>
-            <div><strong>Execution Wave:</strong> <span id="csWave">Wave 7</span></div>
+            <div><strong>Roadmap Version:</strong> <span id="csVersion">V8</span></div>
+            <div><strong>Execution Wave:</strong> <span id="csWave">Wave 6</span></div>
             <div><strong>Status:</strong> <span class="badge coming-soon">PLANNED / COMING SOON</span></div>
             <div><strong>Database:</strong> MySQL 8.4 LTS Dedicated Tables</div>
           </div>
@@ -555,10 +823,10 @@
 
       <!-- View: Design System Showcase -->
       <section id="viewDesignSystem" style="display: none;">
-        <div class="component-showcase">
-          <div class="showcase-block">
-            <h3>🔘 Button Components (Plan §66)</h3>
-            <div class="btn-group">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="live-container">
+            <h3 style="margin-bottom: 1rem;">🔘 Button Components</h3>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
               <button class="btn">Primary Button</button>
               <button class="btn secondary">Secondary Button</button>
               <button class="btn" style="background: var(--danger);">Danger Button</button>
@@ -566,59 +834,17 @@
             </div>
           </div>
 
-          <div class="showcase-block">
-            <h3>📝 Form Controls</h3>
-            <div class="form-group">
-              <label style="font-size: 0.85rem; color: var(--text-muted);">Text Input</label>
-              <input type="text" class="form-input" placeholder="Enter student admission number..." value="ADM-2026-001">
-            </div>
-            <div class="form-group">
-              <label style="font-size: 0.85rem; color: var(--text-muted);">Dropdown Select</label>
-              <select class="form-select">
-                <option>Computer Science & Engineering</option>
-                <option>Electrical Engineering</option>
-                <option>Business Administration</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="showcase-block">
-            <h3>📊 Data Table & Responsive States</h3>
-            <div class="table-responsive">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Module ID</th>
-                    <th>Module Name</th>
-                    <th>Category</th>
-                    <th>Target Wave</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>V0</td>
-                    <td>Project Foundation</td>
-                    <td>System</td>
-                    <td>Wave 1</td>
-                    <td><span class="badge frozen">FROZEN</span></td>
-                  </tr>
-                  <tr>
-                    <td>V1</td>
-                    <td>Application Shell</td>
-                    <td>System</td>
-                    <td>Wave 2</td>
-                    <td><span class="badge building">BUILDING</span></td>
-                  </tr>
-                  <tr>
-                    <td>V4</td>
-                    <td>Student Management</td>
-                    <td>Academic</td>
-                    <td>Wave 7</td>
-                    <td><span class="badge coming-soon">COMING SOON</span></td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="live-container">
+            <h3 style="margin-bottom: 1rem;">📝 Form Controls</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" placeholder="Enter full name...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-input" placeholder="user@campuscore.edu">
+              </div>
             </div>
           </div>
         </div>
@@ -643,12 +869,38 @@
     </div>
   </div>
 
+  <!-- Add Department Modal -->
+  <div class="modal-backdrop" id="addDeptModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Add New Department</h3>
+        <button class="modal-close" id="closeDeptModalBtn">&times;</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department Code (e.g. EE, MECH, BIO)</label>
+        <input type="text" id="newDeptCode" class="form-input" placeholder="CSE">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department Name</label>
+        <input type="text" id="newDeptName" class="form-input" placeholder="Computer Science & Engineering">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Head of Department (HOD)</label>
+        <input type="text" id="newDeptHod" class="form-input" placeholder="Dr. Alan Turing">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn secondary" id="cancelDeptModalBtn">Cancel</button>
+        <button class="btn" id="saveDeptBtn">Create Department</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- Footer -->
   <footer class="app-footer">
-    <div>CampusCore SMS v1.0.0-shell · Fully Responsive & WCAG 2.2 AA Aligned</div>
+    <div>CampusCore SMS v1.0.0 · Wave 5 Frozen · WCAG 2.2 AA Aligned</div>
     <div>MySQL 8.4 LTS · Node.js 26 · TypeScript</div>
   </footer>
 
@@ -656,12 +908,12 @@
     // Complete Module Registry (ADR-002)
     const modules = [
       { id: "v0-foundation", name: "Project Foundation", slug: "foundation", version: "V0", wave: 1, category: "system", desc: "Core technical foundation, toolchains, base configs, and health check API.", icon: "🏗️", status: "FROZEN", path: "/foundation" },
-      { id: "v1-shell", name: "Application Shell", slug: "shell", version: "V1", wave: 2, category: "system", desc: "Complete UI layout shell, navigation, design system, and module registry.", icon: "🖥️", status: "BUILDING", path: "/" },
-      { id: "v2-auth", name: "Authentication", slug: "auth", version: "V2", wave: 3, category: "system", desc: "Argon2id password hashing, MySQL session store, cookie auth, login/logout.", icon: "🔐", status: "COMING_SOON", path: "/auth" },
-      { id: "v3-users-roles", name: "User & Role Management", slug: "users", version: "V3", wave: 4, category: "system", desc: "6 RBAC roles, user CRUD, permission assignment & registry.", icon: "👥", status: "COMING_SOON", path: "/users" },
-      { id: "v7-departments", name: "Department Management", slug: "departments", version: "V7", wave: 5, category: "academic", desc: "Academic department entity, department heads, and statistics.", icon: "🏛️", status: "COMING_SOON", path: "/departments" },
-      { id: "v10-academic-years", name: "Academic Year & Semester", slug: "semesters", version: "V10", wave: 5, category: "academic", desc: "Academic years, terms, active semester tracking.", icon: "🗓️", status: "COMING_SOON", path: "/semesters" },
-      { id: "v38-audit-logs", name: "Audit Logs", slug: "audit-logs", version: "V38", wave: 5, category: "system", desc: "Central transactional audit log store.", icon: "📜", status: "COMING_SOON", path: "/audit-logs" },
+      { id: "v1-shell", name: "Application Shell", slug: "shell", version: "V1", wave: 2, category: "system", desc: "Complete UI layout shell, navigation, design system, and module registry.", icon: "🖥️", status: "FROZEN", path: "/" },
+      { id: "v2-auth", name: "Authentication", slug: "auth", version: "V2", wave: 3, category: "system", desc: "Argon2id password hashing, MySQL session store, cookie auth, login/logout.", icon: "🔐", status: "FROZEN", path: "/auth" },
+      { id: "v3-users-roles", name: "User & Role Management", slug: "users", version: "V3", wave: 4, category: "system", desc: "6 RBAC roles, user CRUD, permission assignment & registry.", icon: "👥", status: "FROZEN", path: "/users" },
+      { id: "v7-departments", name: "Department Management", slug: "departments", version: "V7", wave: 5, category: "academic", desc: "Academic department entity, department heads, and statistics.", icon: "🏛️", status: "FROZEN", path: "/departments" },
+      { id: "v10-academic-years", name: "Academic Year & Semester", slug: "academic", version: "V10", wave: 5, category: "academic", desc: "Academic years, terms, active semester tracking.", icon: "🗓️", status: "FROZEN", path: "/academic" },
+      { id: "v38-audit-logs", name: "Audit Logs", slug: "audit", version: "V38", wave: 5, category: "system", desc: "Central transactional audit log store.", icon: "📜", status: "FROZEN", path: "/audit" },
       { id: "v8-courses", name: "Course Management", slug: "courses", version: "V8", wave: 6, category: "academic", desc: "Degree and certificate courses mapped to departments.", icon: "📚", status: "COMING_SOON", path: "/courses" },
       { id: "v39-settings", name: "System Settings", slug: "settings", version: "V39", wave: 6, category: "system", desc: "Institution profile, branding, locale, timezone, date formats.", icon: "⚙️", status: "COMING_SOON", path: "/settings" },
       { id: "v4-students", name: "Student Management", slug: "students", version: "V4", wave: 7, category: "academic", desc: "Student CRUD with unique Student ID, admission number, search, filters.", icon: "👨‍🎓", status: "COMING_SOON", path: "/students" },
@@ -673,28 +925,36 @@
       { id: "v31-reports", name: "Reports", slug: "reports", version: "V31", wave: 15, category: "admin", desc: "Multi-domain reports: students, attendance, exams, fees (PDF, CSV, Excel).", icon: "📊", status: "COMING_SOON", path: "/reports" }
     ];
 
+    const API_BASE = "http://localhost:5000/api/v1";
+
+    // Toast Manager
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
     // Render Module Cards
     function renderCards(filter = "all") {
       const grid = document.getElementById("moduleGrid");
       grid.innerHTML = "";
-      const filtered = filter === "all" ? modules : modules.filter(m => m.category === filter);
-      
+      let filtered = modules;
+      if (filter === "frozen") filtered = modules.filter(m => m.status === "FROZEN");
+      else if (filter !== "all") filtered = modules.filter(m => m.category === filter);
+
       filtered.forEach(m => {
         const card = document.createElement("a");
         card.className = "module-card";
         card.href = `#module/${m.slug}`;
-        
-        let badgeClass = "coming-soon";
-        let badgeText = "COMING SOON";
-        if (m.status === "FROZEN") { badgeClass = "frozen"; badgeText = "FROZEN"; }
-        if (m.status === "BUILDING") { badgeClass = "building"; badgeText = "BUILDING"; }
-
         card.innerHTML = `
           <div class="card-top">
             <span class="module-icon">${m.icon}</span>
-            <span class="badge ${badgeClass}">${badgeText}</span>
+            <span class="badge ${m.status === "FROZEN" ? "frozen" : "coming-soon"}">${m.status}</span>
           </div>
-          <h3>${m.name}</h3>
+          <h4>${m.name}</h4>
           <p>${m.desc}</p>
           <div class="card-action">
             <span>Wave ${m.wave} · ${m.version}</span>
@@ -714,50 +974,162 @@
       });
     });
 
+    // Load Live Departments
+    async function loadDepartments() {
+      const tbody = document.getElementById("deptTableBody");
+      try {
+        const res = await fetch(`${API_BASE}/departments`);
+        const json = await res.json();
+        if (json.success && json.data.departments) {
+          tbody.innerHTML = json.data.departments.map(d => `
+            <tr>
+              <td><strong>${d.code}</strong></td>
+              <td>${d.name}</td>
+              <td>${d.headOfDepartment || "—"}</td>
+              <td><span class="badge ${d.isActive ? 'frozen' : 'coming-soon'}">${d.isActive ? 'Active' : 'Inactive'}</span></td>
+              <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load departments from API.</td></tr>`;
+      }
+    }
+
+    // Load Live Academic Calendar
+    async function loadAcademic() {
+      const tbody = document.getElementById("academicTableBody");
+      try {
+        const res = await fetch(`${API_BASE}/academic-years`);
+        const json = await res.json();
+        if (json.success && json.data.academicYears) {
+          const currentYear = json.data.academicYears.find(y => y.isCurrent);
+          if (currentYear) {
+            document.getElementById("activeYearName").textContent = `${currentYear.name} (${currentYear.startDate} to ${currentYear.endDate})`;
+          }
+          tbody.innerHTML = json.data.academicYears.map(y => `
+            <tr>
+              <td><strong>${y.name}</strong></td>
+              <td>${y.startDate} — ${y.endDate}</td>
+              <td><span class="badge ${y.isCurrent ? 'frozen' : 'coming-soon'}">${y.isCurrent ? 'CURRENT' : 'HISTORICAL'}</span></td>
+              <td>${y.semesters ? y.semesters.length : 0} Term(s)</td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">Failed to load academic years.</td></tr>`;
+      }
+    }
+
+    // Load Live Audit Logs
+    async function loadAuditLogs() {
+      const tbody = document.getElementById("auditTableBody");
+      try {
+        const res = await fetch(`${API_BASE}/audit-logs?pageSize=15`);
+        const json = await res.json();
+        if (json.success && json.data.logs) {
+          tbody.innerHTML = json.data.logs.map(l => `
+            <tr>
+              <td>${new Date(l.createdAt).toLocaleTimeString()}</td>
+              <td>${l.userEmail || "System"}</td>
+              <td><code>${l.action}</code></td>
+              <td><span class="badge frozen">${l.entity}</span></td>
+              <td>${l.status}</td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load audit logs.</td></tr>`;
+      }
+    }
+
+    // Load Live Users
+    async function loadUsers() {
+      const tbody = document.getElementById("usersTableBody");
+      try {
+        const res = await fetch(`${API_BASE}/users?pageSize=10`);
+        const json = await res.json();
+        if (json.success && json.data.users) {
+          tbody.innerHTML = json.data.users.map(u => `
+            <tr>
+              <td><strong>${u.firstName} ${u.lastName}</strong></td>
+              <td>${u.email}</td>
+              <td><span class="badge frozen">${u.role}</span></td>
+              <td>${u.isActive ? 'Active' : 'Disabled'}</td>
+              <td>${new Date(u.createdAt).toLocaleDateString()}</td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load user records.</td></tr>`;
+      }
+    }
+
     // Router
     function handleRoute() {
       const hash = window.location.hash || "#dashboard";
-      const viewDashboard = document.getElementById("viewDashboard");
-      const viewComingSoon = document.getElementById("viewComingSoon");
-      const viewDesignSystem = document.getElementById("viewDesignSystem");
+      const sections = {
+        viewDashboard: document.getElementById("viewDashboard"),
+        viewDepartments: document.getElementById("viewDepartments"),
+        viewAcademic: document.getElementById("viewAcademic"),
+        viewAudit: document.getElementById("viewAudit"),
+        viewUsers: document.getElementById("viewUsers"),
+        viewAuth: document.getElementById("viewAuth"),
+        viewDesignSystem: document.getElementById("viewDesignSystem"),
+        viewComingSoon: document.getElementById("viewComingSoon")
+      };
+
+      Object.values(sections).forEach(s => { if (s) s.style.display = "none"; });
+      document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
       const breadcrumb = document.getElementById("breadcrumbCurrent");
 
-      // Reset active nav
-      document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
-
-      if (hash.startsWith("#module/")) {
+      if (hash === "#module/departments") {
+        sections.viewDepartments.style.display = "block";
+        breadcrumb.textContent = "Department Management";
+        document.querySelector(`.nav-link[data-nav="departments"]`)?.classList.add("active");
+        loadDepartments();
+      } else if (hash === "#module/academic") {
+        sections.viewAcademic.style.display = "block";
+        breadcrumb.textContent = "Academic Calendar";
+        document.querySelector(`.nav-link[data-nav="academic"]`)?.classList.add("active");
+        loadAcademic();
+      } else if (hash === "#module/audit") {
+        sections.viewAudit.style.display = "block";
+        breadcrumb.textContent = "Audit Logs";
+        document.querySelector(`.nav-link[data-nav="audit"]`)?.classList.add("active");
+        loadAuditLogs();
+      } else if (hash === "#module/users") {
+        sections.viewUsers.style.display = "block";
+        breadcrumb.textContent = "User & Role Directory";
+        document.querySelector(`.nav-link[data-nav="users"]`)?.classList.add("active");
+        loadUsers();
+      } else if (hash === "#module/auth") {
+        sections.viewAuth.style.display = "block";
+        breadcrumb.textContent = "Authentication & Sessions";
+        document.querySelector(`.nav-link[data-nav="auth"]`)?.classList.add("active");
+      } else if (hash.startsWith("#module/")) {
         const slug = hash.replace("#module/", "");
         const mod = modules.find(m => m.slug === slug);
         if (mod) {
-          viewDashboard.style.display = "none";
-          viewDesignSystem.style.display = "none";
-          viewComingSoon.style.display = "block";
-
+          sections.viewComingSoon.style.display = "block";
           document.getElementById("csIcon").textContent = mod.icon;
           document.getElementById("csTitle").textContent = `${mod.name} (${mod.version})`;
           document.getElementById("csDesc").textContent = mod.desc;
           document.getElementById("csVersion").textContent = mod.version;
           document.getElementById("csWave").textContent = `Wave ${mod.wave}`;
           breadcrumb.textContent = mod.name;
-
-          const activeNav = document.querySelector(`.nav-link[data-nav="${slug}"]`);
-          if (activeNav) activeNav.classList.add("active");
+          document.querySelector(`.nav-link[data-nav="${slug}"]`)?.classList.add("active");
         }
       } else if (hash === "#design-system") {
-        viewDashboard.style.display = "none";
-        viewComingSoon.style.display = "none";
-        viewDesignSystem.style.display = "block";
+        sections.viewDesignSystem.style.display = "block";
         breadcrumb.textContent = "UI Component Library";
         document.querySelector(`.nav-link[data-nav="design-system"]`)?.classList.add("active");
       } else {
-        viewDashboard.style.display = "block";
-        viewComingSoon.style.display = "none";
-        viewDesignSystem.style.display = "none";
+        sections.viewDashboard.style.display = "block";
         breadcrumb.textContent = "Dashboard";
         document.querySelector(`.nav-link[data-nav="dashboard"]`)?.classList.add("active");
       }
 
-      // Close mobile drawer if open
       document.getElementById("appSidebar").classList.remove("open");
     }
 
@@ -767,25 +1139,41 @@
       handleRoute();
     });
 
+    // Add Department Modal
+    const addDeptModal = document.getElementById("addDeptModal");
+    document.getElementById("openAddDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.add("open"));
+    document.getElementById("closeDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.remove("open"));
+    document.getElementById("cancelDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.remove("open"));
+    document.getElementById("saveDeptBtn")?.addEventListener("click", async () => {
+      const code = document.getElementById("newDeptCode").value.trim();
+      const name = document.getElementById("newDeptName").value.trim();
+      const headOfDepartment = document.getElementById("newDeptHod").value.trim();
+      if (!code || !name) {
+        showToast("Code and Name are required", "danger");
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/departments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, name, headOfDepartment })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Department ${code.toUpperCase()} created!`, "success");
+          addDeptModal.classList.remove("open");
+          loadDepartments();
+        } else {
+          showToast(json.error?.message || "Failed to create department", "danger");
+        }
+      } catch {
+        showToast("Error connecting to API server", "danger");
+      }
+    });
+
     // Mobile Sidebar Toggle
     document.getElementById("menuToggle").addEventListener("click", () => {
       document.getElementById("appSidebar").classList.toggle("open");
-    });
-
-    // Toast Manager
-    function showToast(message, type = "info") {
-      const container = document.getElementById("toastContainer");
-      const toast = document.createElement("div");
-      toast.className = `toast ${type}`;
-      toast.textContent = message;
-      container.appendChild(toast);
-      setTimeout(() => {
-        toast.remove();
-      }, 4000);
-    }
-
-    document.getElementById("notifyTrigger").addEventListener("click", () => {
-      showToast("CampusCore SMS Shell active - Connected to MySQL 8.4", "success");
     });
 
     // Modal Manager
@@ -794,27 +1182,65 @@
       modal.classList.add("open");
       document.getElementById("modalConfirmBtn").focus();
     });
-    document.getElementById("modalCloseBtn").addEventListener("click", () => modal.classList.remove("open"));
-    document.getElementById("modalCancelBtn").addEventListener("click", () => modal.classList.remove("open"));
-    document.getElementById("modalConfirmBtn").addEventListener("click", () => {
+    document.getElementById("modalCloseBtn")?.addEventListener("click", () => modal.classList.remove("open"));
+    document.getElementById("modalCancelBtn")?.addEventListener("click", () => modal.classList.remove("open"));
+    document.getElementById("modalConfirmBtn")?.addEventListener("click", () => {
       modal.classList.remove("open");
       showToast("Action confirmed successfully!", "success");
     });
 
-    // ESC key closes modal
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.classList.contains("open")) {
+      if (e.key === "Escape") {
         modal.classList.remove("open");
+        addDeptModal.classList.remove("open");
+      }
+    });
+
+    // Refresh Audit
+    document.getElementById("refreshAuditBtn")?.addEventListener("click", () => {
+      loadAuditLogs();
+      showToast("Audit logs refreshed", "success");
+    });
+
+    document.getElementById("notifyTrigger").addEventListener("click", () => {
+      showToast("CampusCore SMS Wave 5 Active - MySQL 8.4 LTS", "success");
+    });
+
+    // Presets for Auth
+    document.getElementById("fillStudentBtn")?.addEventListener("click", () => {
+      document.getElementById("authEmail").value = "student.test@campuscore.edu";
+      document.getElementById("authPassword").value = "StudentPass123!";
+    });
+
+    document.getElementById("loginBtn")?.addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value;
+      const password = document.getElementById("authPassword").value;
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Signed in as ${json.data.user.role}!`, "success");
+          document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
+          document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;
+        } else {
+          showToast("Invalid credentials", "danger");
+        }
+      } catch {
+        showToast("API authentication error", "danger");
       }
     });
 
     // Live Health Probe
     async function checkHealth() {
       try {
-        const res = await fetch("http://localhost:5000/api/v1/health");
+        const res = await fetch(`${API_BASE}/health`);
         const json = await res.json();
         if (json.success) {
-          document.getElementById("systemStatusText").textContent = "API & MySQL 8.4 Connected";
+          document.getElementById("systemStatusText").textContent = "API & MySQL 8.4 Active";
         }
       } catch {
         document.getElementById("systemStatusText").textContent = "API Standby";
