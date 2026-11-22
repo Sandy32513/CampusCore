@@ -40,5 +40,19 @@ export async function ensureSharedSeed(): Promise<void> {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
+
+  const studentPasswordHash = await hashPassword("StudentPass123!");
+  inMemoryUsers.push({
+    id: "2",
+    email: "demo.student@campuscore.edu",
+    passwordHash: studentPasswordHash,
+    firstName: "Demo",
+    lastName: "Student",
+    role: "STUDENT",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
   adminInitialized = true;
 }

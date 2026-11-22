@@ -926,6 +926,42 @@
     ];
 
     const API_BASE = "http://localhost:5000/api/v1";
+    let authToken = localStorage.getItem("campuscore_token") || null;
+
+    async function apiFetch(endpoint, options = {}) {
+      const headers = {
+        "Content-Type": "application/json",
+        ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
+        ...(options.headers || {})
+      };
+      return fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        headers,
+        credentials: "include"
+      });
+    }
+
+    async function ensureAdminSession() {
+      if (!authToken) {
+        try {
+          const res = await fetch(`${API_BASE}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: "admin@campuscore.edu", password: "Admin@123456" }),
+            credentials: "include"
+          });
+          const json = await res.json();
+          if (json.success && json.data.token) {
+            authToken = json.data.token;
+            localStorage.setItem("campuscore_token", authToken);
+            document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
+            document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;
+          }
+        } catch (e) {
+          console.warn("Auto-session init fallback:", e);
+        }
+      }
+    }
 
     // Toast Manager
     function showToast(message, type = "info") {
@@ -978,7 +1014,7 @@
     async function loadDepartments() {
       const tbody = document.getElementById("deptTableBody");
       try {
-        const res = await fetch(`${API_BASE}/departments`);
+        const res = await apiFetch("/departments");
         const json = await res.json();
         if (json.success && json.data.departments) {
           tbody.innerHTML = json.data.departments.map(d => `
@@ -990,6 +1026,8 @@
               <td>${new Date(d.createdAt).toLocaleDateString()}</td>
             </tr>
           `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load departments"}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load departments from API.</td></tr>`;
@@ -1000,7 +1038,7 @@
     async function loadAcademic() {
       const tbody = document.getElementById("academicTableBody");
       try {
-        const res = await fetch(`${API_BASE}/academic-years`);
+        const res = await apiFetch("/academic-years");
         const json = await res.json();
         if (json.success && json.data.academicYears) {
           const currentYear = json.data.academicYears.find(y => y.isCurrent);
@@ -1015,6 +1053,8 @@
               <td>${y.semesters ? y.semesters.length : 0} Term(s)</td>
             </tr>
           `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">${json.error?.message || "Failed to load academic years"}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">Failed to load academic years.</td></tr>`;
@@ -1025,7 +1065,7 @@
     async function loadAuditLogs() {
       const tbody = document.getElementById("auditTableBody");
       try {
-        const res = await fetch(`${API_BASE}/audit-logs?pageSize=15`);
+        const res = await apiFetch("/audit-logs?pageSize=15");
         const json = await res.json();
         if (json.success && json.data.logs) {
           tbody.innerHTML = json.data.logs.map(l => `
@@ -1037,6 +1077,8 @@
               <td>${l.status}</td>
             </tr>
           `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load audit logs"}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load audit logs.</td></tr>`;
@@ -1047,7 +1089,7 @@
     async function loadUsers() {
       const tbody = document.getElementById("usersTableBody");
       try {
-        const res = await fetch(`${API_BASE}/users?pageSize=10`);
+        const res = await apiFetch("/users?pageSize=10");
         const json = await res.json();
         if (json.success && json.data.users) {
           tbody.innerHTML = json.data.users.map(u => `
@@ -1059,6 +1101,8 @@
               <td>${new Date(u.createdAt).toLocaleDateString()}</td>
             </tr>
           `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load user records"}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load user records.</td></tr>`;
@@ -1134,7 +1178,8 @@
     }
 
     window.addEventListener("hashchange", handleRoute);
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
+      await ensureAdminSession();
       renderCards();
       handleRoute();
     });
@@ -1153,9 +1198,8 @@
         return;
       }
       try {
-        const res = await fetch(`${API_BASE}/departments`, {
+        const res = await apiFetch("/departments", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code, name, headOfDepartment })
         });
         const json = await res.json();
@@ -1208,7 +1252,7 @@
 
     // Presets for Auth
     document.getElementById("fillStudentBtn")?.addEventListener("click", () => {
-      document.getElementById("authEmail").value = "student.test@campuscore.edu";
+      document.getElementById("authEmail").value = "demo.student@campuscore.edu";
       document.getElementById("authPassword").value = "StudentPass123!";
     });
 
@@ -1219,15 +1263,19 @@
         const res = await fetch(`${API_BASE}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password }),
+          credentials: "include"
         });
         const json = await res.json();
         if (json.success) {
+          authToken = json.data.token;
+          localStorage.setItem("campuscore_token", authToken);
           showToast(`Signed in as ${json.data.user.role}!`, "success");
           document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
           document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;
+          handleRoute();
         } else {
-          showToast("Invalid credentials", "danger");
+          showToast(json.error?.message || "Invalid credentials", "danger");
         }
       } catch {
         showToast("API authentication error", "danger");
