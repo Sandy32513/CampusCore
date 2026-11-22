@@ -9,6 +9,8 @@ import { rolesRouter, permissionsRouter } from "./routes/roles.js";
 import { departmentsRouter } from "./routes/departments.js";
 import { academicYearsRouter, semestersRouter } from "./routes/academic.js";
 import { auditRouter } from "./routes/audit.js";
+import { coursesRouter } from "./routes/courses.js";
+import { settingsRouter } from "./routes/settings.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
@@ -38,6 +40,10 @@ export function createApp() {
   app.use("/api/v1/academic-years", academicYearsRouter);
   app.use("/api/v1/semesters", semestersRouter);
   app.use("/api/v1/audit-logs", auditRouter);
+
+  // Wave 6 routes
+  app.use("/api/v1/courses", coursesRouter);
+  app.use("/api/v1/settings", settingsRouter);
 
   // Central error handling
   app.use(errorHandler);

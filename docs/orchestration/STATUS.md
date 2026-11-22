@@ -1,15 +1,15 @@
 # SMS Orchestration Status Board
 
-*Last Updated: 2026-11-22 · Orchestrator: Active · Current Phase: Wave 5 Completed*
+*Last Updated: 2026-11-22 · Orchestrator: Active · Current Phase: Wave 6 Completed*
 
 ## 1. Global Metrics
 - **Total Modules:** 50 (V0 - V49)
-- **FROZEN:** 7 (V0, V1, V2, V3, V7, V10, V38)
+- **FROZEN:** 9 (V0, V1, V2, V3, V7, V10, V38, V8, V39)
 - **FROZEN-PROVISIONAL:** 0
 - **IN PROGRESS / VALIDATING:** 0
-- **NOT-STARTED:** 43
+- **NOT-STARTED:** 41
 - **Open Defects (Blockers / Critical / High):** 0
-- **Active Wave:** Wave 5 Complete (Transitioning to Wave 6: V8, V39)
+- **Active Wave:** Wave 6 Complete (Transitioning to Wave 7: V4, V9, V40)
 
 ---
 
@@ -24,11 +24,11 @@
 | **V7** | Department Management | 5 | `FROZEN` | DB, Backend, Frontend, QA | `feature/v7-departments` | `v7.0.0-departments` | 0 | None (Verified) |
 | **V10** | Academic Year & Semester | 5 | `FROZEN` | DB, Backend, Frontend, QA | `feature/v10-academic-years` | `v10.0.0-academic-years` | 0 | None (Verified) |
 | **V38** | Audit Logs | 5 | `FROZEN` | DB, Backend, Frontend, Security | `feature/v38-audit-logs` | `v38.0.0-audit-logs` | 0 | None (Verified) |
-| **V8** | Course Management | 6 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v8-courses` | - | 0 | Ready to Start |
-| **V39** | System Settings | 6 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v39-settings` | - | 0 | Ready to Start |
-| **V4** | Student Management | 7 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v4-students` | - | 0 | Depends on V8 |
-| **V9** | Subject Management | 7 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v9-subjects` | - | 0 | Depends on V8 |
-| **V40** | Backup & Recovery | 7 | `NOT-STARTED` | DB, Backend, Ops, Security | `feature/v40-backup` | - | 0 | Depends on V39 |
+| **V8** | Course Management | 6 | `FROZEN` | DB, Backend, Frontend, QA | `feature/v8-courses` | `v8.0.0-courses` | 0 | None (Verified) |
+| **V39** | System Settings | 6 | `FROZEN` | DB, Backend, Frontend, QA | `feature/v39-settings` | `v39.0.0-system-settings` | 0 | None (Verified) |
+| **V4** | Student Management | 7 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v4-students` | - | 0 | Ready to Start (V3, V7, V8, V10 Frozen) |
+| **V9** | Subject Management | 7 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v9-subjects` | - | 0 | Ready to Start (V8, V10 Frozen) |
+| **V40** | Backup & Recovery | 7 | `NOT-STARTED` | DB, Backend, Ops, Security | `feature/v40-backup` | - | 0 | Ready to Start (V39 Frozen) |
 | **V5** | Student Profile | 8 | `NOT-STARTED` | Frontend, Backend, QA | `feature/v5-student-profile` | - | 0 | Depends on V4 |
 | **V6** | Parent / Guardian Management | 8 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v6-guardians` | - | 0 | Depends on V4 |
 | **V12** | Teacher Management | 8 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v12-teachers` | - | 0 | Depends on V3, V7, V9 |
