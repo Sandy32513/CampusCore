@@ -602,6 +602,16 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="#module/students" class="nav-link" data-nav="students">
+            👨‍🎓 Students <span class="nav-badge">V4</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/subjects" class="nav-link" data-nav="subjects">
+            📖 Subjects <span class="nav-badge">V9</span>
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="#module/academic" class="nav-link" data-nav="academic">
             🗓️ Academic Calendar <span class="nav-badge">V10</span>
           </a>
@@ -609,6 +619,11 @@
         <li class="nav-item">
           <a href="#module/audit" class="nav-link" data-nav="audit">
             📜 Audit Logs <span class="nav-badge">V38</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#module/backups" class="nav-link" data-nav="backups">
+            💾 Backups & Recovery <span class="nav-badge">V40</span>
           </a>
         </li>
         <li class="nav-item">
@@ -627,8 +642,6 @@
       <ul class="nav-list">
         <li class="nav-item"><a href="#module/courses" class="nav-link" data-nav="courses">📚 Courses (Wave 6)</a></li>
         <li class="nav-item"><a href="#module/settings" class="nav-link" data-nav="settings">⚙️ Settings (Wave 6)</a></li>
-        <li class="nav-item"><a href="#module/students" class="nav-link" data-nav="students">👨‍🎓 Students (Wave 7)</a></li>
-        <li class="nav-item"><a href="#module/subjects" class="nav-link" data-nav="subjects">📖 Subjects (Wave 7)</a></li>
         <li class="nav-item"><a href="#module/teachers" class="nav-link" data-nav="teachers">👨‍🏫 Teachers (Wave 8)</a></li>
         <li class="nav-item"><a href="#module/attendance" class="nav-link" data-nav="attendance">📅 Attendance (Wave 11)</a></li>
         <li class="nav-item"><a href="#module/examinations" class="nav-link" data-nav="examinations">📝 Examinations (Wave 11)</a></li>
@@ -699,6 +712,82 @@
             </thead>
             <tbody id="deptTableBody">
               <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading departments from API...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Students (V4 Live) -->
+      <section id="viewStudents" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">👨‍🎓 Student Management (V4 Live View)</div>
+            <button class="btn sm" id="openAddStudentModalBtn">+ Admit Student</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Admission #</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Course</th>
+                <th>Semester</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody">
+              <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Loading students from API...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Subjects (V9 Live) -->
+      <section id="viewSubjects" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">📖 Subject Management (V9 Live View)</div>
+            <button class="btn sm" id="openAddSubjectModalBtn">+ Add Subject</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Subject Title</th>
+                <th>Type</th>
+                <th>Credits</th>
+                <th>Elective</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="subjectTableBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading subjects from API...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Backups (V40 Live) -->
+      <section id="viewBackups" style="display: none;">
+        <div class="live-container">
+          <div class="live-header">
+            <div class="live-title">💾 Database Backup & Recovery (V40 Live View)</div>
+            <button class="btn sm" id="triggerBackupBtn">⚡ Create Manual Backup</button>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>SHA-256 Checksum</th>
+                <th>Created At</th>
+              </tr>
+            </thead>
+            <tbody id="backupTableBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading backups from API...</td></tr>
             </tbody>
           </table>
         </div>
@@ -895,6 +984,80 @@
     </div>
   </div>
 
+  <!-- Add Student Modal -->
+  <div class="modal-backdrop" id="addStudentModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Admit New Student</h3>
+        <button class="modal-close" id="closeStudentModalBtn">&times;</button>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" id="newStudentFirstName" class="form-input" placeholder="Ada">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" id="newStudentLastName" class="form-input" placeholder="Lovelace">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input type="email" id="newStudentEmail" class="form-input" placeholder="ada.lovelace@campuscore.edu">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Date of Birth *</label>
+          <input type="date" id="newStudentDob" class="form-input" value="2005-01-15">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Admission Date *</label>
+          <input type="date" id="newStudentAdmDate" class="form-input" value="2026-08-01">
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn secondary" id="cancelStudentModalBtn">Cancel</button>
+        <button class="btn" id="saveStudentBtn">Admit Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Subject Modal -->
+  <div class="modal-backdrop" id="addSubjectModal" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Add New Academic Subject</h3>
+        <button class="modal-close" id="closeSubjectModalBtn">&times;</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject Code * (e.g. CS201-OS)</label>
+        <input type="text" id="newSubjectCode" class="form-input" placeholder="CS201-OS">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject Title *</label>
+        <input type="text" id="newSubjectName" class="form-input" placeholder="Operating Systems">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Subject Type</label>
+          <select id="newSubjectType" class="form-input">
+            <option value="THEORY">THEORY</option>
+            <option value="PRACTICAL">PRACTICAL</option>
+            <option value="LAB">LAB</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Credits</label>
+          <input type="number" id="newSubjectCredits" class="form-input" value="4" min="1" max="10">
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn secondary" id="cancelSubjectModalBtn">Cancel</button>
+        <button class="btn" id="saveSubjectBtn">Create Subject</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
@@ -1085,6 +1248,82 @@
       }
     }
 
+    // Load Live Students (V4)
+    async function loadStudents() {
+      const tbody = document.getElementById("studentTableBody");
+      try {
+        const res = await apiFetch("/students?pageSize=20");
+        const json = await res.json();
+        if (json.success && json.data.students) {
+          tbody.innerHTML = json.data.students.map(s => `
+            <tr>
+              <td><strong>${s.admissionNumber}</strong></td>
+              <td>${s.fullName}</td>
+              <td>${s.email}</td>
+              <td>${s.departmentName || s.departmentCode || '-'}</td>
+              <td>${s.courseName || s.courseCode || '-'}</td>
+              <td>${s.currentSemesterName || 'Sem ' + s.currentSemesterId}</td>
+              <td><span class="badge ${s.status === 'ACTIVE' ? 'frozen' : 'coming-soon'}">${s.status}</span></td>
+            </tr>
+          `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">${json.error?.message || "Failed to load student records"}</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">Failed to load student records from API.</td></tr>`;
+      }
+    }
+
+    // Load Live Subjects (V9)
+    async function loadSubjects() {
+      const tbody = document.getElementById("subjectTableBody");
+      try {
+        const res = await apiFetch("/subjects?pageSize=20");
+        const json = await res.json();
+        if (json.success && json.data.subjects) {
+          tbody.innerHTML = json.data.subjects.map(s => `
+            <tr>
+              <td><strong>${s.code}</strong></td>
+              <td>${s.name}</td>
+              <td><span class="badge secondary">${s.type}</span></td>
+              <td>${s.credits} Credits (${s.theoryCredits} Th / ${s.practicalCredits} Pr)</td>
+              <td>${s.isElective ? 'Yes (Elective)' : 'No (Core)'}</td>
+              <td><span class="badge ${s.isActive ? 'frozen' : 'coming-soon'}">${s.isActive ? 'Active' : 'Inactive'}</span></td>
+            </tr>
+          `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${json.error?.message || "Failed to load subjects"}</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">Failed to load subjects from API.</td></tr>`;
+      }
+    }
+
+    // Load Live Backups (V40)
+    async function loadBackups() {
+      const tbody = document.getElementById("backupTableBody");
+      try {
+        const res = await apiFetch("/backups?pageSize=20");
+        const json = await res.json();
+        if (json.success && json.data.backups) {
+          tbody.innerHTML = json.data.backups.map(b => `
+            <tr>
+              <td><code>${b.filename}</code></td>
+              <td>${b.fileSizeFormatted}</td>
+              <td>${b.backupType}</td>
+              <td><span class="badge ${b.status === 'COMPLETED' ? 'frozen' : 'coming-soon'}">${b.status}</span></td>
+              <td><span style="font-family:monospace; font-size:0.75rem;" title="${b.checksumSha256 || ''}">${(b.checksumSha256 || '-').slice(0, 16)}...</span></td>
+              <td>${new Date(b.createdAt).toLocaleString()}</td>
+            </tr>
+          `).join("");
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${json.error?.message || "Failed to load backups"}</td></tr>`;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">Failed to load backups from API.</td></tr>`;
+      }
+    }
+
     // Load Live Users
     async function loadUsers() {
       const tbody = document.getElementById("usersTableBody");
@@ -1115,6 +1354,9 @@
       const sections = {
         viewDashboard: document.getElementById("viewDashboard"),
         viewDepartments: document.getElementById("viewDepartments"),
+        viewStudents: document.getElementById("viewStudents"),
+        viewSubjects: document.getElementById("viewSubjects"),
+        viewBackups: document.getElementById("viewBackups"),
         viewAcademic: document.getElementById("viewAcademic"),
         viewAudit: document.getElementById("viewAudit"),
         viewUsers: document.getElementById("viewUsers"),
@@ -1132,6 +1374,21 @@
         breadcrumb.textContent = "Department Management";
         document.querySelector(`.nav-link[data-nav="departments"]`)?.classList.add("active");
         loadDepartments();
+      } else if (hash === "#module/students") {
+        sections.viewStudents.style.display = "block";
+        breadcrumb.textContent = "Student Directory & Admissions";
+        document.querySelector(`.nav-link[data-nav="students"]`)?.classList.add("active");
+        loadStudents();
+      } else if (hash === "#module/subjects") {
+        sections.viewSubjects.style.display = "block";
+        breadcrumb.textContent = "Subject Catalog";
+        document.querySelector(`.nav-link[data-nav="subjects"]`)?.classList.add("active");
+        loadSubjects();
+      } else if (hash === "#module/backups") {
+        sections.viewBackups.style.display = "block";
+        breadcrumb.textContent = "Database Backups & Recovery";
+        document.querySelector(`.nav-link[data-nav="backups"]`)?.classList.add("active");
+        loadBackups();
       } else if (hash === "#module/academic") {
         sections.viewAcademic.style.display = "block";
         breadcrumb.textContent = "Academic Calendar";
@@ -1215,6 +1472,113 @@
       }
     });
 
+    // Add Student Modal (V4)
+    const addStudentModal = document.getElementById("addStudentModal");
+    document.getElementById("openAddStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.add("open"));
+    document.getElementById("closeStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.remove("open"));
+    document.getElementById("cancelStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.remove("open"));
+    document.getElementById("saveStudentBtn")?.addEventListener("click", async () => {
+      const firstName = document.getElementById("newStudentFirstName").value.trim();
+      const lastName = document.getElementById("newStudentLastName").value.trim();
+      const email = document.getElementById("newStudentEmail").value.trim();
+      const dateOfBirth = document.getElementById("newStudentDob").value;
+      const admissionDate = document.getElementById("newStudentAdmDate").value;
+
+      if (!firstName || !lastName || !email || !dateOfBirth || !admissionDate) {
+        showToast("Please fill all required student fields", "danger");
+        return;
+      }
+
+      try {
+        const res = await apiFetch("/students", {
+          method: "POST",
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            dateOfBirth,
+            admissionDate,
+            departmentId: "1",
+            courseId: "1",
+            currentSemesterId: "1",
+            status: "ACTIVE"
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Student ${json.data.student.fullName} admitted!`, "success");
+          addStudentModal.classList.remove("open");
+          loadStudents();
+        } else {
+          showToast(json.error?.message || "Failed to admit student", "danger");
+        }
+      } catch {
+        showToast("Error connecting to API server", "danger");
+      }
+    });
+
+    // Add Subject Modal (V9)
+    const addSubjectModal = document.getElementById("addSubjectModal");
+    document.getElementById("openAddSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.add("open"));
+    document.getElementById("closeSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.remove("open"));
+    document.getElementById("cancelSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.remove("open"));
+    document.getElementById("saveSubjectBtn")?.addEventListener("click", async () => {
+      const code = document.getElementById("newSubjectCode").value.trim();
+      const name = document.getElementById("newSubjectName").value.trim();
+      const type = document.getElementById("newSubjectType").value;
+      const credits = parseInt(document.getElementById("newSubjectCredits").value, 10);
+
+      if (!code || !name) {
+        showToast("Subject Code and Title are required", "danger");
+        return;
+      }
+
+      try {
+        const res = await apiFetch("/subjects", {
+          method: "POST",
+          body: JSON.stringify({
+            code,
+            name,
+            type,
+            credits,
+            theoryCredits: credits,
+            practicalCredits: 0,
+            departmentId: "1"
+          })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Subject ${json.data.subject.code} created!`, "success");
+          addSubjectModal.classList.remove("open");
+          loadSubjects();
+        } else {
+          showToast(json.error?.message || "Failed to create subject", "danger");
+        }
+      } catch {
+        showToast("Error connecting to API server", "danger");
+      }
+    });
+
+    // Trigger Manual Backup (V40)
+    document.getElementById("triggerBackupBtn")?.addEventListener("click", async () => {
+      try {
+        showToast("Initiating MySQL automated backup dump...", "info");
+        const res = await apiFetch("/backups", {
+          method: "POST",
+          body: JSON.stringify({ backupType: "FULL", notes: "Manual UI snapshot" })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Backup created: ${json.data.backup.filename}`, "success");
+          loadBackups();
+        } else {
+          showToast(json.error?.message || "Failed to execute backup", "danger");
+        }
+      } catch {
+        showToast("Error connecting to API server", "danger");
+      }
+    });
+
     // Mobile Sidebar Toggle
     document.getElementById("menuToggle").addEventListener("click", () => {
       document.getElementById("appSidebar").classList.toggle("open");
@@ -1237,6 +1601,8 @@
       if (e.key === "Escape") {
         modal.classList.remove("open");
         addDeptModal.classList.remove("open");
+        addStudentModal.classList.remove("open");
+        addSubjectModal.classList.remove("open");
       }
     });
 

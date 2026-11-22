@@ -43,7 +43,7 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   // 2. Departments
-  const existingCse = await knex("departments").where({ code: "CSE" }).first();
+  const existingCse = await knex("departments").where({ id: 1 }).orWhere({ code: "CSE" }).first();
   if (!existingCse) {
     await knex("departments").insert({
       id: 1,
@@ -55,7 +55,7 @@ export async function seed(knex: Knex): Promise<void> {
     });
   }
 
-  const existingEce = await knex("departments").where({ code: "ECE" }).first();
+  const existingEce = await knex("departments").where({ id: 2 }).orWhere({ code: "ECE" }).first();
   if (!existingEce) {
     await knex("departments").insert({
       id: 2,
@@ -68,7 +68,7 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   // 3. Academic Years & Semesters
-  const existingYear = await knex("academic_years").where({ name: "2026-2027" }).first();
+  const existingYear = await knex("academic_years").where({ id: 1 }).orWhere({ name: "2026-2027" }).first();
   let yearId = existingYear?.id;
   if (!existingYear) {
     const [insertedYearId] = await knex("academic_years").insert({
@@ -109,10 +109,10 @@ export async function seed(knex: Knex): Promise<void> {
   }
 
   // 4. Courses
-  const cseDept = await knex("departments").where({ code: "CSE" }).first();
+  const cseDept = await knex("departments").where({ id: 1 }).orWhere({ code: "CSE" }).first();
   const deptId = cseDept?.id || 1;
 
-  const existingCs101 = await knex("courses").where({ code: "CS101" }).first();
+  const existingCs101 = await knex("courses").where({ id: 1 }).orWhere({ code: "CS101" }).first();
   if (!existingCs101) {
     await knex("courses").insert({
       id: 1,
@@ -127,7 +127,7 @@ export async function seed(knex: Knex): Promise<void> {
     });
   }
 
-  const existingAi201 = await knex("courses").where({ code: "AI201" }).first();
+  const existingAi201 = await knex("courses").where({ id: 2 }).orWhere({ code: "AI201" }).first();
   if (!existingAi201) {
     await knex("courses").insert({
       id: 2,
@@ -142,7 +142,137 @@ export async function seed(knex: Knex): Promise<void> {
     });
   }
 
-  // 5. Audit Log Bootstrap Entry
+  // 5. Subjects (V9)
+  const existingSub1 = await knex("subjects").where({ id: 1 }).orWhere({ code: "CS101-TH" }).first();
+  let sub1Id = existingSub1?.id;
+  if (!existingSub1) {
+    const [id] = await knex("subjects").insert({
+      id: 1,
+      code: "CS101-TH",
+      name: "Introduction to Computer Systems & Programming",
+      department_id: deptId,
+      type: "THEORY",
+      credits: 4,
+      theory_credits: 3,
+      practical_credits: 1,
+      is_elective: false,
+      is_active: true,
+      description: "Fundamental principles of computing and structured programming."
+    });
+    sub1Id = id || 1;
+  }
+
+  const existingSub2 = await knex("subjects").where({ id: 2 }).orWhere({ code: "CS102-DS" }).first();
+  let sub2Id = existingSub2?.id;
+  if (!existingSub2) {
+    const [id] = await knex("subjects").insert({
+      id: 2,
+      code: "CS102-DS",
+      name: "Data Structures & Algorithm Design",
+      department_id: deptId,
+      type: "THEORY",
+      credits: 4,
+      theory_credits: 3,
+      practical_credits: 1,
+      is_elective: false,
+      is_active: true,
+      description: "Linear and non-linear data structures, trees, graphs, and complexity."
+    });
+    sub2Id = id || 2;
+  }
+
+  const existingSub3 = await knex("subjects").where({ id: 3 }).orWhere({ code: "CS103-LB" }).first();
+  let sub3Id = existingSub3?.id;
+  if (!existingSub3) {
+    const [id] = await knex("subjects").insert({
+      id: 3,
+      code: "CS103-LB",
+      name: "Computing & Software Development Laboratory",
+      department_id: deptId,
+      type: "PRACTICAL",
+      credits: 2,
+      theory_credits: 0,
+      practical_credits: 2,
+      is_elective: false,
+      is_active: true,
+      description: "Hands-on implementation of algorithms in C/C++ and modern systems."
+    });
+    sub3Id = id || 3;
+  }
+
+  // 6. Course Subjects Mapping (V9)
+  const existingMap1 = await knex("course_subjects").where({ course_id: 1, subject_id: sub1Id, semester_number: 1 }).first();
+  if (!existingMap1) {
+    await knex("course_subjects").insert({
+      course_id: 1,
+      subject_id: sub1Id,
+      semester_number: 1,
+      is_mandatory: true
+    });
+  }
+
+  const existingMap2 = await knex("course_subjects").where({ course_id: 1, subject_id: sub3Id, semester_number: 1 }).first();
+  if (!existingMap2) {
+    await knex("course_subjects").insert({
+      course_id: 1,
+      subject_id: sub3Id,
+      semester_number: 1,
+      is_mandatory: true
+    });
+  }
+
+  // 7. Students (V4)
+  const sem1 = await knex("semesters").where({ term_number: 1 }).first();
+  const semesterId = sem1?.id || 1;
+
+  const existingStudentRec = await knex("students").where({ id: 1 }).orWhere({ admission_number: "ADM2026001" }).first();
+  if (!existingStudentRec) {
+    await knex("students").insert({
+      id: 1,
+      user_id: 2,
+      admission_number: "ADM2026001",
+      roll_number: "26CSE001",
+      first_name: "Demo",
+      last_name: "Student",
+      email: "demo.student@campuscore.edu",
+      phone: "+1-555-0144",
+      date_of_birth: "2004-05-15",
+      gender: "MALE",
+      blood_group: "O+",
+      department_id: deptId,
+      course_id: 1,
+      current_semester_id: semesterId,
+      admission_date: "2026-08-01",
+      status: "ACTIVE",
+      emergency_contact_name: "Jane Student",
+      emergency_contact_phone: "+1-555-0145",
+      address_line1: "456 Campus Green Blvd",
+      city: "Cambridge",
+      state: "MA",
+      postal_code: "02138",
+      country: "USA"
+    });
+  }
+
+  // 8. Database Backups (V40)
+  const existingBackup = await knex("database_backups").where({ id: 1 }).orWhere({ filename: "backup_baseline_20261122.sql" }).first();
+  if (!existingBackup) {
+    await knex("database_backups").insert({
+      id: 1,
+      filename: "backup_baseline_20261122.sql",
+      filepath: "./storage/backups/backup_baseline_20261122.sql",
+      file_size_bytes: 1048576,
+      backup_type: "FULL",
+      status: "COMPLETED",
+      checksum_sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      created_by_user_id: 1,
+      retention_days: 30,
+      notes: "System baseline snapshot after Wave 6 completion",
+      completed_at: knex.fn.now()
+    });
+  }
+
+  // 9. Audit Log Bootstrap Entry
   const existingLog = await knex("audit_logs").where({ action: "SYSTEM_BOOTSTRAP" }).first();
   if (!existingLog) {
     await knex("audit_logs").insert({

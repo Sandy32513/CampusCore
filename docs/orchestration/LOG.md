@@ -91,3 +91,18 @@ All dispatches, verification gates, integration merges, and gate approvals are r
   - Implemented `SettingsService` and `/api/v1/settings/public`, `/api/v1/settings` endpoints with role guards and V38 audit logging.
   - Verified 53/53 passing Vitest integration tests (0 failures, 100% test pass rate across all active modules).
   - Completed all 8 standard documentation files for V8 and V39 in `docs/modules/`.
+
+### [2026-11-22T11:15:00Z] WAVE 7 (V4: Student Management, V9: Subject Management, V40: Backup & Recovery) FREEZE
+- **Modules:** V4 Student Management, V9 Subject Management, V40 Backup & Recovery
+- **Status:** ALL THREE MODULES FROZEN (`v4.0.0-students`, `v9.0.0-subjects`, `v40.0.0-backup-recovery`)
+- **Actions:**
+  - Added MySQL migration `20261122050000_create_wave7_tables.ts` creating `students`, `subjects`, `course_subjects`, and `database_backups` tables with foreign key constraints, indexes, and full cascading behaviors.
+  - Extended canonical seeds in `database/seeds/01_initial_data.ts` and test database `sms_test` to include initial student, subject, and backup baseline snapshot.
+  - Implemented `@campuscore/shared` types and schemas for students, subjects, and database backups.
+  - Implemented `StudentService` and `/api/v1/students` endpoints (list, get, create/admit, update, toggle status, delete).
+  - Implemented `SubjectService` and `/api/v1/subjects` endpoints (list, get, create, update, toggle status, course-subject mappings).
+  - Implemented `BackupService` and `/api/v1/backups` endpoints (list, get, create automated dump, verify SHA256 integrity, simulate restore, delete).
+  - Fixed MySQL 8.4 `sql_mode=only_full_group_by` aggregate count queries across service layer using `.clearSelect()`.
+  - Added frontend views in `frontend/public/index.html` for `#module/students`, `#module/subjects`, `#module/backups` with live data fetching, student admission modal, and manual backup triggers.
+  - Verified 76/76 passing Vitest integration tests (0 failures, 100% test pass rate across 12 test suites).
+  - Completed all standard documentation files for V4, V9, and V40 in `docs/modules/`.

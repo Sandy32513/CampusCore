@@ -129,7 +129,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "academic",
     description: "Student CRUD with unique Student ID, admission number, search, filters.",
     icon: "👨‍🎓",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/students"
   },
   {
@@ -141,8 +141,20 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "academic",
     description: "Subject catalog, credits, semester and course mapping.",
     icon: "📖",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/subjects"
+  },
+  {
+    id: "v40-backup",
+    name: "Backup & Recovery",
+    slug: "backups",
+    version: "V40",
+    wave: 7,
+    category: "system",
+    description: "MySQL automated backup verification, restore tooling, point-in-time recovery.",
+    icon: "💾",
+    status: "FROZEN",
+    path: "/backups"
   },
   {
     id: "v12-teachers",

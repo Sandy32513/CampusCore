@@ -204,7 +204,7 @@ export class CourseService {
         });
       }
 
-      const totalResult = await dbQuery.clone().count<{ count: number }>("courses.id as count").first();
+      const totalResult = await dbQuery.clone().clearSelect().count<{ count: number }>("courses.id as count").first();
       const total = Number(totalResult?.count || 0);
       const rows = await dbQuery
         .offset((page - 1) * pageSize)

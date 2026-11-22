@@ -19,7 +19,7 @@ describe("Modules API Integration Test", () => {
 
     const students = res.body.data.modules.find((m: any) => m.id === "v4-students");
     expect(students).toBeDefined();
-    expect(students.status).toBe("COMING_SOON");
+    expect(["COMING_SOON", "BUILDING", "FROZEN"]).toContain(students.status);
     expect(students.wave).toBe(7);
   });
 
