@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { healthRouter } from "./routes/health.js";
 import { modulesRouter } from "./routes/modules.js";
+import { authRouter } from "./routes/auth.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 export function createApp() {
@@ -18,6 +19,9 @@ export function createApp() {
 
   // Module Registry routes
   app.use("/api/v1/modules", modulesRouter);
+
+  // Authentication routes
+  app.use("/api/v1/auth", authRouter);
 
   // Central error handling
   app.use(errorHandler);

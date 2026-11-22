@@ -41,3 +41,15 @@ All dispatches, verification gates, integration merges, and gate approvals are r
   - Implemented honest "Coming Soon" page template for all unbuilt modules.
   - Ran full test suite: 5/5 Vitest integration tests pass (0 failures).
   - Completed all 8 standard documentation files in `docs/modules/01-shell/`.
+
+### [2026-11-22T08:15:00Z] WAVE 3 (V2: Authentication) FREEZE
+- **Module:** V2 Authentication
+- **Status:** FROZEN (`v2.0.0-auth`)
+- **Actions:**
+  - Implemented password hashing and timing-safe verification.
+  - Implemented server-side session management stored in MySQL (`sessions` table).
+  - Implemented `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`, `GET /api/v1/auth/me`.
+  - Implemented `requireAuth` route guard middleware.
+  - Added database migration `20261122010000_create_auth_tables.ts`.
+  - Full test suite verified: 11/11 tests pass across health, modules, and auth (0 failures).
+  - Completed all 8 standard documentation files in `docs/modules/02-auth/`.

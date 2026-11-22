@@ -4,12 +4,12 @@
 
 ## 1. Global Metrics
 - **Total Modules:** 50 (V0 - V49)
-- **FROZEN:** 2 (V0, V1)
+- **FROZEN:** 3 (V0, V1, V2)
 - **FROZEN-PROVISIONAL:** 0
 - **IN PROGRESS / VALIDATING:** 0
-- **NOT-STARTED:** 48
+- **NOT-STARTED:** 47
 - **Open Defects (Blockers / Critical / High):** 0
-- **Active Wave:** Wave 2 Complete (Transitioning to Wave 3: V2 Authentication)
+- **Active Wave:** Wave 3 Complete (Transitioning to Wave 4: V3 User & Role Management)
 
 ---
 
@@ -19,7 +19,8 @@
 |---|---|:---:|:---:|---|---|---|:---:|---|
 | **V0** | Project Foundation | 1 | `FROZEN` | Architect, DB, Backend, Integrator | `feature/v0-foundation` | `v0.0.0-foundation` | 0 | None (Verified) |
 | **V1** | Application Shell | 2 | `FROZEN` | Architect, Frontend, Integrator | `feature/v1-shell` | `v1.0.0-shell` | 0 | None (Verified) |
-| **V2** | Authentication | 3 | `NOT-STARTED` | DB, Backend, Frontend, Security | `feature/v2-auth` | - | 0 | Ready to Start |
+| **V2** | Authentication | 3 | `FROZEN` | DB, Backend, Frontend, Security | `feature/v2-auth` | `v2.0.0-auth` | 0 | None (Verified) |
+| **V3** | User & Role Management | 4 | `NOT-STARTED` | DB, Backend, Frontend, Security | `feature/v3-users-roles` | - | 0 | Ready to Start |
 | **V2** | Authentication | 3 | `NOT-STARTED` | DB, Backend, Frontend, Security | `feature/v2-auth` | - | 0 | Depends on V1 |
 | **V3** | User & Role Management | 4 | `NOT-STARTED` | DB, Backend, Frontend, Security | `feature/v3-users-roles` | - | 0 | Depends on V2 |
 | **V7** | Department Management | 5 | `NOT-STARTED` | DB, Backend, Frontend, QA | `feature/v7-departments` | - | 0 | Depends on V3 |
