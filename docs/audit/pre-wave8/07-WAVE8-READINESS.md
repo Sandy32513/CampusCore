@@ -20,4 +20,4 @@
 
 CC-F-203 and CC-F-204 remain partially remediated pending a full DB suite. CC-F-304 needs live deployment-config validation. CC-F-501 needs browser and accessibility review. CC-F-601 now has a configured CI/Gitleaks workflow and clear dependency audit, but its first remote execution remains pending. Governance and roadmap requests CC-F-801/802 remain open as recorded in the findings register and decision requests.
 
-Audit remediation commits and the `v4.0.1-students` patch tag are on `audit/pre-wave8`; the V0 CI patch is being prepared. No Wave 8 implementation, branch, or migration has been started.
+Audit remediation commits and patch tags `v4.0.1-students` and `v0.0.1-foundation` are on `audit/pre-wave8`. No Wave 8 implementation, branch, or migration has been started.

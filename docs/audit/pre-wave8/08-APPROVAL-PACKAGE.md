@@ -65,7 +65,7 @@ DR-01 through DR-06 are in `06-DECISION-REQUESTS.md`: authorized audit tooling/d
 
 ## 10. Reconciliation
 
-Audit remediation commits and the CC-F-305 patch tag are on `audit/pre-wave8`. `STATUS.md` reflects 16 open Critical/High findings; `LOG.md` records the latest validation. ADRs, roadmap drift, and frozen-module path review remain unresolved.
+Audit remediation commits and the CC-F-305 and CC-F-601 patch tags are on `audit/pre-wave8`. `STATUS.md` reflects 16 open Critical/High findings; `LOG.md` records the latest validation. ADRs, roadmap drift, and frozen-module path review remain unresolved.
 
 ## 11. Approval status
 

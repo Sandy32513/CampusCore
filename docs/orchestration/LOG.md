@@ -26,7 +26,7 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Fix:** Added `.github/workflows/ci.yml` with a MySQL 8.4 service, locked install, lint, typecheck, build, npm audit, guarded migration/rollback/reapply, and full test suite. Added full-history Gitleaks v3 on pinned action revisions with read-only repository permissions.
 - **Safety check:** The migration runner rejected `DB_TEST_NAME=sms_test` before opening a connection. No local database was touched.
 - **Validation:** Local 38/38 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. Workflow run is pending its first GitHub execution.
-- **Patch:** V0 patch commit and `v0.0.1-foundation` tag will be recorded after the commit is created; CC-F-601 remains PARTIAL until remote CI and secret-scan results are reviewed.
+- **Patch:** Commit `6db835e` (`fix(v0): add CI and secret scanning [CC-F-601]`) and annotated tag `v0.0.1-foundation`; finding remains PARTIAL until remote CI and secret-scan results are reviewed.
 - **Gate:** A8 remains NOT READY; no Wave 8 work started.
 
 ### [2026-11-23] PRE-WAVE-8 AUDIT STARTED
