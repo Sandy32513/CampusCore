@@ -79,6 +79,13 @@ function safeRestoreErrorCode(error: unknown): string {
   return error instanceof Error ? error.name : "UNKNOWN_ERROR";
 }
 
+function safeSqlStatementLabel(statement: string): string {
+  const normalized = statement.trimStart();
+  const operation = normalized.match(/^[A-Z]+(?:\s+[A-Z]+)?/i)?.[0]?.replace(/\s+/g, "_").toUpperCase() ?? "UNKNOWN";
+  const tableName = normalized.match(/^(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|INSERT\s+INTO)\s+`?([A-Za-z0-9_]+)`?/i)?.[1];
+  return `${operation}:${tableName ?? "NO_TABLE"}`;
+}
+
 async function* generateSqlDump(db: Knex, backupType: BackupType): AsyncGenerator<string> {
   const tableResult = await db.raw(
     "SELECT TABLE_NAME AS tableName FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME"
@@ -510,7 +517,10 @@ export class BackupService {
         await targetDb.raw("DROP TABLE IF EXISTS ??", [tableName]);
       }
       restorePhase = "execute-backup-sql";
-      for (const statement of statements) await targetDb.raw(statement);
+      for (const [index, statement] of statements.entries()) {
+        restorePhase = `execute-backup-sql:${index + 1}:${safeSqlStatementLabel(statement)}`;
+        await targetDb.raw(statement);
+      }
       await targetDb.raw("SET FOREIGN_KEY_CHECKS=1");
 
       restorePhase = "verify-restored-manifests";
