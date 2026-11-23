@@ -91,7 +91,7 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
       .set("Cookie", adminCookie)
       .send({ targetDatabase: "sms_audit_restore_v40" });
 
-    expect(res.status).toBe(200);
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.restoreResult.restored).toBe(true);
   });

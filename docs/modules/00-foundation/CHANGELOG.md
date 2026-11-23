@@ -5,7 +5,7 @@
 - Student integration tests now sign in as the seeded linked student, verify their own record, and assert another student's record is hidden.
 - Backup integration expectations now account for the seeded baseline backup.
 - CI provisions the restore test's dedicated `sms_audit_*` schema and uses temporary storage isolated from repository artifacts.
-- Full remote rerun remains pending (CC-F-601).
+- Remote quality/migration checks pass; the full suite reaches 114/115 with backup restore still failing (CC-F-601).
 
 ## [0.0.2] - 2026-11-23 (CI follow-up, remote validation pending)
 ### Fixed

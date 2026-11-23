@@ -30,7 +30,7 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | `npm run build` | PASS | Shared, backend, and frontend. |
 | Audit migration target guard | PASS (negative check) | `sms_test` is rejected before a database connection is opened. |
 | `npm audit --json` | PASS (0 advisories) | Vitest upgraded to 5.1.1 and Zod to 4.6.7; production and development dependency audit clear. |
-| GitHub Actions CI / Gitleaks | PARTIAL | Run `45124325405`: Gitleaks, lint, typecheck, build, audit, and migration rollback/reapply passed. The full suite had 110/114 pass; student and backup test assumptions and missing restore scratch schema are fixed locally; third run pending. |
+| GitHub Actions CI / Gitleaks | PARTIAL | Run `45126125696`: Gitleaks, lint, typecheck, build, audit, migration rollback/reapply, and isolated scratch provisioning passed. The full suite had 114/115 pass; backup restore remains 422 and is under investigation. |
 | DB-independent unit tests | PASS (38/38) | Ten files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
 | Frontend inline syntax | PASS | One inline script parsed with Node VM; no browser behavior tested. |
 | `git diff --check` | PASS | No whitespace errors. |
@@ -39,7 +39,7 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | Auth matrix / mutation checks / shuffled suite | BLOCKED | Require the isolated database. |
 | Playwright / axe / viewport checks | BLOCKED | Tooling and authenticated audit API are unavailable. |
 | Target-scale `EXPLAIN ANALYZE` | BLOCKED | No performance database or dataset. |
-| Full-history Gitleaks | PASS | Pinned, full-history GitHub Actions scan passed in runs `45123885129` and `45124325405`. |
+| Full-history Gitleaks | PASS | Pinned, full-history GitHub Actions scan passed in runs `45123885129`, `45124325405`, and `45126125696`. |
 
 The historical baseline run was 76/76 before the closed-port test exposed fallback-backed success. That baseline is not evidence that the current DB-backed suite passes.
 
