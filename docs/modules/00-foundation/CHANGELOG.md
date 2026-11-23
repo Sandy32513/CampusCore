@@ -1,9 +1,14 @@
 # V0 Foundation: Changelog
 
-## [0.0.4] - 2026-11-23 (backup JSON binding fix, remote validation pending)
+## [0.0.5] - 2026-11-23 (shuffle-safe integration fixtures, validated)
+### Fixed
+- Integration tests create the fixtures they need, so create, duplicate, read, update, and delete cases no longer depend on earlier cases.
+- CI runs the full MySQL 8.4 suite twice and once with seeded `--sequence.shuffle`; run `45131257677` passed 116/116 tests on all three passes.
+
+## [0.0.4] - 2026-11-23 (backup JSON binding fix, validated)
 ### Fixed
 - Serialize MySQL JSON objects and arrays as scalar JSON text before constructing SQL dump `INSERT` statements.
-- Added a unit test for JSON dump bindings. Local quality and 39/39 unit checks pass; MySQL restore rerun pending.
+- Added a unit test for JSON dump bindings. CI run `45128456165` passed MySQL 8.4.13 isolated restore and all 116 tests.
 
 ## [0.0.3] - 2026-11-23 (integration CI follow-up, remote validation pending)
 ### Fixed

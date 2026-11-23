@@ -1,11 +1,10 @@
 # Wave 8 Readiness
 
-**Recommendation: NOT READY. Do not start V5, V6, or V12.** The pre-Wave-8 source remediation is committed on `audit/pre-wave8` and has DB-independent validation. Database, browser, and operational evidence remains incomplete. No finding is marked fixed and validated.
+**Recommendation: NOT READY. Do not start V5, V6, or V12.** The pre-Wave-8 remediation is committed on `audit/pre-wave8`; two full MySQL 8.4 CI suites, a seeded shuffled suite, and isolated backup restore now pass. Broader failure injection, authorization, browser, performance, and operational evidence remains incomplete. CC-F-202, CC-F-203, and CC-F-601 are fixed and validated; other findings remain partial, blocked, or open.
 
 ## Blocking findings
 
-- **CC-F-201:** Service memory fallbacks have been removed and ten service families have DB-error regression coverage. The full database-backed suite and route integration checks remain blocked.
-- **CC-F-202:** Backup source now streams DDL and data and validates an isolated restore target with table, row-count, and checksum manifests. No real MySQL source dump or restore has run.
+- **CC-F-201:** Service memory fallbacks have been removed and ten service families have DB-error regression coverage. The full MySQL suite passes in CI; broader service/route failure-path and mutation checks remain outstanding.
 - **CC-F-301:** Argon2id and legacy scrypt rehash-on-login are implemented with unit coverage. ADR-000 approval evidence and DB login integration remain open.
 - **CC-F-302:** Browser auth uses the HttpOnly cookie and dynamic API markup is escaped. Browser, keyboard, viewport, and axe checks remain blocked.
 - **CC-F-303:** Process-local login throttling and Origin/Fetch-Metadata/custom-header CSRF checks are implemented. Multi-instance behavior and browser integration remain unverified.
@@ -18,6 +17,6 @@
 
 ## Additional release gates
 
-CC-F-203 and CC-F-204 remain partially remediated pending a full DB suite. CC-F-304 needs live deployment-config validation. CC-F-501 needs browser and accessibility review. CC-F-601's Gitleaks scans and CI quality/migration checks pass. CC-F-202 restore validation found raw JSON object binding on the `audit_logs` insert; the local serialization fix needs a green remote rerun. Governance and roadmap requests CC-F-801/802 remain open as recorded in the findings register and decision requests.
+CC-F-201 and CC-F-204 remain partially remediated pending full failure-path validation. CC-F-301 needs DB login/re-hash integration and ADR-000 approval. CC-F-304 needs live deployment-config validation. CC-F-501 needs browser and accessibility review. CC-F-202 backup/restore, CC-F-203 test integrity, and CC-F-601 CI/secret scanning now pass their defined checks; broader authorization/failure matrices, mutation checks, and governance/roadmap decisions CC-F-801/802 remain open.
 
-Audit remediation commits and patch tags `v4.0.1-students` and `v0.0.1-foundation` are on `audit/pre-wave8`. No Wave 8 implementation, branch, or migration has been started.
+Audit remediation commits and patch tags through `v0.0.5-foundation` (including `v4.0.1-students`) are on `audit/pre-wave8`. No Wave 8 implementation, branch, or migration has been started.

@@ -2,7 +2,19 @@
 
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
-### [2026-11-23] PRE-WAVE-8 RESTORE FIX PREPARED
+### [2026-11-23] PRE-WAVE-8 FULL CI AND SHUFFLE VERIFIED
+- **Branch/tags:** `audit/pre-wave8` is pushed through `1d61bc2`; `v0.0.4-foundation` validates the backup JSON binding fix and `v0.0.5-foundation` tags the integration fixture isolation.
+- **Validation:** GitHub Actions run `45131257677` passed both jobs. MySQL 8.4.13 migration/rollback, isolated backup restore, two standard full test runs, and one seeded `--sequence.shuffle` run each passed 22 files / 116 tests. Full-history Gitleaks passed.
+- **Finding status:** CC-F-202 backup integrity, CC-F-203 test integrity, and CC-F-601 CI/secret scanning are `FIXED+VALIDATED`.
+- **Gate:** A8 remains NOT READY. Failure-path/auth matrices, mutation spot-checks, browser/accessibility and performance reviews, and governance decisions remain open. No Wave 8 implementation was started.
+
+### [2026-11-23] PRE-WAVE-8 BACKUP RESTORE VERIFIED
+- **Branch/tag:** `audit/pre-wave8` commit `cd42a54`, tagged `v0.0.4-foundation` and pushed to origin.
+- **Validation:** GitHub Actions run `45128456165` passed both jobs. MySQL 8.4.13 migrations/rollback/reapply, isolated scratch provisioning, the backup create/verify/restore flow, and the complete suite (22 files / 116 tests) passed. Full-history Gitleaks passed.
+- **Finding status:** CC-F-202 backup integrity and CC-F-601 CI/secret-scanning gates are `FIXED+VALIDATED`. Run 7 resolved the JSON object binding failure on `audit_logs`.
+- **Gate:** A8 remains NOT READY. A second/shuffled DB suite, broader failure/auth matrices, browser/accessibility checks, and governance decisions remain open. No Wave 8 implementation was started.
+
+### [2026-11-23] PRE-WAVE-8 RESTORE FIX PREPARED (PRE-RUN-7 CHECKPOINT)
 - **Branch:** `audit/pre-wave8`; committed patches include `2703c78` for safe restore diagnostics. The CC-F-305 patch is `bed27d9` / `v4.0.1-students`; CC-F-601 patches are tagged through `v0.0.3-foundation`.
 - **Validation:** Ten DB-independent unit files pass 39/39; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, npm audit (0 advisories), and `git diff --check` pass.
 - **Scope:** Service memory fallbacks are removed; backup serialization/isolated restore, Argon2id with legacy scrypt upgrade, cookie-based frontend auth, request security middleware, configuration guards, and the lint gate have source-level implementations and unit coverage as recorded in `docs/audit/pre-wave8/02-REMEDIATION-LOG.md`.
