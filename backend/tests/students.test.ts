@@ -173,6 +173,71 @@ describe("Student Management Integration Tests (V4)", () => {
     expect(res.body.success).toBe(false);
   });
 
+  it("scopes student list and detail reads to the authenticated user's MySQL-linked record", async () => {
+    const suffix = `${Date.now()}-${fixtureCounter}`;
+    const email = `scope.student.${suffix}@campuscore.edu`;
+    const password = "ScopeStudentPass123!";
+
+    const userRes = await request(app)
+      .post("/api/v1/users")
+      .set("Cookie", adminCookie)
+      .send({ email, password, firstName: "Scoped", lastName: "Student", role: "STUDENT" });
+    expect(userRes.status).toBe(201);
+    const userId = userRes.body.data.user.id as string;
+
+    const studentRes = await request(app)
+      .post("/api/v1/students")
+      .set("Cookie", adminCookie)
+      .send({
+        userId,
+        admissionNumber: `SCOPE${suffix}`,
+        rollNumber: `SC${fixtureCounter}`,
+        firstName: "Scoped",
+        lastName: "Student",
+        email,
+        dateOfBirth: "2005-01-01",
+        departmentId: "1",
+        courseId: "1",
+        currentSemesterId: "1",
+        admissionDate: "2026-08-01"
+      });
+    expect(studentRes.status).toBe(201);
+    const ownStudentId = studentRes.body.data.student.id as string;
+
+    const loginRes = await request(app).post("/api/v1/auth/login").send({ email, password });
+    expect(loginRes.status).toBe(200);
+    const ownCookie = loginRes.headers["set-cookie"][0].split(";")[0];
+
+    const listRes = await request(app)
+      .get("/api/v1/students?page=1&pageSize=100")
+      .set("Cookie", ownCookie);
+    expect(listRes.status).toBe(200);
+    expect(listRes.body.meta.total).toBe(1);
+    expect(listRes.body.data.students.map((student: { id: string }) => student.id)).toEqual([ownStudentId]);
+
+    const ownDetail = await request(app)
+      .get(`/api/v1/students/${ownStudentId}`)
+      .set("Cookie", ownCookie);
+    expect(ownDetail.status).toBe(200);
+    expect(ownDetail.body.data.student.userId).toBe(userId);
+
+    for (const otherStudentId of ["1", createdStudentId]) {
+      const otherDetail = await request(app)
+        .get(`/api/v1/students/${otherStudentId}`)
+        .set("Cookie", ownCookie);
+      expect(otherDetail.status).toBe(404);
+      expect(otherDetail.body.error.code).toBe("STUDENT_NOT_FOUND");
+    }
+
+    const filteredOther = await request(app)
+      .get("/api/v1/students")
+      .query({ q: "demo.student@" })
+      .set("Cookie", ownCookie);
+    expect(filteredOther.status).toBe(200);
+    expect(filteredOther.body.meta.total).toBe(0);
+    expect(filteredOther.body.data.students).toEqual([]);
+  });
+
   it("PUT /api/v1/students/:id as Admin should update profile fields", async () => {
     const res = await request(app)
       .put(`/api/v1/students/${createdStudentId}`)
