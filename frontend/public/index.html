@@ -13,10 +13,11 @@
       --border-subtle: #1f2937;
       --text-main: #f9fafb;
       --text-muted: #9ca3af;
-      --text-faint: #6b7280;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --success: #10b981;
+      --text-faint: #9ca3af;
+      --primary: #93c5fd;
+      --primary-button-bg: #1d4ed8;
+      --primary-hover: #1e40af;
+      --success: #34d399;
       --warning: #f59e0b;
       --danger: #ef4444;
       --sidebar-width: 260px;
@@ -24,6 +25,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       background-color: var(--bg-main);
@@ -111,7 +113,7 @@
       background: var(--bg-surface-elevated);
       font-size: 0.85rem;
       font-weight: 500;
-      cursor: pointer;
+      cursor: default;
     }
 
     /* Layout Wrapper */
@@ -254,7 +256,7 @@
       color: var(--text-main);
     }
     .category-tab.active {
-      background: var(--primary);
+      background: var(--primary-button-bg);
       color: #fff;
     }
 
@@ -377,7 +379,7 @@
       font-weight: 500;
       cursor: pointer;
       border: 1px solid transparent;
-      background-color: var(--primary);
+      background-color: var(--primary-button-bg);
       color: #fff;
       transition: all 0.15s ease;
       text-decoration: none;
@@ -417,7 +419,8 @@
       font-size: 0.9rem;
     }
     .form-input:focus {
-      outline: none;
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
       border-color: var(--primary);
       box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
     }
@@ -427,17 +430,13 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.75);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
     }
     .modal-backdrop.open {
-      opacity: 1;
-      pointer-events: auto;
+      display: flex;
     }
     .modal-dialog {
       background: var(--bg-surface);
@@ -561,13 +560,31 @@
       }
       .app-main { padding: 1rem; }
     }
+    @media (max-width: 640px) {
+      .app-header { padding: 0 0.75rem; gap: 0.5rem; }
+      .header-left { gap: 0.5rem; min-width: 0; }
+      .brand { gap: 0.4rem; font-size: 0.95rem; }
+      .header-right { gap: 0.5rem; }
+      .app-footer { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1rem; }
+    }
+    @media (max-width: 900px) {
+      .brand-badge, .status-pill, .user-profile { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
   <!-- Header -->
   <header class="app-header">
     <div class="header-left">
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">☰</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu" aria-controls="appSidebar" aria-expanded="false">☰</button>
       <a href="#dashboard" class="brand">
         <span>🎓 CampusCore SMS</span>
         <span class="brand-badge">A8 NOT READY</span>
@@ -579,7 +596,7 @@
         <span id="systemStatusText">Checking API and database status…</span>
       </div>
       <button class="btn secondary" id="notifyTrigger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">🔔 Toast</button>
-      <div class="user-profile" id="userProfileBtn">
+      <div class="user-profile">
         <span id="currentRoleBadge">👤 Signed out</span>
       </div>
     </div>
@@ -880,11 +897,11 @@
             <div class="live-title">🔐 Session & Role Switcher (V2)</div>
           </div>
           <div class="form-group">
-            <label class="form-label">Email Address</label>
+            <label class="form-label" for="authEmail">Email Address</label>
             <input type="email" id="authEmail" class="form-input" autocomplete="username">
           </div>
           <div class="form-group">
-            <label class="form-label">Password</label>
+            <label class="form-label" for="authPassword">Password</label>
             <input type="password" id="authPassword" class="form-input" autocomplete="current-password">
           </div>
           <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
@@ -931,12 +948,12 @@
             <h3 style="margin-bottom: 1rem;">📝 Form Controls</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
               <div class="form-group">
-                <label class="form-label">Full Name</label>
-                <input type="text" class="form-input" placeholder="Enter full name...">
+                <label class="form-label" for="demoFullName">Full Name</label>
+                <input type="text" id="demoFullName" class="form-input" placeholder="Enter full name...">
               </div>
               <div class="form-group">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-input" placeholder="user@campuscore.edu">
+                <label class="form-label" for="demoEmail">Email Address</label>
+                <input type="email" id="demoEmail" class="form-input" placeholder="user@campuscore.edu">
               </div>
             </div>
           </div>
@@ -946,7 +963,7 @@
   </div>
 
   <!-- Modal Dialog -->
-  <div class="modal-backdrop" id="modalDialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-backdrop" id="modalDialog" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
     <div class="modal-dialog">
       <div class="modal-header">
         <h3 id="modalTitle">Accessible Modal Dialog</h3>
@@ -963,22 +980,22 @@
   </div>
 
   <!-- Add Department Modal -->
-  <div class="modal-backdrop" id="addDeptModal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" id="addDeptModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="deptModalTitle">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Add New Department</h3>
-        <button class="modal-close" id="closeDeptModalBtn">&times;</button>
+        <h3 id="deptModalTitle">Add New Department</h3>
+        <button class="modal-close" id="closeDeptModalBtn" aria-label="Close department dialog">&times;</button>
       </div>
       <div class="form-group">
-        <label class="form-label">Department Code (e.g. EE, MECH, BIO)</label>
+        <label class="form-label" for="newDeptCode">Department Code (e.g. EE, MECH, BIO)</label>
         <input type="text" id="newDeptCode" class="form-input" placeholder="CSE">
       </div>
       <div class="form-group">
-        <label class="form-label">Department Name</label>
+        <label class="form-label" for="newDeptName">Department Name</label>
         <input type="text" id="newDeptName" class="form-input" placeholder="Computer Science & Engineering">
       </div>
       <div class="form-group">
-        <label class="form-label">Head of Department (HOD)</label>
+        <label class="form-label" for="newDeptHod">Head of Department (HOD)</label>
         <input type="text" id="newDeptHod" class="form-input" placeholder="Dr. Alan Turing">
       </div>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
@@ -989,33 +1006,33 @@
   </div>
 
   <!-- Add Student Modal -->
-  <div class="modal-backdrop" id="addStudentModal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" id="addStudentModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="studentModalTitle">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Admit New Student</h3>
-        <button class="modal-close" id="closeStudentModalBtn">&times;</button>
+        <h3 id="studentModalTitle">Admit New Student</h3>
+        <button class="modal-close" id="closeStudentModalBtn" aria-label="Close student dialog">&times;</button>
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
-          <label class="form-label">First Name *</label>
+          <label class="form-label" for="newStudentFirstName">First Name *</label>
           <input type="text" id="newStudentFirstName" class="form-input" placeholder="Ada">
         </div>
         <div class="form-group">
-          <label class="form-label">Last Name *</label>
+          <label class="form-label" for="newStudentLastName">Last Name *</label>
           <input type="text" id="newStudentLastName" class="form-input" placeholder="Lovelace">
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Email Address *</label>
+        <label class="form-label" for="newStudentEmail">Email Address *</label>
         <input type="email" id="newStudentEmail" class="form-input" placeholder="ada.lovelace@campuscore.edu">
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
-          <label class="form-label">Date of Birth *</label>
+          <label class="form-label" for="newStudentDob">Date of Birth *</label>
           <input type="date" id="newStudentDob" class="form-input" value="2005-01-15">
         </div>
         <div class="form-group">
-          <label class="form-label">Admission Date *</label>
+          <label class="form-label" for="newStudentAdmDate">Admission Date *</label>
           <input type="date" id="newStudentAdmDate" class="form-input" value="2026-08-01">
         </div>
       </div>
@@ -1027,23 +1044,23 @@
   </div>
 
   <!-- Add Subject Modal -->
-  <div class="modal-backdrop" id="addSubjectModal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" id="addSubjectModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="subjectModalTitle">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Add New Academic Subject</h3>
-        <button class="modal-close" id="closeSubjectModalBtn">&times;</button>
+        <h3 id="subjectModalTitle">Add New Academic Subject</h3>
+        <button class="modal-close" id="closeSubjectModalBtn" aria-label="Close subject dialog">&times;</button>
       </div>
       <div class="form-group">
-        <label class="form-label">Subject Code * (e.g. CS201-OS)</label>
+        <label class="form-label" for="newSubjectCode">Subject Code * (e.g. CS201-OS)</label>
         <input type="text" id="newSubjectCode" class="form-input" placeholder="CS201-OS">
       </div>
       <div class="form-group">
-        <label class="form-label">Subject Title *</label>
+        <label class="form-label" for="newSubjectName">Subject Title *</label>
         <input type="text" id="newSubjectName" class="form-input" placeholder="Operating Systems">
       </div>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
-          <label class="form-label">Subject Type</label>
+          <label class="form-label" for="newSubjectType">Subject Type</label>
           <select id="newSubjectType" class="form-input">
             <option value="THEORY">THEORY</option>
             <option value="PRACTICAL">PRACTICAL</option>
@@ -1051,7 +1068,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Credits</label>
+          <label class="form-label" for="newSubjectCredits">Credits</label>
           <input type="number" id="newSubjectCredits" class="form-input" value="4" min="1" max="10">
         </div>
       </div>
@@ -1067,7 +1084,7 @@
 
   <!-- Footer -->
   <footer class="app-footer">
-    <div>CampusCore SMS v1.0.1 · Wave 7 Complete · Gate A8 NOT READY</div>
+    <div>CampusCore SMS v1.0.2 · Wave 7 Complete · Gate A8 NOT READY</div>
     <div>MySQL 8.4 LTS · Node.js 26 · TypeScript</div>
   </footer>
 
@@ -1141,6 +1158,56 @@
       toast.textContent = message;
       container.appendChild(toast);
       setTimeout(() => toast.remove(), 4000);
+    }
+
+    let activeDialog = null;
+    let activeDialogTrigger = null;
+
+    function openDialog(dialog, trigger) {
+      activeDialog = dialog;
+      activeDialogTrigger = trigger;
+      dialog.setAttribute("aria-hidden", "false");
+      dialog.classList.add("open");
+      const firstFocusable = dialog.querySelector("input, select, textarea, button, a[href], [tabindex]:not([tabindex='-1'])");
+      firstFocusable?.focus();
+    }
+
+    function closeDialog(dialog = activeDialog) {
+      if (!dialog) return;
+      dialog.classList.remove("open");
+      dialog.setAttribute("aria-hidden", "true");
+      if (dialog !== activeDialog) return;
+      const trigger = activeDialogTrigger;
+      activeDialog = null;
+      activeDialogTrigger = null;
+      if (trigger?.isConnected) trigger.focus();
+    }
+
+    function trapDialogFocus(event) {
+      if (event.key === "Escape" && activeDialog) {
+        event.preventDefault();
+        closeDialog();
+        return;
+      }
+      if (event.key !== "Tab" || !activeDialog) return;
+
+      const focusable = Array.from(activeDialog.querySelectorAll(
+        "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"
+      )).filter(element => element.getClientRects().length > 0);
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     // Render Module Cards
@@ -1446,6 +1513,7 @@
       }
 
       document.getElementById("appSidebar").classList.remove("open");
+      document.getElementById("menuToggle").setAttribute("aria-expanded", "false");
     }
 
     window.addEventListener("hashchange", handleRoute);
@@ -1457,9 +1525,9 @@
 
     // Add Department Modal
     const addDeptModal = document.getElementById("addDeptModal");
-    document.getElementById("openAddDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.add("open"));
-    document.getElementById("closeDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.remove("open"));
-    document.getElementById("cancelDeptModalBtn")?.addEventListener("click", () => addDeptModal.classList.remove("open"));
+    document.getElementById("openAddDeptModalBtn")?.addEventListener("click", event => openDialog(addDeptModal, event.currentTarget));
+    document.getElementById("closeDeptModalBtn")?.addEventListener("click", () => closeDialog(addDeptModal));
+    document.getElementById("cancelDeptModalBtn")?.addEventListener("click", () => closeDialog(addDeptModal));
     document.getElementById("saveDeptBtn")?.addEventListener("click", async () => {
       const code = document.getElementById("newDeptCode").value.trim();
       const name = document.getElementById("newDeptName").value.trim();
@@ -1476,7 +1544,7 @@
         const json = await res.json();
         if (json.success) {
           showToast(`Department ${code.toUpperCase()} created!`, "success");
-          addDeptModal.classList.remove("open");
+          closeDialog(addDeptModal);
           loadDepartments();
         } else {
           showToast(json.error?.message || "Failed to create department", "danger");
@@ -1488,9 +1556,9 @@
 
     // Add Student Modal (V4)
     const addStudentModal = document.getElementById("addStudentModal");
-    document.getElementById("openAddStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.add("open"));
-    document.getElementById("closeStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.remove("open"));
-    document.getElementById("cancelStudentModalBtn")?.addEventListener("click", () => addStudentModal.classList.remove("open"));
+    document.getElementById("openAddStudentModalBtn")?.addEventListener("click", event => openDialog(addStudentModal, event.currentTarget));
+    document.getElementById("closeStudentModalBtn")?.addEventListener("click", () => closeDialog(addStudentModal));
+    document.getElementById("cancelStudentModalBtn")?.addEventListener("click", () => closeDialog(addStudentModal));
     document.getElementById("saveStudentBtn")?.addEventListener("click", async () => {
       const firstName = document.getElementById("newStudentFirstName").value.trim();
       const lastName = document.getElementById("newStudentLastName").value.trim();
@@ -1521,7 +1589,7 @@
         const json = await res.json();
         if (json.success) {
           showToast(`Student ${json.data.student.fullName} admitted!`, "success");
-          addStudentModal.classList.remove("open");
+          closeDialog(addStudentModal);
           loadStudents();
         } else {
           showToast(json.error?.message || "Failed to admit student", "danger");
@@ -1533,9 +1601,9 @@
 
     // Add Subject Modal (V9)
     const addSubjectModal = document.getElementById("addSubjectModal");
-    document.getElementById("openAddSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.add("open"));
-    document.getElementById("closeSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.remove("open"));
-    document.getElementById("cancelSubjectModalBtn")?.addEventListener("click", () => addSubjectModal.classList.remove("open"));
+    document.getElementById("openAddSubjectModalBtn")?.addEventListener("click", event => openDialog(addSubjectModal, event.currentTarget));
+    document.getElementById("closeSubjectModalBtn")?.addEventListener("click", () => closeDialog(addSubjectModal));
+    document.getElementById("cancelSubjectModalBtn")?.addEventListener("click", () => closeDialog(addSubjectModal));
     document.getElementById("saveSubjectBtn")?.addEventListener("click", async () => {
       const code = document.getElementById("newSubjectCode").value.trim();
       const name = document.getElementById("newSubjectName").value.trim();
@@ -1563,7 +1631,7 @@
         const json = await res.json();
         if (json.success) {
           showToast(`Subject ${json.data.subject.code} created!`, "success");
-          addSubjectModal.classList.remove("open");
+          closeDialog(addSubjectModal);
           loadSubjects();
         } else {
           showToast(json.error?.message || "Failed to create subject", "danger");
@@ -1595,30 +1663,22 @@
 
     // Mobile Sidebar Toggle
     document.getElementById("menuToggle").addEventListener("click", () => {
-      document.getElementById("appSidebar").classList.toggle("open");
+      const sidebar = document.getElementById("appSidebar");
+      const isOpen = sidebar.classList.toggle("open");
+      document.getElementById("menuToggle").setAttribute("aria-expanded", String(isOpen));
     });
 
     // Modal Manager
     const modal = document.getElementById("modalDialog");
-    document.getElementById("openModalBtn")?.addEventListener("click", () => {
-      modal.classList.add("open");
-      document.getElementById("modalConfirmBtn").focus();
-    });
-    document.getElementById("modalCloseBtn")?.addEventListener("click", () => modal.classList.remove("open"));
-    document.getElementById("modalCancelBtn")?.addEventListener("click", () => modal.classList.remove("open"));
+    document.getElementById("openModalBtn")?.addEventListener("click", event => openDialog(modal, event.currentTarget));
+    document.getElementById("modalCloseBtn")?.addEventListener("click", () => closeDialog(modal));
+    document.getElementById("modalCancelBtn")?.addEventListener("click", () => closeDialog(modal));
     document.getElementById("modalConfirmBtn")?.addEventListener("click", () => {
-      modal.classList.remove("open");
+      closeDialog(modal);
       showToast("Action confirmed successfully!", "success");
     });
 
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        modal.classList.remove("open");
-        addDeptModal.classList.remove("open");
-        addStudentModal.classList.remove("open");
-        addSubjectModal.classList.remove("open");
-      }
-    });
+    window.addEventListener("keydown", trapDialogFocus);
 
     // Refresh Audit
     document.getElementById("refreshAuditBtn")?.addEventListener("click", () => {

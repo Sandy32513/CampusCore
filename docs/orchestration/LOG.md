@@ -165,3 +165,10 @@ All dispatches, verification gates, integration merges, and gate approvals are r
   - Added frontend views in `frontend/public/index.html` for `#module/students`, `#module/subjects`, `#module/backups` with live data fetching, student admission modal, and manual backup triggers.
   - Verified 76/76 passing Vitest integration tests (0 failures, 100% test pass rate across 12 test suites).
   - Completed all standard documentation files for V4, V9, and V40 in `docs/modules/`.
+
+### [2026-11-23T12:25:00Z] PRE-WAVE-8 AUDIT — CC-F-501 V1 PATCH VALIDATED
+- **Finding:** CC-F-501 (High); V1 shell accessibility and responsive behavior.
+- **Change request:** CR-AUDIT-001; source patch is isolated from other findings.
+- **Actions:** Added named, initially hidden dialogs with keyboard focus containment, Escape close and focus restoration; form labels, visible focus styles, improved contrast, mobile navigation state, reduced-motion support, and compact responsive header/footer behavior.
+- **Validation:** `npm run test:ui` passed all 6 Playwright tests, including axe scans across 11 primary UI states and the student dialog with zero serious/critical violations, keyboard/modal behavior, and no horizontal overflow at 375/768/1024/1440px. API requests were stubbed as 401; no authenticated API or database was used. `npm run lint`, `npm run typecheck`, `npm audit --audit-level=moderate` (0 vulnerabilities), and `git diff --check` passed.
+- **Version:** V1 patch version 1.0.2. Browser validation does not cover authenticated live-backend flows or 200% zoom; Gate A8 remains NOT READY.

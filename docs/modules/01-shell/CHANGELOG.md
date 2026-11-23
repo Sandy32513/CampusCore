@@ -1,5 +1,16 @@
 # V1 Application Shell: Changelog
 
+## [1.0.2] - 2026-11-23
+### Fixed
+- Added visible keyboard focus indicators and improved text, link, button, and status contrast.
+- Made dialogs hidden when closed, labeled them and their form controls, trapped keyboard focus while open, and restored focus after closing.
+- Added Escape dismissal, mobile navigation state announcements, and responsive header/footer behavior through 375px, 768px, 1024px, and 1440px widths.
+- Respected the reduced-motion preference.
+
+### Verified
+- Playwright and axe: 6 browser tests passed; zero serious or critical axe findings across 11 primary UI states and the student admission dialog.
+- Responsive layout checks passed at 375px, 768px, 1024px, and 1440px; API calls were stubbed as unauthorized and no database was used.
+
 ## [1.0.1] - 2026-11-23
 ### Fixed
 - Reconciled dashboard module counts, Wave 7 phase, and Gate A8 readiness with the orchestration status board.
