@@ -202,3 +202,9 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Change request:** CR-AUDIT-001; database integration validation only; ADR approval remains a project-owner decision.
 - **Actions:** Added a real API/MySQL test that seeds a user with a valid legacy scrypt hash, logs in, confirms the database now stores a valid Argon2id hash, and restores the authenticated session.
 - **Validation:** CI run `45182201358` passed both jobs, including all seven backend auth integration tests, repeated and shuffled MySQL suites, browser/a11y checks, and Gitleaks. ADR-000 remains Proposed.
+
+### [2026-11-23T13:28:00Z] PRE-WAVE-8 AUDIT — DATABASE CONNECTION-FAILURE HTTP CONTRACT
+- **Findings:** CC-F-201 (Critical), CC-F-204 (High), and CC-F-205 (High).
+- **Change request:** CR-AUDIT-001; isolated closed-port probe using audit-only database naming; no database was accessed or stopped.
+- **Actions:** Added an HTTP integration test that starts the API with its MySQL2 connection pointed at closed port 1, checks `/health` reports degraded/disconnected, then sends a session-protected request and verifies the generic 503/`DB_UNAVAILABLE` response and request ID.
+- **Validation:** CI run `45183818813` passed both jobs, the probe, all repeated/shuffled MySQL suites, browser/a11y checks, and Gitleaks. This verifies real-driver error propagation; stopping and recovering a live MySQL service remains outstanding.

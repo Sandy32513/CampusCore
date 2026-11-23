@@ -214,9 +214,10 @@ Audit fixes are committed and pushed on `audit/pre-wave8`, including CC-F-305 (`
 
 ### Further verified continuation (2026-11-23)
 
-- Branch `audit/pre-wave8` is pushed through `ec5d677`; tags `v1.0.3-shell` and `v2.0.1-auth` are pushed. CI runs `45178870296`, `45180675706`, and `45182201358` passed both jobs.
+- Branch `audit/pre-wave8` is pushed through `94c4e13`; tags `v1.0.3-shell` and `v2.0.1-auth` are pushed. CI runs `45178870296`, `45180675706`, `45182201358`, and `45183818813` passed both jobs.
 - CC-F-302 live browser authentication/session coverage now passes against the disposable `sms_audit_ci` schema. The flow confirms the HttpOnly/SameSite cookie, no token in the API response or JavaScript-readable storage, API/database health, and session restoration after reload. Seven backend auth integration tests also pass in the latest CI run.
 - CC-F-501 and CC-F-502 remain fixed and validated. The dashboard now reports 11 unresolved Critical/High findings (1 Critical, 10 High); six of 17 are fixed and validated. Current screenshots are checked in for 375/768/1024/1440px.
 - CC-F-305 now has MySQL-backed student self-scope route evidence in run `45180675706` (list/count/search/own detail succeed; another linked student's and an unlinked record's detail are hidden). The finding remains partial because parent reads stay fail-closed until V6 supplies a consent-backed relationship.
 - CC-F-301 now has MySQL-backed legacy scrypt-to-Argon2id login/session evidence in run `45182201358`; it remains partial pending the human ADR-000 approval.
+- CC-F-201/204/205 now have a live HTTP failure-contract check in run `45183818813`: a real MySQL2 closed-port error produces degraded health and a redacted 503/`DB_UNAVAILABLE` through session validation. The isolated probe did not connect to or stop a database; real MySQL outage/recovery remains outstanding.
 - Gate A8 remains NOT READY. Live DB outage/recovery, parent relationship authorization, deployment-scale throttling/CSRF, performance, governance/architecture decisions, and Wave 8 prerequisites remain outstanding. Do not start Wave 8.
