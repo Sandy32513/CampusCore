@@ -1,3 +1,4 @@
+import "./middleware/asyncErrors.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -15,6 +16,8 @@ import { studentsRouter } from "./routes/students.js";
 import { subjectsRouter } from "./routes/subjects.js";
 import { backupsRouter } from "./routes/backups.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { config } from "./config/env.js";
+import { csrfProtection } from "./middleware/csrfProtection.js";
 
 export function createApp() {
   const app = express();
@@ -22,16 +25,12 @@ export function createApp() {
   app.use(helmet());
   app.use(
     cors({
-      origin: [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000"
-      ],
+      origin: config.corsOrigins,
       credentials: true
     })
   );
   app.use(express.json());
+  app.use(csrfProtection);
 
   // Health routes
   app.use("/health", healthRouter);

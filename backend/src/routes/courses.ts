@@ -48,7 +48,7 @@ coursesRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Reque
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid course data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -58,7 +58,7 @@ coursesRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Reque
   }
 
   const result = await CourseService.createCourse(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -116,7 +116,7 @@ coursesRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Req
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid course update data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -126,7 +126,7 @@ coursesRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Req
   }
 
   const result = await CourseService.updateCourse(id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -168,7 +168,7 @@ coursesRouter.patch("/:id/status", requireRole(["SUPER_ADMIN", "ADMIN"]), async 
   }
 
   const result = await CourseService.toggleCourseStatus(id, isActive, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });

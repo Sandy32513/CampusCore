@@ -1,270 +1,144 @@
-import { UserDto, CreateUserInput, UpdateUserInput, QueryUsersInput } from "@campuscore/shared";
+import { randomBytes } from "node:crypto";
+import type { UserDto, CreateUserInput, UpdateUserInput, QueryUsersInput } from "@campuscore/shared";
 import { getDb } from "../db/connection.js";
-import { inMemoryUsers, inMemorySessions, ensureSharedSeed, StoredUser } from "../db/userRepository.js";
 import { hashPassword } from "../utils/crypto.js";
+
+interface UserRow {
+  id: number | string;
+  email: string;
+  password_hash?: string;
+  first_name: string;
+  last_name: string;
+  role: UserDto["role"];
+  is_active: number | boolean;
+  created_at: string | Date;
+}
+
+function toUserDto(row: UserRow): UserDto {
+  return {
+    id: String(row.id),
+    email: row.email,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    role: row.role,
+    isActive: Boolean(row.is_active),
+    createdAt: new Date(row.created_at).toISOString()
+  };
+}
+
+function isDuplicateEntry(error: unknown): boolean {
+  return typeof error === "object" && error !== null &&
+    "code" in error && error.code === "ER_DUP_ENTRY";
+}
 
 export class UserService {
   static async listUsers(query: QueryUsersInput): Promise<{ users: UserDto[]; total: number }> {
-    await ensureSharedSeed();
     const { page, pageSize, role, q } = query;
-
-    // 1. Try DB
-    try {
-      const db = getDb();
-      let dbQuery = db("users");
-      if (role) dbQuery = dbQuery.where({ role });
-      if (q) {
-        dbQuery = dbQuery.where((builder) => {
-          builder.where("email", "like", `%${q}%`)
-            .orWhere("first_name", "like", `%${q}%`)
-            .orWhere("last_name", "like", `%${q}%`);
-        });
-      }
-      const totalResult = await dbQuery.clone().count<{ count: number }>("id as count").first();
-      const total = Number(totalResult?.count || 0);
-      const rows = await dbQuery.offset((page - 1) * pageSize).limit(pageSize).orderBy("id", "asc");
-
-      const users: UserDto[] = rows.map((r) => ({
-        id: String(r.id),
-        email: r.email,
-        firstName: r.first_name,
-        lastName: r.last_name,
-        role: r.role,
-        isActive: Boolean(r.is_active),
-        createdAt: new Date(r.created_at).toISOString()
-      }));
-
-      return { users, total };
-    } catch {
-      // Memory fallback
-    }
-
-    // 2. Memory store
-    let filtered = [...inMemoryUsers];
-    if (role) filtered = filtered.filter((u) => u.role === role);
+    const db = getDb();
+    let dbQuery = db("users");
+    if (role) dbQuery = dbQuery.where({ role });
     if (q) {
-      const queryLower = q.toLowerCase();
-      filtered = filtered.filter(
-        (u) =>
-          u.email.toLowerCase().includes(queryLower) ||
-          u.firstName.toLowerCase().includes(queryLower) ||
-          u.lastName.toLowerCase().includes(queryLower)
-      );
+      dbQuery = dbQuery.where((builder) => {
+        builder.where("email", "like", `%${q}%`)
+          .orWhere("first_name", "like", `%${q}%`)
+          .orWhere("last_name", "like", `%${q}%`);
+      });
     }
 
-    const total = filtered.length;
-    const start = (page - 1) * pageSize;
-    const paginated = filtered.slice(start, start + pageSize);
-
-    return {
-      users: paginated.map((u) => ({
-        id: u.id,
-        email: u.email,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        role: u.role,
-        isActive: u.isActive,
-        createdAt: u.createdAt
-      })),
-      total
-    };
+    const totalResult = await dbQuery.clone().count<{ count: number }>("id as count").first();
+    const total = Number(totalResult?.count || 0);
+    const rows = await dbQuery.offset((page - 1) * pageSize).limit(pageSize).orderBy("id", "asc");
+    return { users: rows.map((row) => toUserDto(row as UserRow)), total };
   }
 
   static async createUser(input: CreateUserInput): Promise<{ user?: UserDto; error?: string }> {
-    await ensureSharedSeed();
-    const normalizedEmail = input.email.trim().toLowerCase();
-
-    // Check duplicate
-    if (inMemoryUsers.some((u) => u.email === normalizedEmail)) {
-      return { error: "DUPLICATE_EMAIL" };
-    }
+    const email = input.email.trim().toLowerCase();
+    const db = getDb();
+    const existing = await db("users").where({ email }).first();
+    if (existing) return { error: "DUPLICATE_EMAIL" };
 
     const passwordHash = await hashPassword(input.password);
-    const id = String(inMemoryUsers.length + 1);
-    const now = new Date().toISOString();
-
-    const newUser: StoredUser = {
-      id,
-      email: normalizedEmail,
-      passwordHash,
-      firstName: input.firstName.trim(),
-      lastName: input.lastName.trim(),
-      role: input.role,
-      isActive: true,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    // Try DB
+    let insertId: number | string;
     try {
-      const db = getDb();
-      await db("users").insert({
-        id,
-        email: newUser.email,
-        password_hash: newUser.passwordHash,
-        first_name: newUser.firstName,
-        last_name: newUser.lastName,
-        role: newUser.role,
+      [insertId] = await db("users").insert({
+        email,
+        password_hash: passwordHash,
+        first_name: input.firstName.trim(),
+        last_name: input.lastName.trim(),
+        role: input.role,
         is_active: true
       });
-    } catch {
-      // Memory fallback
+    } catch (error) {
+      if (isDuplicateEntry(error)) return { error: "DUPLICATE_EMAIL" };
+      throw error;
     }
 
-    inMemoryUsers.push(newUser);
-
-    return {
-      user: {
-        id: newUser.id,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        role: newUser.role,
-        isActive: newUser.isActive,
-        createdAt: newUser.createdAt
-      }
-    };
+    const row = await db("users").where({ id: insertId }).first();
+    if (!row) throw new Error("The new user could not be loaded after creation");
+    return { user: toUserDto(row as UserRow) };
   }
 
   static async getUserById(id: string): Promise<UserDto | null> {
-    await ensureSharedSeed();
-
-    try {
-      const db = getDb();
-      const r = await db("users").where({ id }).first();
-      if (r) {
-        return {
-          id: String(r.id),
-          email: r.email,
-          firstName: r.first_name,
-          lastName: r.last_name,
-          role: r.role,
-          isActive: Boolean(r.is_active),
-          createdAt: new Date(r.created_at).toISOString()
-        };
-      }
-    } catch {
-      // Memory fallback
-    }
-
-    const user = inMemoryUsers.find((u) => u.id === id);
-    if (!user) return null;
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      isActive: user.isActive,
-      createdAt: user.createdAt
-    };
+    const row = await getDb()("users").where({ id }).first();
+    return row ? toUserDto(row as UserRow) : null;
   }
 
   static async updateUser(id: string, input: UpdateUserInput): Promise<UserDto | null> {
-    await ensureSharedSeed();
-    const user = inMemoryUsers.find((u) => u.id === id);
-    if (!user) return null;
+    const db = getDb();
+    const existing = await db("users").where({ id }).first();
+    if (!existing) return null;
 
-    if (input.email) user.email = input.email.trim().toLowerCase();
-    if (input.firstName) user.firstName = input.firstName.trim();
-    if (input.lastName) user.lastName = input.lastName.trim();
-    if (input.role) user.role = input.role;
-    user.updatedAt = new Date().toISOString();
+    const updates: Partial<{
+      email: string;
+      first_name: string;
+      last_name: string;
+      role: UserDto["role"];
+      updated_at: Date;
+    }> = { updated_at: new Date() };
+    if (input.email !== undefined) updates.email = input.email.trim().toLowerCase();
+    if (input.firstName !== undefined) updates.first_name = input.firstName.trim();
+    if (input.lastName !== undefined) updates.last_name = input.lastName.trim();
+    if (input.role !== undefined) updates.role = input.role;
 
-    // Try DB
-    try {
-      const db = getDb();
-      await db("users").where({ id }).update({
-        email: user.email,
-        first_name: user.firstName,
-        last_name: user.lastName,
-        role: user.role,
-        updated_at: new Date()
-      });
-    } catch {
-      // Memory
-    }
-
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      isActive: user.isActive,
-      createdAt: user.createdAt
-    };
+    await db("users").where({ id }).update(updates);
+    return this.getUserById(id);
   }
 
-  static async updateStatus(id: string, isActive: boolean, currentAdminId: string): Promise<{ user?: UserDto; error?: string }> {
-    await ensureSharedSeed();
-    if (id === currentAdminId && !isActive) {
-      return { error: "CANNOT_DEACTIVATE_SELF" };
-    }
+  static async updateStatus(
+    id: string,
+    isActive: boolean,
+    currentAdminId: string
+  ): Promise<{ user?: UserDto; error?: string }> {
+    if (id === currentAdminId && !isActive) return { error: "CANNOT_DEACTIVATE_SELF" };
 
-    const user = inMemoryUsers.find((u) => u.id === id);
-    if (!user) return { error: "USER_NOT_FOUND" };
+    const db = getDb();
+    const existing = await db("users").where({ id }).select("id").first();
+    if (!existing) return { error: "USER_NOT_FOUND" };
 
-    user.isActive = isActive;
-    user.updatedAt = new Date().toISOString();
+    await db.transaction(async (trx) => {
+      await trx("users").where({ id }).update({ is_active: isActive, updated_at: new Date() });
+      if (!isActive) await trx("sessions").where({ user_id: id }).del();
+    });
 
-    // Try DB & revoke sessions
-    try {
-      const db = getDb();
-      await db("users").where({ id }).update({ is_active: isActive });
-      if (!isActive) {
-        await db("sessions").where({ user_id: id }).del();
-      }
-    } catch {
-      // Memory
-    }
-
-    if (!isActive) {
-      // Revoke all in-memory sessions for this user
-      for (let i = inMemorySessions.length - 1; i >= 0; i--) {
-        if (inMemorySessions[i].userId === id) {
-          inMemorySessions.splice(i, 1);
-        }
-      }
-    }
-
-    return {
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        isActive: user.isActive,
-        createdAt: user.createdAt
-      }
-    };
+    const user = await this.getUserById(id);
+    return user ? { user } : { error: "USER_NOT_FOUND" };
   }
 
-  static async resetPassword(id: string, newPassword?: string): Promise<{ tempPassword?: string; error?: string }> {
-    await ensureSharedSeed();
-    const user = inMemoryUsers.find((u) => u.id === id);
-    if (!user) return { error: "USER_NOT_FOUND" };
+  static async resetPassword(
+    id: string,
+    newPassword?: string
+  ): Promise<{ tempPassword?: string; error?: string }> {
+    const db = getDb();
+    const existing = await db("users").where({ id }).select("id").first();
+    if (!existing) return { error: "USER_NOT_FOUND" };
 
-    const generated = newPassword || "TempPass@" + Math.random().toString(36).substring(2, 8) + "!";
-    const newHash = await hashPassword(generated);
-    user.passwordHash = newHash;
+    const temporaryPassword = newPassword ?? `${randomBytes(18).toString("base64url")}aA1!`;
+    const passwordHash = await hashPassword(temporaryPassword);
+    await db.transaction(async (trx) => {
+      await trx("users").where({ id }).update({ password_hash: passwordHash, updated_at: new Date() });
+      await trx("sessions").where({ user_id: id }).del();
+    });
 
-    try {
-      const db = getDb();
-      await db("users").where({ id }).update({ password_hash: newHash });
-      await db("sessions").where({ user_id: id }).del();
-    } catch {
-      // Memory
-    }
-
-    // Revoke sessions
-    for (let i = inMemorySessions.length - 1; i >= 0; i--) {
-      if (inMemorySessions[i].userId === id) {
-        inMemorySessions.splice(i, 1);
-      }
-    }
-
-    return { tempPassword: generated };
+    return { tempPassword: temporaryPassword };
   }
 }

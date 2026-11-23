@@ -2,11 +2,12 @@ import { Router, Request, Response } from "express";
 import { ApiResponse, loginSchema } from "@campuscore/shared";
 import { AuthService } from "../services/authService.js";
 import { requireAuth, extractSessionToken } from "../middleware/auth.js";
+import { loginRateLimit } from "../middleware/authRateLimit.js";
 
 export const authRouter = Router();
 
 // POST /api/v1/auth/login
-authRouter.post("/login", async (req: Request, res: Response) => {
+authRouter.post("/login", loginRateLimit, async (req: Request, res: Response) => {
   const parseResult = loginSchema.safeParse(req.body);
   if (!parseResult.success) {
     res.status(400).json({
@@ -14,7 +15,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid login credentials format",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -49,8 +50,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     data: {
-      user: result.user,
-      token: result.rawToken
+      user: result.user
     },
     message: "Login successful"
   });

@@ -41,7 +41,7 @@ settingsRouter.put("/", requireRole(["SUPER_ADMIN"]), async (req: Request, res: 
   }
 
   const updatedSettings = await SettingsService.updateSettings(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });

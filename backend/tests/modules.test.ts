@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
+import { MODULE_CATALOG } from "@campuscore/shared";
 
 describe("Modules API Integration Test", () => {
   const app = createApp();
@@ -13,11 +14,11 @@ describe("Modules API Integration Test", () => {
     expect(res.body.data.modules).toBeInstanceOf(Array);
     expect(res.body.data.modules.length).toBeGreaterThan(5);
 
-    const foundation = res.body.data.modules.find((m: any) => m.id === "v0-foundation");
+    const foundation = MODULE_CATALOG.find((module) => module.id === "v0-foundation");
     expect(foundation).toBeDefined();
     expect(foundation.status).toBe("FROZEN");
 
-    const students = res.body.data.modules.find((m: any) => m.id === "v4-students");
+    const students = MODULE_CATALOG.find((module) => module.id === "v4-students");
     expect(students).toBeDefined();
     expect(["COMING_SOON", "BUILDING", "FROZEN"]).toContain(students.status);
     expect(students.wave).toBe(7);

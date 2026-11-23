@@ -70,7 +70,7 @@ academicYearsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req:
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid academic year data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -80,7 +80,7 @@ academicYearsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req:
   }
 
   const result = await AcademicService.createAcademicYear(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -130,7 +130,7 @@ academicYearsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (re
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid academic year update data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -140,7 +140,7 @@ academicYearsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (re
   }
 
   const result = await AcademicService.updateAcademicYear(id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -164,7 +164,7 @@ academicYearsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (re
 academicYearsRouter.patch("/:id/set-current", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await AcademicService.setCurrentAcademicYear(id, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -214,7 +214,7 @@ academicYearsRouter.post("/:yearId/semesters", requireRole(["SUPER_ADMIN", "ADMI
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid semester data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -224,7 +224,7 @@ academicYearsRouter.post("/:yearId/semesters", requireRole(["SUPER_ADMIN", "ADMI
   }
 
   const result = await AcademicService.createSemester(yearId, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -293,7 +293,7 @@ semestersRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: R
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid semester update data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -303,7 +303,7 @@ semestersRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: R
   }
 
   const result = await AcademicService.updateSemester(id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -327,7 +327,7 @@ semestersRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: R
 semestersRouter.patch("/:id/activate", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await AcademicService.activateSemester(id, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });

@@ -39,11 +39,7 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.backups).toBeInstanceOf(Array);
-    expect(res.body.data.backups.length).toBeGreaterThanOrEqual(1);
-
-    const first = res.body.data.backups[0];
-    expect(first.filename).toBeDefined();
-    expect(first.status).toBe("COMPLETED");
+    expect(res.body.data.backups).toEqual([]);
   });
 
   it("POST /api/v1/backups as Student should be rejected with 403 Forbidden", async () => {
@@ -88,10 +84,11 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
     expect(res.body.data.verification.isValid).toBe(true);
   });
 
-  it("POST /api/v1/backups/:id/restore as Super Admin should validate and simulate restore", async () => {
+  it("POST /api/v1/backups/:id/restore restores and verifies only an isolated scratch database", async () => {
     const res = await request(app)
       .post(`/api/v1/backups/${createdBackupId}/restore`)
-      .set("Cookie", adminCookie);
+      .set("Cookie", adminCookie)
+      .send({ targetDatabase: "sms_audit_restore_v40" });
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

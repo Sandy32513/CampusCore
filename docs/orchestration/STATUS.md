@@ -1,6 +1,6 @@
 # SMS Orchestration Status Board
 
-*Last Updated: 2026-11-22 · Orchestrator: Active · Current Phase: Wave 7 Completed*
+*Last Updated: 2026-11-23 · Orchestrator: Active · Current Phase: Wave 7 Completed*
 
 ## 1. Global Metrics
 - **Total Modules:** 50 (V0 - V49)
@@ -8,12 +8,14 @@
 - **FROZEN-PROVISIONAL:** 0
 - **IN PROGRESS / VALIDATING:** 0
 - **NOT-STARTED:** 38
-- **Open Defects (Blockers / Critical / High):** 0
+- **Open Defects (Blockers / Critical / High):** 15 (2 Critical, 13 High; all remain open or partially remediated pending required validation; evidence in `docs/audit/pre-wave8/01-FINDINGS-REGISTER.md`)
 - **Active Wave:** Wave 7 Completed (V4: Student Management, V9: Subject Management, V40: Backup & Recovery)
 
 ---
 
 ## 2. Module Status Table
+
+The module rows retain the historical freeze/tag snapshot and its original per-module defect counts. Those zeros do not mean the current audit findings are resolved; use the global count above and `docs/audit/pre-wave8/01-FINDINGS-REGISTER.md` for current findings.
 
 | Module | Name | Wave | Status | Owner Agents | Branch | Last Tag | Open Defects | Blockers |
 |---|---|:---:|:---:|---|---|---|:---:|---|

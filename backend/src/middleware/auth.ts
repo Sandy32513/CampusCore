@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { UserDto } from "@campuscore/shared";
 import { AuthService } from "../services/authService.js";
 
+// Express request augmentation requires declaration merging.
+/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace Express {
     interface Request {
@@ -10,6 +12,7 @@ declare global {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */
 
 export function extractSessionToken(req: Request): string | null {
   // 1. Check Cookie
@@ -46,7 +49,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     return;
   }
 
-  const user = await AuthService.validateSession(token);
+  let user: UserDto | null;
+  try {
+    user = await AuthService.validateSession(token);
+  } catch (error) {
+    next(error);
+    return;
+  }
   if (!user) {
     res.status(401).json({
       success: false,

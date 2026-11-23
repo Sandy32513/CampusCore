@@ -48,7 +48,7 @@ departmentsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: R
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid department data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -58,7 +58,7 @@ departmentsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: R
   }
 
   const result = await DepartmentService.createDepartment(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -108,7 +108,7 @@ departmentsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req:
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid department update data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
@@ -118,7 +118,7 @@ departmentsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req:
   }
 
   const result = await DepartmentService.updateDepartment(id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });
@@ -152,7 +152,7 @@ departmentsRouter.patch("/:id/status", requireRole(["SUPER_ADMIN", "ADMIN"]), as
   }
 
   const result = await DepartmentService.toggleDepartmentStatus(id, isActive, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.get("user-agent")
   });

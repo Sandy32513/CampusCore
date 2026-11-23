@@ -2,6 +2,27 @@
 
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
+### [2026-11-23] PRE-WAVE-8 REMEDIATION VERIFICATION UPDATE
+- **Branch:** `audit/pre-wave8`; all source and audit-doc changes remain uncommitted and untagged.
+- **Validation:** Eight DB-independent unit files pass 27/27; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, and `git diff --check` pass.
+- **Scope:** Service memory fallbacks are removed; backup serialization/isolated restore, Argon2id with legacy scrypt upgrade, cookie-based frontend auth, request security middleware, configuration guards, and the lint gate have source-level implementations and unit coverage as recorded in `docs/audit/pre-wave8/02-REMEDIATION-LOG.md`.
+- **Limitations:** No authenticated dedicated `sms_audit_*` database is available. Full DB tests, migrations/rollback, live dump/restore, auth integration, and query-plan checks remain BLOCKED. Playwright/axe, gitleaks, and CI remain incomplete. `03-VALIDATION-REPORT.md` is the detailed evidence record.
+- **Gate:** A8 remains NOT READY; no Wave 8 work, commit, push, or tag was started.
+
+### [2026-11-23] DEPENDENCY ADVISORIES CLEARED
+- **Findings:** `npm audit --json` identified 7 advisories: 2 Critical, 2 High, and 3 Moderate; the production-only audit identified the Zod High advisory.
+- **Remediation:** Upgraded Vitest 2→5.1.1 and Zod 3→4.6.7, and updated Zod error details to use the v4 `.issues` field.
+- **Validation:** `npm audit --json` now reports 0 advisories. The 27-test DB-independent suite, typecheck, lint, and build pass on the upgraded dependencies.
+- **Remaining:** CI and gitleaks are still unavailable. Database/browser validation remains blocked; Gate A8 is NOT READY.
+
+### [2026-11-23] PRE-WAVE-8 AUDIT STARTED
+- **Baseline:** Local HEAD `cb1ffbe`; full history present; all 12 version tags resolve to the recorded wave commits.
+- **Branch:** Created local `audit/pre-wave8`; no commits or pushes made.
+- **Findings:** Audit register records 2 Critical and 13 High findings; Wave 8 is not ready. Evidence and blocked checks are in `docs/audit/pre-wave8/`.
+- **Validation at initial audit pass:** Typecheck/build passed; initial test run reported 76/76. Closed-port injection on the original harness produced 75 passes and 1 failure while the DB seed error was swallowed. The first DB-independent runtime set passed 4/4; the initial real lint run found 41 violations. Later remediation and current validation are recorded in the verification entries above.
+- **Partial fixes:** Test setup now rethrows DB setup errors; error handler returns a stable 503 and redacts unexpected messages; async Express 4 rejections are forwarded; CORS/storage config and Node pin were added. Changes are uncommitted and not fully validated; no patch tags were created.
+- **Blockers:** MySQL84 is running, but dedicated `sms_audit` credentials/schema and exact server version have not been verified. Playwright/axe and gitleaks are unavailable. No Wave 8 work started.
+
 ---
 
 ### [2026-11-22T07:30:00Z] GATE 0: Inception & Orchestration Planning

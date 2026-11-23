@@ -876,18 +876,17 @@
           </div>
           <div class="form-group">
             <label class="form-label">Email Address</label>
-            <input type="email" id="authEmail" class="form-input" value="admin@campuscore.edu">
+            <input type="email" id="authEmail" class="form-input" autocomplete="username">
           </div>
           <div class="form-group">
             <label class="form-label">Password</label>
-            <input type="password" id="authPassword" class="form-input" value="Admin@123456">
+            <input type="password" id="authPassword" class="form-input" autocomplete="current-password">
           </div>
           <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
             <button class="btn" id="loginBtn" style="flex:1;">Sign In</button>
-            <button class="btn secondary" id="fillStudentBtn">Student Preset</button>
           </div>
           <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-surface-elevated); border-radius: 6px; font-size: 0.8rem;" id="sessionStatusBox">
-            Status: Active session with Super Admin
+            Status: Sign in to load account data
           </div>
         </div>
       </section>
@@ -1089,12 +1088,23 @@
     ];
 
     const API_BASE = "http://localhost:5000/api/v1";
-    let authToken = localStorage.getItem("campuscore_token") || null;
+    const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
 
     async function apiFetch(endpoint, options = {}) {
+      const method = (options.method || "GET").toUpperCase();
       const headers = {
         "Content-Type": "application/json",
-        ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
+        ...(!SAFE_METHODS.has(method) ? { "X-CSRF-Protection": "1" } : {}),
         ...(options.headers || {})
       };
       return fetch(`${API_BASE}${endpoint}`, {
@@ -1105,24 +1115,15 @@
     }
 
     async function ensureAdminSession() {
-      if (!authToken) {
-        try {
-          const res = await fetch(`${API_BASE}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: "admin@campuscore.edu", password: "Admin@123456" }),
-            credentials: "include"
-          });
-          const json = await res.json();
-          if (json.success && json.data.token) {
-            authToken = json.data.token;
-            localStorage.setItem("campuscore_token", authToken);
-            document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
-            document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;
-          }
-        } catch (e) {
-          console.warn("Auto-session init fallback:", e);
+      try {
+        const res = await apiFetch("/auth/me");
+        const json = await res.json();
+        if (json.success && json.data.user) {
+          document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
+          document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;
         }
+      } catch {
+        document.getElementById("sessionStatusBox").textContent = "Sign in to load account data";
       }
     }
 
@@ -1182,15 +1183,15 @@
         if (json.success && json.data.departments) {
           tbody.innerHTML = json.data.departments.map(d => `
             <tr>
-              <td><strong>${d.code}</strong></td>
-              <td>${d.name}</td>
-              <td>${d.headOfDepartment || "—"}</td>
+              <td><strong>${escapeHtml(d.code)}</strong></td>
+              <td>${escapeHtml(d.name)}</td>
+              <td>${escapeHtml(d.headOfDepartment || "—")}</td>
               <td><span class="badge ${d.isActive ? 'frozen' : 'coming-soon'}">${d.isActive ? 'Active' : 'Inactive'}</span></td>
               <td>${new Date(d.createdAt).toLocaleDateString()}</td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load departments"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load departments")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load departments from API.</td></tr>`;
@@ -1210,14 +1211,14 @@
           }
           tbody.innerHTML = json.data.academicYears.map(y => `
             <tr>
-              <td><strong>${y.name}</strong></td>
-              <td>${y.startDate} — ${y.endDate}</td>
+              <td><strong>${escapeHtml(y.name)}</strong></td>
+              <td>${escapeHtml(y.startDate)} — ${escapeHtml(y.endDate)}</td>
               <td><span class="badge ${y.isCurrent ? 'frozen' : 'coming-soon'}">${y.isCurrent ? 'CURRENT' : 'HISTORICAL'}</span></td>
               <td>${y.semesters ? y.semesters.length : 0} Term(s)</td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">${json.error?.message || "Failed to load academic years"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load academic years")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">Failed to load academic years.</td></tr>`;
@@ -1234,14 +1235,14 @@
           tbody.innerHTML = json.data.logs.map(l => `
             <tr>
               <td>${new Date(l.createdAt).toLocaleTimeString()}</td>
-              <td>${l.userEmail || "System"}</td>
-              <td><code>${l.action}</code></td>
-              <td><span class="badge frozen">${l.entity}</span></td>
-              <td>${l.status}</td>
+              <td>${escapeHtml(l.userEmail || "System")}</td>
+              <td><code>${escapeHtml(l.action)}</code></td>
+              <td><span class="badge frozen">${escapeHtml(l.entity)}</span></td>
+              <td>${escapeHtml(l.status)}</td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load audit logs"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load audit logs")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load audit logs.</td></tr>`;
@@ -1257,17 +1258,17 @@
         if (json.success && json.data.students) {
           tbody.innerHTML = json.data.students.map(s => `
             <tr>
-              <td><strong>${s.admissionNumber}</strong></td>
-              <td>${s.fullName}</td>
-              <td>${s.email}</td>
-              <td>${s.departmentName || s.departmentCode || '-'}</td>
-              <td>${s.courseName || s.courseCode || '-'}</td>
-              <td>${s.currentSemesterName || 'Sem ' + s.currentSemesterId}</td>
-              <td><span class="badge ${s.status === 'ACTIVE' ? 'frozen' : 'coming-soon'}">${s.status}</span></td>
+              <td><strong>${escapeHtml(s.admissionNumber)}</strong></td>
+              <td>${escapeHtml(s.fullName)}</td>
+              <td>${escapeHtml(s.email)}</td>
+              <td>${escapeHtml(s.departmentName || s.departmentCode || '-')}</td>
+              <td>${escapeHtml(s.courseName || s.courseCode || '-')}</td>
+              <td>${escapeHtml(s.currentSemesterName || 'Sem ' + s.currentSemesterId)}</td>
+              <td><span class="badge ${s.status === 'ACTIVE' ? 'frozen' : 'coming-soon'}">${escapeHtml(s.status)}</span></td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">${json.error?.message || "Failed to load student records"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load student records")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">Failed to load student records from API.</td></tr>`;
@@ -1283,16 +1284,16 @@
         if (json.success && json.data.subjects) {
           tbody.innerHTML = json.data.subjects.map(s => `
             <tr>
-              <td><strong>${s.code}</strong></td>
-              <td>${s.name}</td>
-              <td><span class="badge secondary">${s.type}</span></td>
-              <td>${s.credits} Credits (${s.theoryCredits} Th / ${s.practicalCredits} Pr)</td>
+              <td><strong>${escapeHtml(s.code)}</strong></td>
+              <td>${escapeHtml(s.name)}</td>
+              <td><span class="badge secondary">${escapeHtml(s.type)}</span></td>
+              <td>${escapeHtml(s.credits)} Credits (${escapeHtml(s.theoryCredits)} Th / ${escapeHtml(s.practicalCredits)} Pr)</td>
               <td>${s.isElective ? 'Yes (Elective)' : 'No (Core)'}</td>
               <td><span class="badge ${s.isActive ? 'frozen' : 'coming-soon'}">${s.isActive ? 'Active' : 'Inactive'}</span></td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${json.error?.message || "Failed to load subjects"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load subjects")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">Failed to load subjects from API.</td></tr>`;
@@ -1308,16 +1309,16 @@
         if (json.success && json.data.backups) {
           tbody.innerHTML = json.data.backups.map(b => `
             <tr>
-              <td><code>${b.filename}</code></td>
-              <td>${b.fileSizeFormatted}</td>
-              <td>${b.backupType}</td>
-              <td><span class="badge ${b.status === 'COMPLETED' ? 'frozen' : 'coming-soon'}">${b.status}</span></td>
-              <td><span style="font-family:monospace; font-size:0.75rem;" title="${b.checksumSha256 || ''}">${(b.checksumSha256 || '-').slice(0, 16)}...</span></td>
+              <td><code>${escapeHtml(b.filename)}</code></td>
+              <td>${escapeHtml(b.fileSizeFormatted)}</td>
+              <td>${escapeHtml(b.backupType)}</td>
+              <td><span class="badge ${b.status === 'COMPLETED' ? 'frozen' : 'coming-soon'}">${escapeHtml(b.status)}</span></td>
+              <td><span style="font-family:monospace; font-size:0.75rem;" title="${escapeHtml(b.checksumSha256 || '')}">${escapeHtml((b.checksumSha256 || '-').slice(0, 16))}...</span></td>
               <td>${new Date(b.createdAt).toLocaleString()}</td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${json.error?.message || "Failed to load backups"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load backups")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">Failed to load backups from API.</td></tr>`;
@@ -1333,15 +1334,15 @@
         if (json.success && json.data.users) {
           tbody.innerHTML = json.data.users.map(u => `
             <tr>
-              <td><strong>${u.firstName} ${u.lastName}</strong></td>
-              <td>${u.email}</td>
-              <td><span class="badge frozen">${u.role}</span></td>
+              <td><strong>${escapeHtml(u.firstName)} ${escapeHtml(u.lastName)}</strong></td>
+              <td>${escapeHtml(u.email)}</td>
+              <td><span class="badge frozen">${escapeHtml(u.role)}</span></td>
               <td>${u.isActive ? 'Active' : 'Disabled'}</td>
               <td>${new Date(u.createdAt).toLocaleDateString()}</td>
             </tr>
           `).join("");
         } else {
-          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${json.error?.message || "Failed to load user records"}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">${escapeHtml(json.error?.message || "Failed to load user records")}</td></tr>`;
         }
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">Failed to load user records.</td></tr>`;
@@ -1616,17 +1617,11 @@
       showToast("CampusCore SMS Wave 5 Active - MySQL 8.4 LTS", "success");
     });
 
-    // Presets for Auth
-    document.getElementById("fillStudentBtn")?.addEventListener("click", () => {
-      document.getElementById("authEmail").value = "demo.student@campuscore.edu";
-      document.getElementById("authPassword").value = "StudentPass123!";
-    });
-
     document.getElementById("loginBtn")?.addEventListener("click", async () => {
       const email = document.getElementById("authEmail").value;
       const password = document.getElementById("authPassword").value;
       try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
+        const res = await apiFetch("/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -1634,8 +1629,6 @@
         });
         const json = await res.json();
         if (json.success) {
-          authToken = json.data.token;
-          localStorage.setItem("campuscore_token", authToken);
           showToast(`Signed in as ${json.data.user.role}!`, "success");
           document.getElementById("currentRoleBadge").textContent = `👤 ${json.data.user.role}`;
           document.getElementById("sessionStatusBox").textContent = `Active Session: ${json.data.user.email} (${json.data.user.role})`;

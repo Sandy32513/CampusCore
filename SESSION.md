@@ -195,3 +195,11 @@ The remote status board uses conflicting names for some of these versions. Treat
 ### NDA approval gate
 
 The reviewed NDA is a draft and Schedule 2 contains a placeholder rather than an explicit Codex approval. The project owner/legal parties must confirm approval before confidential material is submitted to Codex. Do not upload the NDA itself or other confidential documents to an AI service unless that use is approved under the executed agreement.
+
+## 11. Audit update (2026-11-23)
+
+Wave 7 (V4, V9, V40) is present at commit `cb1ffbe`, and the pre-Wave-8 audit is in progress on the local `audit/pre-wave8` branch. Do not treat the older “Wave 6 next” statements above as current. Wave 8 has not started and remains blocked pending audit findings and the approval gate. See `docs/audit/pre-wave8/08-APPROVAL-PACKAGE.md` for current status.
+
+### Verification update (2026-11-23)
+
+Current source changes remain uncommitted. Eight DB-independent unit files pass 27/27; typecheck, lint, build, frontend inline-script syntax parsing, and `git diff --check` pass. Upgrading Vitest 2→5.1.1 and Zod 3→4.6.7 cleared the npm audit (0 advisories); CI and gitleaks remain unavailable. Dedicated MySQL `sms_audit_*` validation, real backup/restore, Playwright/axe, and performance checks remain outstanding. Gate A8 is NOT READY; do not start Wave 8.

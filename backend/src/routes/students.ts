@@ -55,7 +55,7 @@ studentsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Requ
   }
 
   const result = await StudentService.createStudent(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -130,7 +130,7 @@ studentsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Re
   }
 
   const result = await StudentService.updateStudent(req.params.id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -176,7 +176,7 @@ studentsRouter.patch("/:id/status", requireRole(["SUPER_ADMIN", "ADMIN"]), async
   }
 
   const result = await StudentService.toggleStudentStatus(req.params.id, status, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -199,7 +199,7 @@ studentsRouter.patch("/:id/status", requireRole(["SUPER_ADMIN", "ADMIN"]), async
 // DELETE /api/v1/students/:id (Super Admin only)
 studentsRouter.delete("/:id", requireRole(["SUPER_ADMIN"]), async (req: Request, res: Response) => {
   const result = await StudentService.deleteStudent(req.params.id, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });

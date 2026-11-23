@@ -1,4 +1,4 @@
-import { SYSTEM_ROLES, SYSTEM_PERMISSIONS } from "@campuscore/shared";
+import { SYSTEM_PERMISSIONS } from "@campuscore/shared";
 
 export interface RoleDescriptor {
   name: string;

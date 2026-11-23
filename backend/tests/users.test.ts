@@ -170,7 +170,7 @@ describe("User & Role Management Integration Tests (V3)", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data.roles).toHaveLength(6);
-    const roleNames = res.body.data.roles.map((r: any) => r.name);
+    const roleNames = res.body.data.roles.map((role: { name: string }) => role.name);
     expect(roleNames).toContain("SUPER_ADMIN");
     expect(roleNames).toContain("ADMIN");
     expect(roleNames).toContain("TEACHER");

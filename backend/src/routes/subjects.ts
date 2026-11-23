@@ -56,7 +56,7 @@ subjectsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Requ
   }
 
   const result = await SubjectService.createSubject(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -124,7 +124,7 @@ subjectsRouter.put("/:id", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Re
   }
 
   const result = await SubjectService.updateSubject(req.params.id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -156,7 +156,7 @@ subjectsRouter.patch("/:id/status", requireRole(["SUPER_ADMIN", "ADMIN"]), async
   }
 
   const result = await SubjectService.toggleSubjectStatus(req.params.id, isActive, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -188,7 +188,7 @@ subjectsRouter.post("/:id/courses", requireRole(["SUPER_ADMIN", "ADMIN"]), async
   }
 
   const result = await SubjectService.mapSubjectToCourse(req.params.id, parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -217,8 +217,8 @@ subjectsRouter.post("/:id/courses", requireRole(["SUPER_ADMIN", "ADMIN"]), async
 
 // DELETE /api/v1/subjects/:id/courses/:courseId (Admin only)
 subjectsRouter.delete("/:id/courses/:courseId", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Request, res: Response) => {
-  const result = await SubjectService.unmapSubjectFromCourse(req.params.id, req.params.courseId, {
-    user: (req as any).user,
+  await SubjectService.unmapSubjectFromCourse(req.params.id, req.params.courseId, {
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });

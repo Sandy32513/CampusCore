@@ -1,7 +1,8 @@
 import { Router, Request, Response } from "express";
 import {
   CreateBackupSchema,
-  QueryBackupsSchema
+  QueryBackupsSchema,
+  RestoreBackupSchema
 } from "@campuscore/shared";
 import { BackupService } from "../services/backupService.js";
 import { requireAuth } from "../middleware/auth.js";
@@ -50,7 +51,7 @@ backupsRouter.post("/", requireRole(["SUPER_ADMIN"]), async (req: Request, res: 
   }
 
   const result = await BackupService.createBackup(parseResult.data, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });
@@ -90,11 +91,20 @@ backupsRouter.get("/:id/verify", requireRole(["SUPER_ADMIN", "ADMIN"]), async (r
 
 // POST /api/v1/backups/:id/restore (Super Admin only)
 backupsRouter.post("/:id/restore", requireRole(["SUPER_ADMIN"]), async (req: Request, res: Response) => {
+  const parseResult = RestoreBackupSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    res.status(400).json({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "A pre-provisioned sms_audit_* scratch database is required" }
+    });
+    return;
+  }
+
   const result = await BackupService.restoreBackup(req.params.id, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
-  });
+  }, parseResult.data.targetDatabase);
 
   if (!result) {
     res.status(404).json({
@@ -122,7 +132,7 @@ backupsRouter.post("/:id/restore", requireRole(["SUPER_ADMIN"]), async (req: Req
 // DELETE /api/v1/backups/:id (Super Admin only)
 backupsRouter.delete("/:id", requireRole(["SUPER_ADMIN"]), async (req: Request, res: Response) => {
   const result = await BackupService.deleteBackup(req.params.id, {
-    user: (req as any).user,
+    user: req.user!,
     ip: req.ip,
     userAgent: req.headers["user-agent"]
   });

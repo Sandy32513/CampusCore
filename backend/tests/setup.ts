@@ -1,15 +1,15 @@
 import { beforeAll } from "vitest";
 import { getDb } from "../src/db/connection.js";
 import { hashPassword } from "../src/utils/crypto.js";
-import { inMemoryUsers } from "../src/db/userRepository.js";
-import { inMemoryDepartments } from "../src/services/departmentService.js";
-import { inMemoryStudents } from "../src/services/studentService.js";
-import { inMemorySubjects, inMemoryCourseSubjects } from "../src/services/subjectService.js";
-import { inMemoryBackups } from "../src/services/backupService.js";
 
 beforeAll(async () => {
-  try {
     const db = getDb();
+    const activeDatabaseResult = await db.raw("SELECT DATABASE() AS databaseName");
+    const activeDatabase = activeDatabaseResult[0]?.[0]?.databaseName;
+    if (typeof activeDatabase !== "string" || !/^sms_audit_[a-z0-9_]+$/i.test(activeDatabase)) {
+      throw new Error("Integration tests require a dedicated sms_audit_* database; no tables were changed");
+    }
+
     await db("database_backups").del();
     await db("course_subjects").del();
     await db("subjects").del();
@@ -22,13 +22,6 @@ beforeAll(async () => {
     await db("sessions").del();
     await db("users").del();
 
-    // Reset in-memory stores to match DB seeds
-    inMemoryUsers.length = 0;
-    inMemoryDepartments.length = 0;
-    inMemoryStudents.length = 0;
-    inMemorySubjects.length = 0;
-    inMemoryCourseSubjects.length = 0;
-    inMemoryBackups.length = 0;
 
     // Re-seed baseline data
     const adminPasswordHash = await hashPassword("Admin@123456");
@@ -222,103 +215,4 @@ beforeAll(async () => {
       status: "SUCCESS"
     });
 
-    // Populate memory mirrors
-    inMemoryStudents.push({
-      id: 1,
-      user_id: 2,
-      admission_number: "ADM2026001",
-      roll_number: "26CSE001",
-      first_name: "Demo",
-      last_name: "Student",
-      email: "demo.student@campuscore.edu",
-      phone: "+1-555-0144",
-      date_of_birth: "2004-05-15",
-      gender: "MALE",
-      blood_group: "O+",
-      department_id: 1,
-      course_id: 1,
-      current_semester_id: 1,
-      admission_date: "2026-08-01",
-      status: "ACTIVE",
-      emergency_contact_name: "Jane Student",
-      emergency_contact_phone: "+1-555-0145",
-      address_line1: "456 Campus Green Blvd",
-      city: "Cambridge",
-      state: "MA",
-      postal_code: "02138",
-      country: "USA",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    });
-
-    inMemorySubjects.push(
-      {
-        id: 1,
-        code: "CS101-TH",
-        name: "Introduction to Computer Systems & Programming",
-        department_id: 1,
-        type: "THEORY",
-        credits: 4,
-        theory_credits: 3,
-        practical_credits: 1,
-        is_elective: 0,
-        is_active: 1,
-        description: "Fundamental principles of computing and structured programming.",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 2,
-        code: "CS102-DS",
-        name: "Data Structures & Algorithm Design",
-        department_id: 1,
-        type: "THEORY",
-        credits: 4,
-        theory_credits: 3,
-        practical_credits: 1,
-        is_elective: 0,
-        is_active: 1,
-        description: "Linear and non-linear data structures, trees, graphs, and complexity.",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 3,
-        code: "CS103-LB",
-        name: "Computing & Software Development Laboratory",
-        department_id: 1,
-        type: "PRACTICAL",
-        credits: 2,
-        theory_credits: 0,
-        practical_credits: 2,
-        is_elective: 0,
-        is_active: 1,
-        description: "Hands-on implementation of algorithms in C/C++ and modern systems.",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-    );
-
-    inMemoryCourseSubjects.push(
-      { id: 1, course_id: 1, subject_id: 1, semester_number: 1, is_mandatory: 1, created_at: new Date().toISOString() },
-      { id: 2, course_id: 1, subject_id: 3, semester_number: 1, is_mandatory: 1, created_at: new Date().toISOString() }
-    );
-
-    inMemoryBackups.push({
-      id: 1,
-      filename: "backup_baseline_20261122.sql",
-      filepath: "./storage/backups/backup_baseline_20261122.sql",
-      file_size_bytes: 1048576,
-      backup_type: "FULL",
-      status: "COMPLETED",
-      checksum_sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      created_by_user_id: 1,
-      retention_days: 30,
-      notes: "System baseline snapshot",
-      created_at: new Date().toISOString(),
-      completed_at: new Date().toISOString()
-    });
-  } catch (err: any) {
-    console.error("SETUP DB SEED ERROR:", err?.message || err);
-  }
 });

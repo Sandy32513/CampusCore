@@ -45,7 +45,7 @@ usersRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Request
       error: {
         code: "VALIDATION_ERROR",
         message: "Invalid user data",
-        details: parseResult.error.errors.map((e) => ({
+        details: parseResult.error.issues.map((e) => ({
           field: e.path.join("."),
           issue: e.message
         }))
