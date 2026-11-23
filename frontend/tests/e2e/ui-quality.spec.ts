@@ -96,7 +96,7 @@ test("mobile navigation announces its state and closes after keyboard navigation
 });
 
 test("dashboard fits the required viewport widths", async ({ page }, testInfo) => {
-  for (const width of [375, 768, 1024, 1440]) {
+  for (const width of [375, 640, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     await expect(page.locator(".module-card").first()).toBeAttached();
