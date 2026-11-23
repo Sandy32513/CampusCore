@@ -183,4 +183,10 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Finding:** CC-F-302 (High); V2/V1 cookie-based browser authentication.
 - **Change request:** CR-AUDIT-001; isolated browser-validation and CI sequencing update.
 - **Actions:** Added an opt-in Playwright flow using the real API and `sms_audit_ci` MySQL database. The test checks login, the HttpOnly/SameSite cookie, the API response without a token, empty local/session storage, health status, and session restoration after reload. CI now migrates and seeds the isolated schema before running the browser check. Local mode remains database-independent and skips this CI-only flow.
-- **Validation:** Local `npm run test:ui` passed 6 tests and skipped the one live-backend test as designed. The pushed CI result is pending.
+- **Validation:** Local `npm run test:ui` passed 6 tests and skipped the one live-backend test as designed. CI run `45178870296` passed six backend auth integration tests and the live Chromium login/session test against disposable schema `sms_audit_ci`. Initial CI run `45177873958` exposed an ambiguous email-label locator before login; `28a5718` scoped it to `#authEmail`, and the subsequent full run passed.
+
+### [2026-11-23T13:05:00Z] PRE-WAVE-8 AUDIT — CC-F-502 COUNT AFTER LIVE AUTH VALIDATION
+- **Finding:** CC-F-502 (High); dashboard unresolved-count reconciliation after CC-F-302 closure.
+- **Change request:** CR-AUDIT-001; follow-up to the previously validated V1 dashboard count.
+- **Actions:** Updated the dashboard and assertion from 12 to 11 unresolved Critical/High findings (1 Critical, 10 High), consistent with the findings register after CC-F-302 was validated. Dashboard screenshots were regenerated at 375, 768, 1024, and 1440px.
+- **Validation:** CI run `45178870296` passed the seven-test browser suite, including live auth and the 11-finding dashboard assertion, plus both CI jobs and full-history Gitleaks.

@@ -211,3 +211,10 @@ Audit fixes are committed and pushed on `audit/pre-wave8`, including CC-F-305 (`
 - Playwright/axe: 6/6 tests pass; zero serious/critical axe violations across 11 routed UI states and the student admission dialog; no horizontal overflow at 375/640/768/1024/1440 CSS px. Dashboard screenshots at 375/768/1024/1440 are checked into `docs/audit/pre-wave8/screens/`.
 - CI run `45175697430` passed both jobs, including browser checks, MySQL migration/rollback/reapply, isolated restore provisioning, two full suites plus a seeded shuffle (23 files / 117 tests each), and Gitleaks. API requests in browser tests were unauthorized stubs; authenticated flows remain open under CC-F-302.
 - Gate A8 remains NOT READY. Live DB outage/recovery, DB-backed object-scope, authenticated browser/session, performance, governance, and Wave 8 prerequisites remain outstanding. Do not start Wave 8.
+
+### Further verified continuation (2026-11-23)
+
+- Branch `audit/pre-wave8` is pushed through `42422c1`; tags `v1.0.3-shell` and `v2.0.1-auth` are pushed. CI run `45178870296` passed both jobs on that head.
+- CC-F-302 live browser authentication/session coverage now passes against the disposable `sms_audit_ci` schema. The flow confirms the HttpOnly/SameSite cookie, no token in the API response or JavaScript-readable storage, API/database health, and session restoration after reload. Six backend auth integration tests also pass in CI.
+- CC-F-501 and CC-F-502 remain fixed and validated. The dashboard now reports 11 unresolved Critical/High findings (1 Critical, 10 High); six of 17 are fixed and validated. Current screenshots are checked in for 375/768/1024/1440px.
+- Gate A8 remains NOT READY. Live DB outage/recovery, DB-backed object scope, deployment-scale throttling/CSRF, performance, governance/architecture decisions, and Wave 8 prerequisites remain outstanding. Do not start Wave 8.
