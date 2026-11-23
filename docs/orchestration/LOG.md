@@ -3,17 +3,17 @@
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
 ### [2026-11-23] PRE-WAVE-8 REMEDIATION VERIFICATION UPDATE
-- **Branch:** `audit/pre-wave8`; all source and audit-doc changes remain uncommitted and untagged.
-- **Validation:** Eight DB-independent unit files pass 27/27; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, and `git diff --check` pass.
+- **Branch:** `audit/pre-wave8`; source and audit-doc fixes are committed in `f21a7d5`, the CC-F-305 patch is `bed27d9` / `v4.0.1-students`, and follow-up audit metadata is `b5bcb20`.
+- **Validation:** Ten DB-independent unit files pass 38/38; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, and `git diff --check` pass.
 - **Scope:** Service memory fallbacks are removed; backup serialization/isolated restore, Argon2id with legacy scrypt upgrade, cookie-based frontend auth, request security middleware, configuration guards, and the lint gate have source-level implementations and unit coverage as recorded in `docs/audit/pre-wave8/02-REMEDIATION-LOG.md`.
-- **Limitations:** No authenticated dedicated `sms_audit_*` database is available. Full DB tests, migrations/rollback, live dump/restore, auth integration, and query-plan checks remain BLOCKED. Playwright/axe, gitleaks, and CI remain incomplete. `03-VALIDATION-REPORT.md` is the detailed evidence record.
-- **Gate:** A8 remains NOT READY; no Wave 8 work, commit, push, or tag was started.
+- **Limitations:** No authenticated dedicated `sms_audit_*` database is available. Full DB tests, migrations/rollback, live dump/restore, auth integration, and query-plan checks remain BLOCKED. Playwright/axe remain incomplete. CI and Gitleaks are configured; their first remote run is pending. `03-VALIDATION-REPORT.md` is the detailed evidence record.
+- **Gate:** A8 remains NOT READY; no Wave 8 implementation was started.
 
 ### [2026-11-23] DEPENDENCY ADVISORIES CLEARED
 - **Findings:** `npm audit --json` identified 7 advisories: 2 Critical, 2 High, and 3 Moderate; the production-only audit identified the Zod High advisory.
 - **Remediation:** Upgraded Vitest 2→5.1.1 and Zod 3→4.6.7, and updated Zod error details to use the v4 `.issues` field.
 - **Validation:** `npm audit --json` now reports 0 advisories. The 27-test DB-independent suite, typecheck, lint, and build pass on the upgraded dependencies.
-- **Remaining:** CI and gitleaks are still unavailable. Database/browser validation remains blocked; Gate A8 is NOT READY.
+- **Remaining at this checkpoint:** CI and Gitleaks had not yet been configured. Database/browser validation remains blocked; Gate A8 is NOT READY.
 
 ### [2026-11-23] CC-F-305 STUDENT OBJECT-LEVEL ACCESS PATCH
 - **Finding:** The V4 security matrix requires student self-scope and parent-child scope, but authenticated student/parent sessions could read all student PII. No guardian/student relationship exists for safe parent scope.
@@ -21,6 +21,13 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Validation:** Route authorization and Knex predicate tests pass as part of 38/38 DB-independent tests; typecheck and lint pass. Full MySQL role matrix remains BLOCKED.
 - **Patch:** Commit `bed27d9` (`fix(v4): scope student reads to linked accounts [CC-F-305]`) and annotated tag `v4.0.1-students`; finding remains PARTIAL until DB-backed authorization validation.
 - **Gate:** Open High/W8-BLOCKER count is now 14 High + 2 Critical; A8 remains NOT READY.
+
+### [2026-11-23] CC-F-601 CI AND SECRET-SCAN GATE ADDED
+- **Fix:** Added `.github/workflows/ci.yml` with a MySQL 8.4 service, locked install, lint, typecheck, build, npm audit, guarded migration/rollback/reapply, and full test suite. Added full-history Gitleaks v3 on pinned action revisions with read-only repository permissions.
+- **Safety check:** The migration runner rejected `DB_TEST_NAME=sms_test` before opening a connection. No local database was touched.
+- **Validation:** Local 38/38 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. Workflow run is pending its first GitHub execution.
+- **Patch:** V0 patch commit and `v0.0.1-foundation` tag will be recorded after the commit is created; CC-F-601 remains PARTIAL until remote CI and secret-scan results are reviewed.
+- **Gate:** A8 remains NOT READY; no Wave 8 work started.
 
 ### [2026-11-23] PRE-WAVE-8 AUDIT STARTED
 - **Baseline:** Local HEAD `cb1ffbe`; full history present; all 12 version tags resolve to the recorded wave commits.

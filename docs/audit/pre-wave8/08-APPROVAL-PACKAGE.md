@@ -28,7 +28,9 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | `npm run typecheck` | PASS | Shared, backend, and frontend. |
 | `npm run lint` | PASS | Real ESLint runs in all three workspaces with zero errors/warnings. |
 | `npm run build` | PASS | Shared, backend, and frontend. |
+| Audit migration target guard | PASS (negative check) | `sms_test` is rejected before a database connection is opened. |
 | `npm audit --json` | PASS (0 advisories) | Vitest upgraded to 5.1.1 and Zod to 4.6.7; production and development dependency audit clear. |
+| GitHub Actions CI / Gitleaks | PENDING | Workflow is configured with MySQL 8.4 and full-history secret scanning; no remote result yet. |
 | DB-independent unit tests | PASS (38/38) | Ten files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
 | Frontend inline syntax | PASS | One inline script parsed with Node VM; no browser behavior tested. |
 | `git diff --check` | PASS | No whitespace errors. |
@@ -37,7 +39,7 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | Auth matrix / mutation checks / shuffled suite | BLOCKED | Require the isolated database. |
 | Playwright / axe / viewport checks | BLOCKED | Tooling and authenticated audit API are unavailable. |
 | Target-scale `EXPLAIN ANALYZE` | BLOCKED | No performance database or dataset. |
-| Full-history gitleaks | BLOCKED | gitleaks unavailable. |
+| Full-history Gitleaks | PENDING | A pinned, full-history GitHub Actions job is configured; the first remote result is pending. |
 
 The historical baseline run was 76/76 before the closed-port test exposed fallback-backed success. That baseline is not evidence that the current DB-backed suite passes.
 

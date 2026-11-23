@@ -1,5 +1,12 @@
 # V0 Foundation: Changelog
 
+## [0.0.1] - 2026-11-23 (audit patch, remote validation pending)
+### Added
+- Added a GitHub Actions quality gate for lint, typecheck, build, npm audit, MySQL 8.4 migration/rollback, and the full test suite.
+- Added a full-history Gitleaks job with pinned action revisions and read-only repository permissions.
+- Added a guarded audit-schema migration runner for CI; it refuses database names outside `sms_audit_*`.
+- Remote workflow execution remains pending (CC-F-601).
+
 ## [0.0.0] - 2026-11-22
 ### Added
 - Monorepo workspace configuration (`shared`, `backend`, `frontend`).

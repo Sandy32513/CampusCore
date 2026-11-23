@@ -202,4 +202,4 @@ Wave 7 (V4, V9, V40) is present at commit `cb1ffbe`, and the pre-Wave-8 audit is
 
 ### Verification update (2026-11-23)
 
-Audit fixes are committed on `audit/pre-wave8`; ten DB-independent unit files pass 38/38, and typecheck, lint, build, frontend inline-script syntax parsing, and `git diff --check` pass. Upgrading Vitest 2→5.1.1 and Zod 3→4.6.7 cleared the npm audit (0 advisories); CI and gitleaks remain unavailable. Dedicated MySQL `sms_audit_*` validation, real backup/restore, Playwright/axe, and performance checks remain outstanding. Gate A8 is NOT READY; do not start Wave 8.
+Audit fixes are committed on `audit/pre-wave8`; ten DB-independent unit files pass 38/38, and typecheck, lint, build, frontend inline-script syntax parsing, and `git diff --check` pass. Upgrading Vitest 2→5.1.1 and Zod 3→4.6.7 cleared the npm audit (0 advisories). A MySQL 8.4/Gitleaks GitHub Actions workflow is configured but has not run yet. Dedicated local MySQL `sms_audit_*` validation, real backup/restore, Playwright/axe, and performance checks remain outstanding. Gate A8 is NOT READY; do not start Wave 8.
