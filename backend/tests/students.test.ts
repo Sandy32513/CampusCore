@@ -88,7 +88,7 @@ describe("Student Management Integration Tests (V4)", () => {
         rollNumber: "26CSE999",
         firstName: "Grace",
         lastName: "Hopper",
-        email: "grace.hopper@campuscore.edu",
+        email: "new.student@campuscore.edu",
         phone: "+1-555-0198",
         dateOfBirth: "2004-12-09",
         gender: "FEMALE",
@@ -114,6 +114,7 @@ describe("Student Management Integration Tests (V4)", () => {
   });
 
   it("POST /api/v1/students with duplicate email should return 409 Conflict", async () => {
+    const duplicateEmail = `duplicate.student.${fixtureCounter}@campuscore.edu`;
     const original = await request(app)
       .post("/api/v1/students")
       .set("Cookie", adminCookie)
@@ -122,7 +123,7 @@ describe("Student Management Integration Tests (V4)", () => {
         rollNumber: "26CSE887",
         firstName: "Grace",
         lastName: "Hopper",
-        email: "grace.hopper@campuscore.edu",
+        email: duplicateEmail,
         dateOfBirth: "2004-12-09",
         departmentId: "1",
         courseId: "1",
@@ -138,7 +139,7 @@ describe("Student Management Integration Tests (V4)", () => {
         admissionNumber: "ADM2026888",
         firstName: "Duplicate",
         lastName: "Hopper",
-        email: "grace.hopper@campuscore.edu",
+        email: duplicateEmail,
         dateOfBirth: "2004-12-09",
         departmentId: "1",
         courseId: "1",
