@@ -8,7 +8,7 @@
 - **FROZEN-PROVISIONAL:** 0
 - **IN PROGRESS / VALIDATING:** 0
 - **NOT-STARTED:** 38
-- **Open Defects (Critical / High):** 13 unresolved (1 Critical, 12 High); 3 of 16 total Critical/High findings are fixed and validated. Evidence is in `docs/audit/pre-wave8/01-FINDINGS-REGISTER.md`.
+- **Open Defects (Critical / High):** 12 unresolved (1 Critical, 11 High); 5 of 17 total Critical/High findings are fixed and validated. Evidence is in `docs/audit/pre-wave8/01-FINDINGS-REGISTER.md`.
 - **Active Wave:** Wave 7 Completed (V4: Student Management, V9: Subject Management, V40: Backup & Recovery)
 
 ---

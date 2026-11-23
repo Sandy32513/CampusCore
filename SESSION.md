@@ -203,3 +203,11 @@ Wave 7 (V4, V9, V40) is present at commit `cb1ffbe`, and the pre-Wave-8 audit is
 ### Verification update (2026-11-23)
 
 Audit fixes are committed and pushed on `audit/pre-wave8`, including CC-F-305 (`bed27d9`, `v4.0.1-students`), backup JSON serialization (`cd42a54`, `v0.0.4-foundation`), shuffle-safe integration fixtures (`1d61bc2`, `v0.0.5-foundation`), and the route authorization matrix (`43d654d`). Eleven DB-independent unit files pass 40/40; typecheck and lint pass locally. CI run `45165565332` passed Gitleaks, MySQL 8.4.13 migrations/rollback, isolated restore, and three 117/117 full suites. The table-driven matrix passed 420 HTTP role/auth cases; 16 isolated `requireRole` removal mutations were caught in `D:\CampusCore-audit-mutation`. Live DB failure/recovery and object-scope checks, Playwright/axe, governance decisions, and performance checks remain outstanding. Gate A8 is NOT READY; do not start Wave 8.
+
+### Latest verified continuation (2026-11-23)
+
+- Branch `audit/pre-wave8` is pushed through `789b4e2`; V1 tags `v1.0.1-shell` and `v1.0.2-shell` are pushed.
+- CC-F-501 shell accessibility/responsive validation and CC-F-502 dashboard status/count reconciliation are `FIXED+VALIDATED`. Current audit count is 12 unresolved Critical/High findings (1 Critical, 11 High); 5 of 17 findings are fixed and validated.
+- Playwright/axe: 6/6 tests pass; zero serious/critical axe violations across 11 routed UI states and the student admission dialog; no horizontal overflow at 375/640/768/1024/1440 CSS px. Dashboard screenshots at 375/768/1024/1440 are checked into `docs/audit/pre-wave8/screens/`.
+- CI run `45175697430` passed both jobs, including browser checks, MySQL migration/rollback/reapply, isolated restore provisioning, two full suites plus a seeded shuffle (23 files / 117 tests each), and Gitleaks. API requests in browser tests were unauthorized stubs; authenticated flows remain open under CC-F-302.
+- Gate A8 remains NOT READY. Live DB outage/recovery, DB-backed object-scope, authenticated browser/session, performance, governance, and Wave 8 prerequisites remain outstanding. Do not start Wave 8.

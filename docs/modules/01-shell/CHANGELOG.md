@@ -6,10 +6,11 @@
 - Made dialogs hidden when closed, labeled them and their form controls, trapped keyboard focus while open, and restored focus after closing.
 - Added Escape dismissal, mobile navigation state announcements, and responsive header/footer behavior through 375px, 768px, 1024px, and 1440px widths.
 - Respected the reduced-motion preference.
+- Reconciled the dashboard's unresolved Critical/High finding count after the validated fixes (12 total: 1 Critical, 11 High).
 
 ### Verified
 - Playwright and axe: 6 browser tests passed; zero serious or critical axe findings across 11 primary UI states and the student admission dialog.
-- Responsive layout checks passed at 375px, 768px, 1024px, and 1440px; API calls were stubbed as unauthorized and no database was used.
+- Responsive layout checks passed at 375px, 640px (the 200%-reflow equivalent of 1280 CSS px), 768px, 1024px, and 1440px; the durable screenshot set covers the four required widths. API calls were stubbed as unauthorized and no database was used.
 
 ## [1.0.1] - 2026-11-23
 ### Fixed
