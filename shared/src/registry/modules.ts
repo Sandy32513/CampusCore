@@ -33,7 +33,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "system",
     description: "Complete UI layout shell, navigation, design system, and module registry.",
     icon: "🖥️",
-    status: "BUILDING",
+    status: "FROZEN",
     path: "/"
   },
   {
@@ -45,7 +45,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "system",
     description: "Argon2id password hashing, MySQL session store, cookie auth, login/logout.",
     icon: "🔐",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/auth"
   },
   {
@@ -57,7 +57,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "system",
     description: "6 RBAC roles, user CRUD, permission assignment & registry.",
     icon: "👥",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/users"
   },
   {
@@ -69,7 +69,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "academic",
     description: "Academic department entity, department heads, and statistics.",
     icon: "🏛️",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/departments"
   },
   {
@@ -81,7 +81,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "academic",
     description: "Academic years, terms, active semester tracking.",
     icon: "🗓️",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/semesters"
   },
   {
@@ -93,7 +93,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "system",
     description: "Central transactional audit log store.",
     icon: "📜",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/audit-logs"
   },
   {
@@ -105,7 +105,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "academic",
     description: "Degree and certificate courses mapped to departments.",
     icon: "📚",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/courses"
   },
   {
@@ -117,7 +117,7 @@ export const MODULE_CATALOG: ModuleDescriptor[] = [
     category: "system",
     description: "Institution profile, branding, locale, timezone, date formats.",
     icon: "⚙️",
-    status: "COMING_SOON",
+    status: "FROZEN",
     path: "/settings"
   },
   {

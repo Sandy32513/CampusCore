@@ -2,6 +2,11 @@
 
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
+### [2026-11-23] CC-F-502 DASHBOARD STATUS RECONCILED
+- **Patch:** V1 shell dashboard, shared module catalog, role/health indicator, and frozen-module details now agree with the current status board; unverified test totals were removed. Patch changelog: `v1.0.1-shell` (tag after CI verification).
+- **Validation:** `npm run test:e2e --workspace=frontend -- --grep 'dashboard reflects|frozen modules are not described'` passed 2/2. The browser test returned 401 for API calls and did not connect to MySQL.
+- **Gate:** A8 remains NOT READY. No Wave 8 implementation was started.
+
 ### [2026-11-23] ROUTE AUTHORIZATION MATRIX AND MUTATION CHECKS VERIFIED
 - **Branch/tag:** `audit/pre-wave8` includes matrix test commit `43d654d`; patch tag `v0.0.6-foundation` records the route authorization evidence.
 - **Validation:** CI run `45165565332` passed both jobs. Quality gates, MySQL 8.4.13 migration/rollback/reapply, isolated backup restore, two standard suites, one seeded shuffle (23 files / 117 tests each), and full-history Gitleaks passed. Eleven DB-independent unit files pass 40/40; local typecheck and lint pass.

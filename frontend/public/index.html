@@ -101,6 +101,7 @@
     }
     .dot.green { background: var(--success); box-shadow: 0 0 6px var(--success); }
     .dot.yellow { background: var(--warning); box-shadow: 0 0 6px var(--warning); }
+    .dot.red { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
     .user-profile {
       display: flex;
       align-items: center;
@@ -569,17 +570,17 @@
       <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">☰</button>
       <a href="#dashboard" class="brand">
         <span>🎓 CampusCore SMS</span>
-        <span class="brand-badge">WAVE 5 FROZEN</span>
+        <span class="brand-badge">A8 NOT READY</span>
       </a>
     </div>
     <div class="header-right">
       <div class="status-pill" id="systemStatus">
-        <span class="dot green"></span>
-        <span id="systemStatusText">API & MySQL 8.4 Connected</span>
+        <span class="dot yellow" id="systemStatusDot"></span>
+        <span id="systemStatusText">Checking API and database status…</span>
       </div>
       <button class="btn secondary" id="notifyTrigger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;">🔔 Toast</button>
       <div class="user-profile" id="userProfileBtn">
-        <span id="currentRoleBadge">👤 Super Admin</span>
+        <span id="currentRoleBadge">👤 Signed out</span>
       </div>
     </div>
   </header>
@@ -594,7 +595,7 @@
         <li class="nav-item"><a href="#design-system" class="nav-link" data-nav="design-system">🎨 UI Components</a></li>
       </ul>
 
-      <div class="sidebar-section">Frozen Modules (Wave 1-5)</div>
+      <div class="sidebar-section">Module Screens</div>
       <ul class="nav-list">
         <li class="nav-item">
           <a href="#module/departments" class="nav-link" data-nav="departments">
@@ -638,7 +639,7 @@
         </li>
       </ul>
 
-      <div class="sidebar-section">Academic Modules (Planned)</div>
+      <div class="sidebar-section">Module Navigation</div>
       <ul class="nav-list">
         <li class="nav-item"><a href="#module/courses" class="nav-link" data-nav="courses">📚 Courses (Wave 6)</a></li>
         <li class="nav-item"><a href="#module/settings" class="nav-link" data-nav="settings">⚙️ Settings (Wave 6)</a></li>
@@ -665,23 +666,27 @@
             <div class="title">Total System Modules</div>
             <div class="value">50</div>
           </div>
-          <div class="metric-card">
-            <div class="title">Validated & Frozen</div>
-            <div class="value" style="color: var(--success);">7 <span style="font-size: 0.9rem; font-weight: normal;">(V0, V1, V2, V3, V7, V10, V38)</span></div>
+          <div class="metric-card" data-testid="frozen-modules-metric">
+            <div class="title">Frozen Modules</div>
+            <div class="value" style="color: var(--success);">12 <span style="font-size: 0.9rem; font-weight: normal;">(V0, V1, V2, V3, V7, V10, V38, V8, V39, V4, V9, V40)</span></div>
           </div>
           <div class="metric-card">
-            <div class="title">Integration Tests</div>
-            <div class="value" style="color: var(--primary);">41 / 41 <span style="font-size: 0.85rem; font-weight: normal; color: var(--success);">✓ 100% Pass</span></div>
+            <div class="title">Current Phase</div>
+            <div class="value" style="color: var(--primary);">Wave 7 Complete</div>
+          </div>
+          <div class="metric-card" data-testid="audit-gate-metric">
+            <div class="title">Gate A8</div>
+            <div class="value" style="color: var(--warning);">NOT READY</div>
           </div>
           <div class="metric-card">
-            <div class="title">Current Wave</div>
-            <div class="value" style="color: var(--warning);">Wave 6 Ready</div>
+            <div class="title">Unresolved Critical / High</div>
+            <div class="value" style="color: var(--danger);">13 <span style="font-size: 0.85rem; font-weight: normal;">(1 Critical · 12 High)</span></div>
           </div>
         </div>
 
         <div class="category-tabs" id="categoryTabs">
           <button class="category-tab active" data-cat="all">All Modules</button>
-          <button class="category-tab" data-cat="frozen">Frozen & Live (Wave 1-5)</button>
+          <button class="category-tab" data-cat="frozen">Frozen & Live (12)</button>
           <button class="category-tab" data-cat="academic">Academic</button>
           <button class="category-tab" data-cat="admin">Admin & Ops</button>
           <button class="category-tab" data-cat="finance">Finance</button>
@@ -901,7 +906,7 @@
           <div class="roadmap-info">
             <div><strong>Roadmap Version:</strong> <span id="csVersion">V8</span></div>
             <div><strong>Execution Wave:</strong> <span id="csWave">Wave 6</span></div>
-            <div><strong>Status:</strong> <span class="badge coming-soon">PLANNED / COMING SOON</span></div>
+            <div><strong>Status:</strong> <span id="csStatus" class="badge coming-soon">PLANNED / COMING SOON</span></div>
             <div><strong>Database:</strong> MySQL 8.4 LTS Dedicated Tables</div>
           </div>
 
@@ -1062,7 +1067,7 @@
 
   <!-- Footer -->
   <footer class="app-footer">
-    <div>CampusCore SMS v1.0.0 · Wave 5 Frozen · WCAG 2.2 AA Aligned</div>
+    <div>CampusCore SMS v1.0.1 · Wave 7 Complete · Gate A8 NOT READY</div>
     <div>MySQL 8.4 LTS · Node.js 26 · TypeScript</div>
   </footer>
 
@@ -1076,10 +1081,11 @@
       { id: "v7-departments", name: "Department Management", slug: "departments", version: "V7", wave: 5, category: "academic", desc: "Academic department entity, department heads, and statistics.", icon: "🏛️", status: "FROZEN", path: "/departments" },
       { id: "v10-academic-years", name: "Academic Year & Semester", slug: "academic", version: "V10", wave: 5, category: "academic", desc: "Academic years, terms, active semester tracking.", icon: "🗓️", status: "FROZEN", path: "/academic" },
       { id: "v38-audit-logs", name: "Audit Logs", slug: "audit", version: "V38", wave: 5, category: "system", desc: "Central transactional audit log store.", icon: "📜", status: "FROZEN", path: "/audit" },
-      { id: "v8-courses", name: "Course Management", slug: "courses", version: "V8", wave: 6, category: "academic", desc: "Degree and certificate courses mapped to departments.", icon: "📚", status: "COMING_SOON", path: "/courses" },
-      { id: "v39-settings", name: "System Settings", slug: "settings", version: "V39", wave: 6, category: "system", desc: "Institution profile, branding, locale, timezone, date formats.", icon: "⚙️", status: "COMING_SOON", path: "/settings" },
-      { id: "v4-students", name: "Student Management", slug: "students", version: "V4", wave: 7, category: "academic", desc: "Student CRUD with unique Student ID, admission number, search, filters.", icon: "👨‍🎓", status: "COMING_SOON", path: "/students" },
-      { id: "v9-subjects", name: "Subject Management", slug: "subjects", version: "V9", wave: 7, category: "academic", desc: "Subject catalog, credits, semester and course mapping.", icon: "📖", status: "COMING_SOON", path: "/subjects" },
+      { id: "v8-courses", name: "Course Management", slug: "courses", version: "V8", wave: 6, category: "academic", desc: "Degree and certificate courses mapped to departments.", icon: "📚", status: "FROZEN", path: "/courses" },
+      { id: "v39-settings", name: "System Settings", slug: "settings", version: "V39", wave: 6, category: "system", desc: "Institution profile, branding, locale, timezone, date formats.", icon: "⚙️", status: "FROZEN", path: "/settings" },
+      { id: "v4-students", name: "Student Management", slug: "students", version: "V4", wave: 7, category: "academic", desc: "Student CRUD with unique Student ID, admission number, search, filters.", icon: "👨‍🎓", status: "FROZEN", path: "/students" },
+      { id: "v9-subjects", name: "Subject Management", slug: "subjects", version: "V9", wave: 7, category: "academic", desc: "Subject catalog, credits, semester and course mapping.", icon: "📖", status: "FROZEN", path: "/subjects" },
+      { id: "v40-backup", name: "Backup & Recovery", slug: "backups", version: "V40", wave: 7, category: "system", desc: "MySQL automated backup verification, restore tooling, point-in-time recovery.", icon: "💾", status: "FROZEN", path: "/backups" },
       { id: "v12-teachers", name: "Teacher Management", slug: "teachers", version: "V12", wave: 8, category: "academic", desc: "Faculty profiles, employee IDs, department mapping.", icon: "👨‍🏫", status: "COMING_SOON", path: "/teachers" },
       { id: "v15-attendance", name: "Attendance", slug: "attendance", version: "V15", wave: 11, category: "academic", desc: "Daily and subject-level student attendance marking.", icon: "📅", status: "COMING_SOON", path: "/attendance" },
       { id: "v18-exams", name: "Examination Management", slug: "examinations", version: "V18", wave: 11, category: "academic", desc: "Exam scheduling, rooms, max marks, student eligibility.", icon: "📝", status: "COMING_SOON", path: "/examinations" },
@@ -1148,6 +1154,8 @@
       filtered.forEach(m => {
         const card = document.createElement("a");
         card.className = "module-card";
+        card.dataset.moduleId = m.id;
+        card.dataset.status = m.status;
         card.href = `#module/${m.slug}`;
         card.innerHTML = `
           <div class="card-top">
@@ -1416,9 +1424,14 @@
           sections.viewComingSoon.style.display = "block";
           document.getElementById("csIcon").textContent = mod.icon;
           document.getElementById("csTitle").textContent = `${mod.name} (${mod.version})`;
-          document.getElementById("csDesc").textContent = mod.desc;
+          document.getElementById("csDesc").textContent = mod.status === "FROZEN"
+            ? `${mod.desc} The module is frozen; this shell does not include its interactive view.`
+            : mod.desc;
           document.getElementById("csVersion").textContent = mod.version;
           document.getElementById("csWave").textContent = `Wave ${mod.wave}`;
+          const statusBadge = document.getElementById("csStatus");
+          statusBadge.textContent = mod.status === "FROZEN" ? "FROZEN" : "PLANNED / COMING SOON";
+          statusBadge.className = `badge ${mod.status === "FROZEN" ? "frozen" : "coming-soon"}`;
           breadcrumb.textContent = mod.name;
           document.querySelector(`.nav-link[data-nav="${slug}"]`)?.classList.add("active");
         }
@@ -1614,7 +1627,7 @@
     });
 
     document.getElementById("notifyTrigger").addEventListener("click", () => {
-      showToast("CampusCore SMS Wave 5 Active - MySQL 8.4 LTS", "success");
+      showToast("CampusCore SMS Wave 7 Complete - Gate A8 Not Ready", "info");
     });
 
     document.getElementById("loginBtn")?.addEventListener("click", async () => {
@@ -1643,14 +1656,26 @@
 
     // Live Health Probe
     async function checkHealth() {
+      const statusText = document.getElementById("systemStatusText");
+      const statusDot = document.getElementById("systemStatusDot");
+
+      function setSystemStatus(message, state) {
+        statusText.textContent = message;
+        statusDot.className = `dot ${state}`;
+      }
+
       try {
         const res = await fetch(`${API_BASE}/health`);
         const json = await res.json();
-        if (json.success) {
-          document.getElementById("systemStatusText").textContent = "API & MySQL 8.4 Active";
+        if (res.ok && json.success && json.data?.status === "healthy" && json.data?.database === "connected") {
+          setSystemStatus("API & MySQL 8.4 Healthy", "green");
+        } else if (res.ok && json.success && json.data?.database === "disconnected") {
+          setSystemStatus("API online · MySQL 8.4 disconnected", "yellow");
+        } else {
+          setSystemStatus("API health check failed", "red");
         }
       } catch {
-        document.getElementById("systemStatusText").textContent = "API Standby";
+        setSystemStatus("API unavailable", "red");
       }
     }
     checkHealth();

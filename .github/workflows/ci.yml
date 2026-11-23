@@ -17,7 +17,7 @@ concurrency:
 jobs:
   quality-and-mysql:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       NODE_ENV: test
       DB_HOST: 127.0.0.1
@@ -60,6 +60,10 @@ jobs:
         run: npm run typecheck
       - name: Build
         run: npm run build
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run frontend browser and accessibility checks
+        run: npm run test:e2e --workspace=frontend
       - name: Audit dependencies
         run: npm audit --audit-level=moderate
       - name: Migrate empty schema, roll back latest, and migrate again
