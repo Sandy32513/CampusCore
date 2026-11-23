@@ -4,7 +4,7 @@
 ### Security
 - Scoped student list and detail reads for `STUDENT` accounts to their linked `user_id`.
 - Denied `PARENT` reads until a verified consent-backed guardian/student relationship exists; V6 remains a prerequisite.
-- Added route authorization and query-scope unit checks under CC-F-305. MySQL integration validation remains blocked.
+- Added route authorization and query-scope unit checks under CC-F-305 (commit `bed27d9`, tag `v4.0.1-students`). MySQL integration validation remains blocked.
 
 ## [4.0.0] - 2026-11-22
 ### Added
