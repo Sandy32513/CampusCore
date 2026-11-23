@@ -1,5 +1,13 @@
 # V1 Application Shell: Changelog
 
+## [1.0.4] - 2026-11-23
+### Fixed
+- Reconciled the dashboard unresolved Critical/High count after CC-F-201, CC-F-204, and CC-F-205 passed the MySQL outage/recovery validation (8 total: 0 Critical, 8 High).
+- Advanced the shell patch footer to v1.0.4.
+
+### Verified
+- The Playwright dashboard regression assertion checks the current 8-finding count and severity breakdown.
+
 ## [1.0.3] - 2026-11-23
 ### Fixed
 - Reconciled the dashboard unresolved Critical/High count after CC-F-302 passed live browser/API/MySQL validation (11 total: 1 Critical, 10 High).
