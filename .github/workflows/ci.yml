@@ -66,8 +66,12 @@ jobs:
         run: npm run db:migrate:audit-test --workspace=backend
       - name: Provision isolated restore scratch schema
         run: npm run db:provision:audit-scratch --workspace=backend
-      - name: Run full test suite against MySQL 8.4
+      - name: Run full test suite against MySQL 8.4 (pass 1)
         run: npm test
+      - name: Repeat full test suite against MySQL 8.4 (pass 2)
+        run: npm test
+      - name: Run shuffled full test suite against MySQL 8.4
+        run: npm exec --workspace=backend -- vitest run --sequence.shuffle --sequence.seed=20261123
 
   secret-scan:
     runs-on: ubuntu-latest
