@@ -1,5 +1,12 @@
 # V1 Application Shell: Changelog
 
+## [1.0.3] - 2026-11-23
+### Fixed
+- Reconciled the dashboard unresolved Critical/High count after CC-F-302 passed live browser/API/MySQL validation (11 total: 1 Critical, 10 High).
+
+### Verified
+- Playwright dashboard regression assertion passes on the current audit status; CI also runs the real authentication flow against the isolated MySQL schema.
+
 ## [1.0.2] - 2026-11-23
 ### Fixed
 - Added visible keyboard focus indicators and improved text, link, button, and status contrast.
