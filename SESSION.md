@@ -221,3 +221,10 @@ Audit fixes are committed and pushed on `audit/pre-wave8`, including CC-F-305 (`
 - CC-F-301 now has MySQL-backed legacy scrypt-to-Argon2id login/session evidence in run `45182201358`; it remains partial pending the human ADR-000 approval.
 - CC-F-201/204/205 now have a live HTTP failure-contract check in run `45183818813`: a real MySQL2 closed-port error produces degraded health and a redacted 503/`DB_UNAVAILABLE` through session validation. The isolated probe did not connect to or stop a database; real MySQL outage/recovery remains outstanding.
 - Gate A8 remains NOT READY. Live DB outage/recovery, parent relationship authorization, deployment-scale throttling/CSRF, performance, governance/architecture decisions, and Wave 8 prerequisites remain outstanding. Do not start Wave 8.
+
+### Latest verified continuation (2026-11-23)
+
+- Branch `audit/pre-wave8` is pushed through `e08b327` (`CC-F-502` count update); `v1.0.4-shell` is the corresponding dashboard patch tag. Prior verified tags include `v1.0.3-shell`, `v2.0.1-auth`, and `v4.0.1-students`.
+- CI run `45185946389` passed both jobs, including the live MySQL outage probe: only disposable CI schema/container was interrupted; the same API process returned degraded health and redacted 503 during outage and healthy/connected after restart. CC-F-201, CC-F-204, and CC-F-205 are now fixed and validated.
+- The audit has 9 of 17 Critical/High findings fixed and validated; 8 remain unresolved (0 Critical, 8 High). The dashboard metric and 375/768/1024/1440px screenshots were updated in `e08b327`; local Playwright/axe passed 6 tests. CI run `45187037585` passed both jobs, including the updated dashboard count, browser/a11y suite, repeated/shuffled MySQL 8.4 suites, live outage/recovery probe, and Gitleaks.
+- Gate A8 remains NOT READY due to ADR-000 approval, multi-instance throttling/CSRF and deployment config validation, parent relationship authorization, target-scale performance, governance, and Wave 8 architecture prerequisites. Do not start Wave 8.

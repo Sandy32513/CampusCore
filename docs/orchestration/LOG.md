@@ -208,3 +208,15 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Change request:** CR-AUDIT-001; isolated closed-port probe using audit-only database naming; no database was accessed or stopped.
 - **Actions:** Added an HTTP integration test that starts the API with its MySQL2 connection pointed at closed port 1, checks `/health` reports degraded/disconnected, then sends a session-protected request and verifies the generic 503/`DB_UNAVAILABLE` response and request ID.
 - **Validation:** CI run `45183818813` passed both jobs, the probe, all repeated/shuffled MySQL suites, browser/a11y checks, and Gitleaks. This verifies real-driver error propagation; stopping and recovering a live MySQL service remains outstanding.
+
+### [2026-11-23T13:53:10Z] PRE-WAVE-8 AUDIT — LIVE MYSQL OUTAGE AND RECOVERY
+- **Findings:** CC-F-201 (Critical), CC-F-204 (High), and CC-F-205 (High).
+- **Change:** Commit `2db9034` adds an opt-in live outage probe and CI step, guarded to GitHub Actions and the disposable `sms_audit_ci` schema/container. It stops and restarts the known MySQL 8.4 service container and verifies the same API process returns degraded health plus a redacted 503/`DB_UNAVAILABLE` during outage, then healthy/connected after restart.
+- **Validation:** CI run `45185946389` passed both jobs, including the live outage/recovery probe and full-history Gitleaks. The isolated DB was restored before cleanup. CC-F-201/204/205 are now fixed and validated.
+- **Current audit count:** 9 of 17 Critical/High findings fixed and validated; 8 unresolved (0 Critical, 8 High). Gate A8 remains NOT READY; do not start Wave 8.
+
+### [2026-11-23T13:56:22Z] PRE-WAVE-8 AUDIT — CC-F-502 COUNT UPDATE
+- **Finding:** CC-F-502 (High); dashboard metric reconciliation after CC-F-201/204/205 validation.
+- **Change:** Commit `e08b327` updates the V1 dashboard to 8 unresolved findings (0 Critical, 8 High), sets the shell patch version to v1.0.4, and regenerates screenshots at 375/768/1024/1440px. Annotated tag `v1.0.4-shell` points to the commit and is pushed.
+- **Validation:** Local Playwright/axe passed 6 tests; one live-backend test was skipped by design. CI run `45187037585` passed both jobs, including dashboard E2E, browser/a11y checks, all standard and shuffled MySQL suites, live outage/recovery, and Gitleaks.
+- **Current audit count:** 9 of 17 Critical/High findings fixed and validated; 8 unresolved (0 Critical, 8 High). Gate A8 remains NOT READY; do not start Wave 8.
