@@ -196,3 +196,9 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Change request:** CR-AUDIT-001; added a database-backed integration check without changing Wave 8 scope.
 - **Actions:** Added a distinct student account linked to its MySQL student record, then exercised authenticated list/count/search and own/other detail routes. Student reads returned only the linked row; other and unlinked records were hidden. Parent reads remain fail-closed until the consent-backed V6 relationship exists.
 - **Validation:** CI run `45180675706` passed both full-suite runs and the seeded shuffle against MySQL 8.4, including the new scope integration test; secret scan also passed. Local typecheck and lint passed.
+
+### [2026-11-23T13:18:00Z] PRE-WAVE-8 AUDIT — CC-F-301 MYSQL PASSWORD MIGRATION VALIDATION
+- **Finding:** CC-F-301 (High); legacy password upgrade to Argon2id.
+- **Change request:** CR-AUDIT-001; database integration validation only; ADR approval remains a project-owner decision.
+- **Actions:** Added a real API/MySQL test that seeds a user with a valid legacy scrypt hash, logs in, confirms the database now stores a valid Argon2id hash, and restores the authenticated session.
+- **Validation:** CI run `45182201358` passed both jobs, including all seven backend auth integration tests, repeated and shuffled MySQL suites, browser/a11y checks, and Gitleaks. ADR-000 remains Proposed.

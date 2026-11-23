@@ -6,7 +6,7 @@ The NDA in the repository is a draft and Schedule 2 contains only placeholders. 
 
 ## DR-02 — Record Argon2id migration decision
 
-TRD and ADR-000 specify Argon2id; source now uses Node 26 Argon2id while retaining legacy scrypt verification and rehash-on-successful-login. Unit tests pass for both paths, but DB login/re-hash integration and an ADR approval record remain open. Recommendation: record the human ADR decision and validate the migration path against an audit schema before release.
+TRD and ADR-000 specify Argon2id; source now uses Node 26 Argon2id while retaining legacy scrypt verification and rehash-on-successful-login. Unit tests pass for both paths, and CI run `45182201358` validated legacy-hash upgrade through the MySQL-backed login API, including session restoration. ADR-000 remains Proposed. Recommendation: record the human ADR decision before release.
 
 ## DR-03 — Validate the real backup and restore path
 
@@ -22,4 +22,4 @@ Current frontend is a static HTML document served by a small TypeScript workspac
 
 ## DR-06 — Release gate remediation queue
 
-Lint runs in each workspace with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. CI run `45165565332` passed quality checks, migration rollback/reapply, scratch provisioning, two standard full suites, and a seeded shuffled full suite (117 tests each), plus full-history Gitleaks. The 420-request route authorization matrix passed, and all 16 isolated authorization-guard mutations were caught. CI run `45180675706` also passed the MySQL-backed student self-scope list/detail/filter test. Live DB failure/recovery, parent relationship authorization, performance, and governance checks remain before release.
+Lint runs in each workspace with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. CI run `45165565332` passed quality checks, migration rollback/reapply, scratch provisioning, two standard full suites, and a seeded shuffled full suite (117 tests each), plus full-history Gitleaks. The 420-request route authorization matrix passed, and all 16 isolated authorization-guard mutations were caught. CI run `45180675706` passed the MySQL-backed student self-scope list/detail/filter test; run `45182201358` passed the MySQL-backed legacy password rehash/session test. Live DB failure/recovery, parent relationship authorization, performance, and governance checks remain before release.
