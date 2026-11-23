@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:auth-e2e": "vitest run tests/auth.test.ts",
+    "test:db-recovery": "vitest run tests/databaseRecovery.test.ts",
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "db:migrate:audit-test": "tsx scripts/migrateAuditDb.ts",
     "db:provision:audit-scratch": "tsx scripts/provisionAuditScratchDb.ts"
