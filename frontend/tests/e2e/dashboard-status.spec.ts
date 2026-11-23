@@ -25,6 +25,8 @@ test("dashboard reflects the frozen catalog and the closed Wave 8 gate", async (
   expect(frozenCardIds).toEqual(frozenCatalogIds);
   await expect(page.getByTestId("frozen-modules-metric")).toContainText("12");
   await expect(page.getByTestId("audit-gate-metric")).toContainText("NOT READY");
+  await expect(page.getByTestId("unresolved-findings-metric")).toContainText("12");
+  await expect(page.getByTestId("unresolved-findings-metric")).toContainText("1 Critical · 11 High");
   await expect(page.locator("#viewDashboard")).toContainText("Wave 7 Complete");
   await expect(page.locator("#viewDashboard")).not.toContainText("41 / 41");
   await expect(page.locator("#viewDashboard")).not.toContainText("100% Pass");
