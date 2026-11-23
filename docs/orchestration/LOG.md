@@ -190,3 +190,9 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Change request:** CR-AUDIT-001; follow-up to the previously validated V1 dashboard count.
 - **Actions:** Updated the dashboard and assertion from 12 to 11 unresolved Critical/High findings (1 Critical, 10 High), consistent with the findings register after CC-F-302 was validated. Dashboard screenshots were regenerated at 375, 768, 1024, and 1440px.
 - **Validation:** CI run `45178870296` passed the seven-test browser suite, including live auth and the 11-finding dashboard assertion, plus both CI jobs and full-history Gitleaks.
+
+### [2026-11-23T13:15:00Z] PRE-WAVE-8 AUDIT — CC-F-305 MYSQL SELF-SCOPE VALIDATION
+- **Finding:** CC-F-305 (High); student and parent object-level authorization.
+- **Change request:** CR-AUDIT-001; added a database-backed integration check without changing Wave 8 scope.
+- **Actions:** Added a distinct student account linked to its MySQL student record, then exercised authenticated list/count/search and own/other detail routes. Student reads returned only the linked row; other and unlinked records were hidden. Parent reads remain fail-closed until the consent-backed V6 relationship exists.
+- **Validation:** CI run `45180675706` passed both full-suite runs and the seeded shuffle against MySQL 8.4, including the new scope integration test; secret scan also passed. Local typecheck and lint passed.
