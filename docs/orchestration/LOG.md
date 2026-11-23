@@ -6,7 +6,7 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Branch:** `audit/pre-wave8`; source and audit-doc fixes are committed in `f21a7d5`, the CC-F-305 patch is `bed27d9` / `v4.0.1-students`, and follow-up audit metadata is `b5bcb20`.
 - **Validation:** Ten DB-independent unit files pass 38/38; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, and `git diff --check` pass.
 - **Scope:** Service memory fallbacks are removed; backup serialization/isolated restore, Argon2id with legacy scrypt upgrade, cookie-based frontend auth, request security middleware, configuration guards, and the lint gate have source-level implementations and unit coverage as recorded in `docs/audit/pre-wave8/02-REMEDIATION-LOG.md`.
-- **Limitations:** No authenticated dedicated `sms_audit_*` database is available. Full DB tests, migrations/rollback, live dump/restore, auth integration, and query-plan checks remain BLOCKED. Playwright/axe remain incomplete. CI and Gitleaks are configured; their first remote run is pending. `03-VALIDATION-REPORT.md` is the detailed evidence record.
+- **Limitations:** No authenticated dedicated `sms_audit_*` database is available locally. Full DB tests, migrations/rollback, live dump/restore, auth integration, and query-plan checks remain outstanding. Playwright/axe remain incomplete. First remote Gitleaks passed; CI caught the shared declaration ordering issue at typecheck, with a fix awaiting remote rerun. `03-VALIDATION-REPORT.md` is the detailed evidence record.
 - **Gate:** A8 remains NOT READY; no Wave 8 implementation was started.
 
 ### [2026-11-23] DEPENDENCY ADVISORIES CLEARED
@@ -25,8 +25,9 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 ### [2026-11-23] CC-F-601 CI AND SECRET-SCAN GATE ADDED
 - **Fix:** Added `.github/workflows/ci.yml` with a MySQL 8.4 service, locked install, lint, typecheck, build, npm audit, guarded migration/rollback/reapply, and full test suite. Added full-history Gitleaks v3 on pinned action revisions with read-only repository permissions.
 - **Safety check:** The migration runner rejected `DB_TEST_NAME=sms_test` before opening a connection. No local database was touched.
-- **Validation:** Local 38/38 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. Workflow run is pending its first GitHub execution.
-- **Patch:** Commit `6db835e` (`fix(v0): add CI and secret scanning [CC-F-601]`) and annotated tag `v0.0.1-foundation`; finding remains PARTIAL until remote CI and secret-scan results are reviewed.
+- **Validation:** Local 38/38 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. First remote Gitleaks scan passed; CI run `45123885129` failed at clean-checkout typecheck before build, migration, or full tests.
+- **Patch:** Commit `6db835e` (`fix(v0): add CI and secret scanning [CC-F-601]`) and annotated tag `v0.0.1-foundation`; finding remains PARTIAL pending CI follow-up.
+- **Follow-up:** Root typecheck now builds `@campuscore/shared` before workspace checks; the complete remote workflow rerun remains pending.
 - **Gate:** A8 remains NOT READY; no Wave 8 work started.
 
 ### [2026-11-23] PRE-WAVE-8 AUDIT STARTED

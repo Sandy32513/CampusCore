@@ -1,6 +1,6 @@
 # V0: Project Foundation
 
-Status: **FROZEN** (`v0.0.0-foundation`) with audit patch `v0.0.1-foundation`; first remote CI/Gitleaks run is pending.
+Status: **FROZEN** (`v0.0.0-foundation`) with audit patches `v0.0.1-foundation` and `v0.0.2-foundation`; first Gitleaks scan passed, and the CI typecheck ordering fix awaits a complete remote rerun.
 
 ## Module Summary
 The Project Foundation module establishes the monorepo structure, development standards, shared types, MySQL connection pool, health check APIs, and basic responsive user interface.

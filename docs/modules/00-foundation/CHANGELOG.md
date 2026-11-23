@@ -1,5 +1,10 @@
 # V0 Foundation: Changelog
 
+## [0.0.2] - 2026-11-23 (CI follow-up, remote validation pending)
+### Fixed
+- Root typecheck builds the shared package declarations before checking workspace imports, so clean checkouts do not depend on ignored build output.
+- The first Gitleaks history scan passed; the first CI run identified this clean-checkout issue and the full rerun is pending.
+
 ## [0.0.1] - 2026-11-23 (audit patch, remote validation pending)
 ### Added
 - Added a GitHub Actions quality gate for lint, typecheck, build, npm audit, MySQL 8.4 migration/rollback, and the full test suite.

@@ -22,4 +22,4 @@ Current frontend is a static HTML document served by a small TypeScript workspac
 
 ## DR-06 — Release gate remediation queue
 
-Lint was initially a no-op; ESLint now runs in each workspace and passes with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. A pinned GitHub Actions workflow now configures quality checks, a MySQL 8.4 migration/rollback/full-suite job, and full-history Gitleaks. The workflow has not run yet. Recommendation: verify the first remote run and fix any environment/configuration failures before release.
+Lint was initially a no-op; ESLint now runs in each workspace and passes with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. The first remote Gitleaks scan passed. CI exposed a clean-checkout shared declaration ordering issue at typecheck; a follow-up now builds the shared package first. Recommendation: verify a complete green remote run, including MySQL migrations and the full suite, before release.
