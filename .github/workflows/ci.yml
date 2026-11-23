@@ -71,7 +71,7 @@ jobs:
       - name: Repeat full test suite against MySQL 8.4 (pass 2)
         run: npm test
       - name: Run shuffled full test suite against MySQL 8.4
-        run: npm exec --workspace=backend -- vitest run --sequence.shuffle --sequence.seed=20261123
+        run: npm exec --workspace=backend -- vitest run --sequence.shuffle.files --sequence.seed=20261123
 
   secret-scan:
     runs-on: ubuntu-latest
