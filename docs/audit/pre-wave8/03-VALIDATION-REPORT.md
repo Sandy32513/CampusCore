@@ -5,7 +5,7 @@
 | `npm ci` baseline | PASS with warnings | At initial install, 209 packages installed; npm reported 7 advisories (3 moderate, 2 high, 2 critical) and an esbuild install-script approval warning. The later dependency upgrades clear the advisories per the current audit row below. |
 | `npm ci` after dependency remediation | PASS (0 advisories) | Clean install from the updated lockfile completed; npm still warns that the esbuild postinstall script is not approved by local install-script policy. |
 | `npm audit --json` after dependency remediation | PASS (0 advisories) | Upgraded Vitest 2→5.1.1 and Zod 3→4.6.7; updated Zod error formatting for v4. Both production and development dependency audit reports are clear. |
-| GitHub Actions CI and full-history Gitleaks | PARTIAL | First run `45123885129`: full-history Gitleaks passed. CI reached typecheck and failed because the clean checkout had not built `@campuscore/shared` declarations before checking backend imports. Root `typecheck` now builds shared before running workspace typechecks; a follow-up remote run must verify this and continue to MySQL migrations/full tests. |
+| GitHub Actions CI and full-history Gitleaks | PARTIAL | Gitleaks passed in runs `45123885129` and `45124325405`. The second run passed locked install, lint, typecheck, build, audit, and MySQL 8.4 migration/rollback/reapply. Full suite reached 110/114 tests: two student integration assertions used a login with no linked student record; the backup test expected an empty list despite the seeded baseline; restore target `sms_audit_restore_v40` was not provisioned. Test fixtures and isolated scratch provisioning have been corrected locally; a third remote run must validate the full suite. |
 | `npm run typecheck` | PASS | Reran across shared, backend, and frontend after current edits. |
 | `npm run lint` | PASS | Reran across shared, backend, and frontend; zero errors or warnings. |
 | `npm run build` | PASS | Reran across shared, backend, and frontend after current edits. |
@@ -26,6 +26,6 @@
 | Playwright + axe at 375/768/1024/1440 | BLOCKED | Browser tooling and authenticated scratch API are unavailable. Static review removed browser token storage/JSON exposure and escapes API data interpolated into HTML. No viewport/a11y pass rate is claimed. |
 | `EXPLAIN ANALYZE` at target scale | BLOCKED | No authenticated audit/performance instance. |
 | Git history/tag inventory | PASS (partial scope) | Full clone; 12 expected tags resolve to expected wave commits; local audit branch exists. Frozen-module path-level audit remains incomplete. |
-| Secret scan entire Git history | PASS | Pinned Gitleaks v3 with full-history checkout passed in GitHub Actions run `45123885129`. No secret/PII value was copied into reports. |
+| Secret scan entire Git history | PASS | Pinned Gitleaks v3 with full-history checkout passed in GitHub Actions runs `45123885129` and `45124325405`. No secret/PII value was copied into reports. |
 
 No check is reported passed unless its command ran successfully as listed. Source fixes are committed on `audit/pre-wave8`, but database and browser evidence remains blocked; findings are not marked `FIXED+VALIDATED` until their required validation passes.

@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run --config vitest.unit.config.ts",
-    "db:migrate:audit-test": "tsx scripts/migrateAuditDb.ts"
+    "db:migrate:audit-test": "tsx scripts/migrateAuditDb.ts",
+    "db:provision:audit-scratch": "tsx scripts/provisionAuditScratchDb.ts"
   },
   "dependencies": {
     "@campuscore/shared": "*",

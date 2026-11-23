@@ -39,7 +39,8 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.backups).toBeInstanceOf(Array);
-    expect(res.body.data.backups).toEqual([]);
+    expect(res.body.data.backups).toHaveLength(1);
+    expect(res.body.data.backups[0].filename).toBe("backup_baseline_20261122.sql");
   });
 
   it("POST /api/v1/backups as Student should be rejected with 403 Forbidden", async () => {

@@ -14,21 +14,9 @@ describe("Student Management Integration Tests (V4)", () => {
       .send({ email: "admin@campuscore.edu", password: "Admin@123456" });
     adminCookie = adminLogin.headers["set-cookie"][0].split(";")[0];
 
-    // Create a regular user for RBAC testing
-    await request(app)
-      .post("/api/v1/users")
-      .set("Cookie", adminCookie)
-      .send({
-        email: "student.qa@campuscore.edu",
-        password: "StudentPass123!",
-        firstName: "Student",
-        lastName: "QA",
-        role: "STUDENT"
-      });
-
     const studentLogin = await request(app)
       .post("/api/v1/auth/login")
-      .send({ email: "student.qa@campuscore.edu", password: "StudentPass123!" });
+      .send({ email: "demo.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
   });
 
@@ -43,7 +31,7 @@ describe("Student Management Integration Tests (V4)", () => {
     expect(res.body.data.students.length).toBeGreaterThanOrEqual(1);
 
     const first = res.body.data.students[0];
-    expect(first.admissionNumber).toBeDefined();
+    expect(first.admissionNumber).toBe("ADM2026001");
     expect(first.departmentId).toBeDefined();
     expect(first.courseId).toBeDefined();
   });
@@ -124,16 +112,25 @@ describe("Student Management Integration Tests (V4)", () => {
     expect(res.body.error.code).toBe("DUPLICATE_EMAIL");
   });
 
-  it("GET /api/v1/students/:id should return single student details", async () => {
+  it("GET /api/v1/students/:id should return the linked student's details", async () => {
     const res = await request(app)
-      .get(`/api/v1/students/${createdStudentId}`)
+      .get("/api/v1/students/1")
       .set("Cookie", studentCookie);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.student.id).toBe(createdStudentId);
-    expect(res.body.data.student.email).toBe("grace.hopper@campuscore.edu");
+    expect(res.body.data.student.id).toBe("1");
+    expect(res.body.data.student.email).toBe("demo.student@campuscore.edu");
     expect(res.body.data.student.departmentName).toBeDefined();
+  });
+
+  it("GET /api/v1/students/:id should hide another student's profile", async () => {
+    const res = await request(app)
+      .get(`/api/v1/students/${createdStudentId}`)
+      .set("Cookie", studentCookie);
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
   });
 
   it("PUT /api/v1/students/:id as Admin should update profile fields", async () => {

@@ -24,6 +24,8 @@ jobs:
       DB_PORT: 3306
       DB_NAME: sms_audit_ci
       DB_TEST_NAME: sms_audit_ci
+      DB_RESTORE_TEST_NAME: sms_audit_restore_v40
+      STORAGE_DIR: /tmp/campuscore-ci-storage
       DB_APP_USER: root
       DB_APP_PASSWORD: campuscore_ci_test_password
       DB_MIGRATOR_USER: root
@@ -62,6 +64,8 @@ jobs:
         run: npm audit --audit-level=moderate
       - name: Migrate empty schema, roll back latest, and migrate again
         run: npm run db:migrate:audit-test --workspace=backend
+      - name: Provision isolated restore scratch schema
+        run: npm run db:provision:audit-scratch --workspace=backend
       - name: Run full test suite against MySQL 8.4
         run: npm test
 
