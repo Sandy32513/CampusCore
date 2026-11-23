@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,8 @@ describe("Department Management Integration Tests (V7)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdDeptId: string;
+  let createdDeptCode: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     // 1. Login as Admin
@@ -31,6 +33,17 @@ describe("Department Management Integration Tests (V7)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "dept.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    createdDeptCode = `QADEPT${fixtureCounter}`;
+    const res = await request(app)
+      .post("/api/v1/departments")
+      .set("Cookie", adminCookie)
+      .send({ code: createdDeptCode, name: `QA Department ${fixtureCounter}` });
+    expect(res.status).toBe(201);
+    createdDeptId = res.body.data.department.id;
   });
 
   it("GET /api/v1/departments should return list of seeded departments", async () => {
@@ -80,11 +93,18 @@ describe("Department Management Integration Tests (V7)", () => {
   });
 
   it("POST /api/v1/departments with duplicate code should return 409 Conflict", async () => {
+    const duplicateCode = `DUPDEPT${fixtureCounter}`;
+    const existing = await request(app)
+      .post("/api/v1/departments")
+      .set("Cookie", adminCookie)
+      .send({ code: duplicateCode, name: "Duplicate Fixture Department" });
+    expect(existing.status).toBe(201);
+
     const res = await request(app)
       .post("/api/v1/departments")
       .set("Cookie", adminCookie)
       .send({
-        code: "MECH",
+        code: duplicateCode,
         name: "Mechanical Engineering Duplicate"
       });
 
@@ -101,7 +121,7 @@ describe("Department Management Integration Tests (V7)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.department.id).toBe(createdDeptId);
-    expect(res.body.data.department.code).toBe("MECH");
+    expect(res.body.data.department.code).toBe(createdDeptCode);
     expect(res.body.data.department.stats.courseCount).toBe(0);
   });
 

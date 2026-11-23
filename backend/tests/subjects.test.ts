@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,8 @@ describe("Subject Management Integration Tests (V9)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdSubjectId: string;
+  let createdSubjectCode: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     const adminLogin = await request(app)
@@ -29,6 +31,25 @@ describe("Subject Management Integration Tests (V9)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "subject.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    createdSubjectCode = `QA-SUB-${fixtureCounter}`;
+    const res = await request(app)
+      .post("/api/v1/subjects")
+      .set("Cookie", adminCookie)
+      .send({
+        code: createdSubjectCode,
+        name: `QA Subject ${fixtureCounter}`,
+        departmentId: "1",
+        type: "THEORY",
+        credits: 3,
+        theoryCredits: 3,
+        practicalCredits: 0
+      });
+    expect(res.status).toBe(201);
+    createdSubjectId = res.body.data.subject.id;
   });
 
   it("GET /api/v1/subjects should return list of academic subjects", async () => {
@@ -87,11 +108,18 @@ describe("Subject Management Integration Tests (V9)", () => {
   });
 
   it("POST /api/v1/subjects with duplicate code should return 409 Conflict", async () => {
+    const duplicateCode = `DUP-SUB-${fixtureCounter}`;
+    const existing = await request(app)
+      .post("/api/v1/subjects")
+      .set("Cookie", adminCookie)
+      .send({ code: duplicateCode, name: "Duplicate Fixture Subject", departmentId: "1" });
+    expect(existing.status).toBe(201);
+
     const res = await request(app)
       .post("/api/v1/subjects")
       .set("Cookie", adminCookie)
       .send({
-        code: "CS201-OS",
+        code: duplicateCode,
         name: "Duplicate Operating Systems",
         departmentId: "1"
       });
@@ -109,7 +137,7 @@ describe("Subject Management Integration Tests (V9)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.subject.id).toBe(createdSubjectId);
-    expect(res.body.data.subject.code).toBe("CS201-OS");
+    expect(res.body.data.subject.code).toBe(createdSubjectCode);
     expect(res.body.data.subject.courses).toBeInstanceOf(Array);
   });
 
@@ -156,6 +184,12 @@ describe("Subject Management Integration Tests (V9)", () => {
   });
 
   it("DELETE /api/v1/subjects/:id/courses/:courseId should unmap subject from course", async () => {
+    const mapping = await request(app)
+      .post(`/api/v1/subjects/${createdSubjectId}/courses`)
+      .set("Cookie", adminCookie)
+      .send({ courseId: "1", semesterNumber: 3, isMandatory: true });
+    expect(mapping.status).toBe(201);
+
     const res = await request(app)
       .delete(`/api/v1/subjects/${createdSubjectId}/courses/1`)
       .set("Cookie", adminCookie);

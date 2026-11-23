@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,7 +7,7 @@ describe("Academic Year & Semester Integration Tests (V10)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdYearId: string;
-  let createdSemesterId: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     const adminLogin = await request(app)
@@ -31,6 +31,21 @@ describe("Academic Year & Semester Integration Tests (V10)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "academic.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    const year = await request(app)
+      .post("/api/v1/academic-years")
+      .set("Cookie", adminCookie)
+      .send({
+        name: `QA-2027-${fixtureCounter}`,
+        startDate: "2027-08-01",
+        endDate: "2028-06-30",
+        isCurrent: false
+      });
+    expect(year.status).toBe(201);
+    createdYearId = year.body.data.academicYear.id;
   });
 
   it("GET /api/v1/academic-years should return list of academic years", async () => {
@@ -115,6 +130,11 @@ describe("Academic Year & Semester Integration Tests (V10)", () => {
       .get("/api/v1/academic-years/current")
       .set("Cookie", adminCookie);
     expect(currentRes.body.data.academicYear.id).toBe(createdYearId);
+
+    const resetCurrent = await request(app)
+      .patch("/api/v1/academic-years/1/set-current")
+      .set("Cookie", adminCookie);
+    expect(resetCurrent.status).toBe(200);
   });
 
   it("POST /api/v1/academic-years/:yearId/semesters should reject dates outside academic year bounds", async () => {
@@ -138,7 +158,7 @@ describe("Academic Year & Semester Integration Tests (V10)", () => {
       .post(`/api/v1/academic-years/${createdYearId}/semesters`)
       .set("Cookie", adminCookie)
       .send({
-        name: "Fall 2027",
+        name: "Fall 2027 QA",
         termNumber: 1,
         startDate: "2027-08-15",
         endDate: "2027-12-15",
@@ -147,14 +167,26 @@ describe("Academic Year & Semester Integration Tests (V10)", () => {
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.semester.name).toBe("Fall 2027");
+    expect(res.body.data.semester.name).toBe("Fall 2027 QA");
     expect(res.body.data.semester.termNumber).toBe(1);
-    createdSemesterId = res.body.data.semester.id;
   });
 
   it("PATCH /api/v1/semesters/:id/activate should activate semester", async () => {
+    const semester = await request(app)
+      .post(`/api/v1/academic-years/${createdYearId}/semesters`)
+      .set("Cookie", adminCookie)
+      .send({
+        name: "Fall 2027 Activation QA",
+        termNumber: 1,
+        startDate: "2027-08-15",
+        endDate: "2027-12-15",
+        isActive: false
+      });
+    expect(semester.status).toBe(201);
+    const semesterId = semester.body.data.semester.id;
+
     const res = await request(app)
-      .patch(`/api/v1/semesters/${createdSemesterId}/activate`)
+      .patch(`/api/v1/semesters/${semesterId}/activate`)
       .set("Cookie", adminCookie);
 
     expect(res.status).toBe(200);

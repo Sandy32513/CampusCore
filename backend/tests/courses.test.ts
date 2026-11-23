@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,8 @@ describe("Course Management Integration Tests (V8)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdCourseId: string;
+  let createdCourseCode: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     const adminLogin = await request(app)
@@ -30,6 +32,24 @@ describe("Course Management Integration Tests (V8)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "course.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    createdCourseCode = `QA-COURSE-${fixtureCounter}`;
+    const res = await request(app)
+      .post("/api/v1/courses")
+      .set("Cookie", adminCookie)
+      .send({
+        departmentId: "1",
+        code: createdCourseCode,
+        name: `QA Course ${fixtureCounter}`,
+        degreeLevel: "UNDERGRADUATE",
+        durationYears: 4,
+        totalCredits: 160
+      });
+    expect(res.status).toBe(201);
+    createdCourseId = res.body.data.course.id;
   });
 
   it("GET /api/v1/courses should return list of courses with department mapping", async () => {
@@ -103,12 +123,25 @@ describe("Course Management Integration Tests (V8)", () => {
   });
 
   it("POST /api/v1/courses with duplicate code should return 409 Conflict", async () => {
+    const duplicateCode = `DUP-COURSE-${fixtureCounter}`;
+    const existing = await request(app)
+      .post("/api/v1/courses")
+      .set("Cookie", adminCookie)
+      .send({
+        departmentId: "1",
+        code: duplicateCode,
+        name: "Duplicate Fixture Course",
+        durationYears: 4,
+        totalCredits: 160
+      });
+    expect(existing.status).toBe(201);
+
     const res = await request(app)
       .post("/api/v1/courses")
       .set("Cookie", adminCookie)
       .send({
         departmentId: "1",
-        code: "BTECH-AI",
+        code: duplicateCode,
         name: "Duplicate AI Course",
         durationYears: 4.0,
         totalCredits: 160
@@ -127,7 +160,7 @@ describe("Course Management Integration Tests (V8)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.course.id).toBe(createdCourseId);
-    expect(res.body.data.course.code).toBe("BTECH-AI");
+    expect(res.body.data.course.code).toBe(createdCourseCode);
     expect(res.body.data.course.stats).toBeDefined();
     expect(res.body.data.course.stats.studentCount).toBe(0);
   });

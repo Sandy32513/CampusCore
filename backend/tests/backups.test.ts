@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,7 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdBackupId: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     const adminLogin = await request(app)
@@ -31,6 +32,16 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
   });
 
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    const res = await request(app)
+      .post("/api/v1/backups")
+      .set("Cookie", adminCookie)
+      .send({ backupType: "FULL", notes: `Order-independent fixture ${fixtureCounter}` });
+    expect(res.status).toBe(201);
+    createdBackupId = res.body.data.backup.id;
+  });
+
   it("GET /api/v1/backups as Admin should return list of backups", async () => {
     const res = await request(app)
       .get("/api/v1/backups")
@@ -39,8 +50,8 @@ describe("Backup & Recovery Integration Tests (V40)", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.backups).toBeInstanceOf(Array);
-    expect(res.body.data.backups).toHaveLength(1);
-    expect(res.body.data.backups[0].filename).toBe("backup_baseline_20261122.sql");
+    expect(res.body.data.backups.map((backup: { filename: string }) => backup.filename))
+      .toContain("backup_baseline_20261122.sql");
   });
 
   it("POST /api/v1/backups as Student should be rejected with 403 Forbidden", async () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,7 @@ describe("Student Management Integration Tests (V4)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdStudentId: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     const adminLogin = await request(app)
@@ -18,6 +19,27 @@ describe("Student Management Integration Tests (V4)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "demo.student@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    const res = await request(app)
+      .post("/api/v1/students")
+      .set("Cookie", adminCookie)
+      .send({
+        admissionNumber: `QA2026${fixtureCounter}`,
+        rollNumber: `QACSE${fixtureCounter}`,
+        firstName: "QA",
+        lastName: `Student ${fixtureCounter}`,
+        email: `qa.student.${fixtureCounter}@campuscore.edu`,
+        dateOfBirth: "2005-01-01",
+        departmentId: "1",
+        courseId: "1",
+        currentSemesterId: "1",
+        admissionDate: "2026-08-01"
+      });
+    expect(res.status).toBe(201);
+    createdStudentId = res.body.data.student.id;
   });
 
   it("GET /api/v1/students should return paginated list of students with mappings", async () => {
@@ -92,6 +114,23 @@ describe("Student Management Integration Tests (V4)", () => {
   });
 
   it("POST /api/v1/students with duplicate email should return 409 Conflict", async () => {
+    const original = await request(app)
+      .post("/api/v1/students")
+      .set("Cookie", adminCookie)
+      .send({
+        admissionNumber: "ADM2026887",
+        rollNumber: "26CSE887",
+        firstName: "Grace",
+        lastName: "Hopper",
+        email: "grace.hopper@campuscore.edu",
+        dateOfBirth: "2004-12-09",
+        departmentId: "1",
+        courseId: "1",
+        currentSemesterId: "1",
+        admissionDate: "2026-08-01"
+      });
+    expect(original.status).toBe(201);
+
     const res = await request(app)
       .post("/api/v1/students")
       .set("Cookie", adminCookie)

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 
@@ -7,6 +7,8 @@ describe("User & Role Management Integration Tests (V3)", () => {
   let adminCookie: string;
   let studentCookie: string;
   let createdUserId: string;
+  let createdUserEmail: string;
+  let fixtureCounter = 0;
 
   beforeAll(async () => {
     // 1. Login as default Admin
@@ -33,6 +35,23 @@ describe("User & Role Management Integration Tests (V3)", () => {
       .post("/api/v1/auth/login")
       .send({ email: "student.test@campuscore.edu", password: "StudentPass123!" });
     studentCookie = studentLogin.headers["set-cookie"][0].split(";")[0];
+  });
+
+  beforeEach(async () => {
+    fixtureCounter += 1;
+    createdUserEmail = `qa.teacher.${fixtureCounter}@campuscore.edu`;
+    const res = await request(app)
+      .post("/api/v1/users")
+      .set("Cookie", adminCookie)
+      .send({
+        email: createdUserEmail,
+        password: "FacultyPass123!",
+        firstName: "QA",
+        lastName: `Teacher ${fixtureCounter}`,
+        role: "TEACHER"
+      });
+    expect(res.status).toBe(201);
+    createdUserId = res.body.data.user.id;
   });
 
   it("GET /api/v1/users as Admin should return paginated list of users", async () => {
@@ -79,11 +98,24 @@ describe("User & Role Management Integration Tests (V3)", () => {
   });
 
   it("POST /api/v1/users with duplicate email should return 409 Conflict", async () => {
+    const duplicateEmail = `duplicate.teacher.${fixtureCounter}@campuscore.edu`;
+    const existing = await request(app)
+      .post("/api/v1/users")
+      .set("Cookie", adminCookie)
+      .send({
+        email: duplicateEmail,
+        password: "FacultyPass123!",
+        firstName: "Existing",
+        lastName: "Teacher",
+        role: "TEACHER"
+      });
+    expect(existing.status).toBe(201);
+
     const res = await request(app)
       .post("/api/v1/users")
       .set("Cookie", adminCookie)
       .send({
-        email: "prof.oak@campuscore.edu",
+        email: duplicateEmail,
         password: "AnotherPassword123!",
         firstName: "Duplicate",
         lastName: "User",
@@ -110,7 +142,7 @@ describe("User & Role Management Integration Tests (V3)", () => {
     // 1. Login as the target user to establish an active session
     const loginTarget = await request(app)
       .post("/api/v1/auth/login")
-      .send({ email: "prof.oak@campuscore.edu", password: "FacultyPass123!" });
+      .send({ email: createdUserEmail, password: "FacultyPass123!" });
     expect(loginTarget.status).toBe(200);
     const targetCookie = loginTarget.headers["set-cookie"][0].split(";")[0];
 
@@ -159,7 +191,7 @@ describe("User & Role Management Integration Tests (V3)", () => {
 
     const newLogin = await request(app)
       .post("/api/v1/auth/login")
-      .send({ email: "prof.oak@campuscore.edu", password: "NewSecurePassword123!" });
+      .send({ email: createdUserEmail, password: "NewSecurePassword123!" });
     expect(newLogin.status).toBe(200);
   });
 
