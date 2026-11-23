@@ -7,8 +7,8 @@ test("real browser login uses an HttpOnly session and restores it after reload",
   await expect(page.locator("#systemStatusText")).toHaveText("API & MySQL 8.4 Healthy");
   await expect(page.locator("#sessionStatusBox")).toContainText("Sign in to load account data");
 
-  await page.getByLabel("Email Address").fill("admin@campuscore.edu");
-  await page.getByLabel("Password").fill("Admin@123456");
+  await page.locator("#authEmail").fill("admin@campuscore.edu");
+  await page.locator("#authPassword").fill("Admin@123456");
   const loginResponsePromise = page.waitForResponse(response =>
     response.url() === "http://localhost:5000/api/v1/auth/login" && response.request().method() === "POST"
   );
