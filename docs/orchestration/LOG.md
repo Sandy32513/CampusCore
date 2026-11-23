@@ -178,3 +178,9 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Change request:** CR-AUDIT-001; isolated dashboard-count follow-up.
 - **Actions:** Updated the unresolved finding metric from 13 (1 Critical, 12 High) to 12 (1 Critical, 11 High), matching the current findings register after F501 validation; added a Playwright assertion to prevent drift.
 - **Validation:** `npm run test:ui` passed all 6 tests locally; CI run `45175697430` passed both jobs, including the dashboard count assertion, browser/axe suite, MySQL workflow, and Gitleaks.
+
+### [2026-11-23T12:48:00Z] PRE-WAVE-8 AUDIT — CC-F-302 LIVE BROWSER AUTH COVERAGE ADDED
+- **Finding:** CC-F-302 (High); V2/V1 cookie-based browser authentication.
+- **Change request:** CR-AUDIT-001; isolated browser-validation and CI sequencing update.
+- **Actions:** Added an opt-in Playwright flow using the real API and `sms_audit_ci` MySQL database. The test checks login, the HttpOnly/SameSite cookie, the API response without a token, empty local/session storage, health status, and session restoration after reload. CI now migrates and seeds the isolated schema before running the browser check. Local mode remains database-independent and skips this CI-only flow.
+- **Validation:** Local `npm run test:ui` passed 6 tests and skipped the one live-backend test as designed. The pushed CI result is pending.

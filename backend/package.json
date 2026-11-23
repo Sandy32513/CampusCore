@@ -11,6 +11,7 @@
     "lint": "eslint --max-warnings=0 \"src/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:auth-e2e": "vitest run tests/auth.test.ts",
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "db:migrate:audit-test": "tsx scripts/migrateAuditDb.ts",
     "db:provision:audit-scratch": "tsx scripts/provisionAuditScratchDb.ts"

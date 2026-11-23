@@ -20,6 +20,9 @@ jobs:
     timeout-minutes: 30
     env:
       NODE_ENV: test
+      E2E_LIVE_BACKEND: "1"
+      APP_BASE_URL: http://localhost:3000
+      CORS_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
       DB_NAME: sms_audit_ci
@@ -62,14 +65,16 @@ jobs:
         run: npm run build
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run frontend browser and accessibility checks
-        run: npm run test:e2e --workspace=frontend
       - name: Audit dependencies
         run: npm audit --audit-level=moderate
       - name: Migrate empty schema, roll back latest, and migrate again
         run: npm run db:migrate:audit-test --workspace=backend
       - name: Provision isolated restore scratch schema
         run: npm run db:provision:audit-scratch --workspace=backend
+      - name: Seed and verify browser authentication against MySQL
+        run: npm run test:auth-e2e --workspace=backend
+      - name: Run frontend browser, authentication, and accessibility checks
+        run: npm run test:e2e --workspace=frontend
       - name: Run full test suite against MySQL 8.4 (pass 1)
         run: npm test
       - name: Repeat full test suite against MySQL 8.4 (pass 2)
