@@ -72,6 +72,13 @@ function unwrapRawRows<T extends Record<string, unknown>>(result: unknown): T[] 
   return result as T[];
 }
 
+function safeRestoreErrorCode(error: unknown): string {
+  if (error && typeof error === "object" && "code" in error && typeof error.code === "string") {
+    return error.code;
+  }
+  return error instanceof Error ? error.name : "UNKNOWN_ERROR";
+}
+
 async function* generateSqlDump(db: Knex, backupType: BackupType): AsyncGenerator<string> {
   const tableResult = await db.raw(
     "SELECT TABLE_NAME AS tableName FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME"
@@ -470,11 +477,15 @@ export class BackupService {
     }
 
     let targetDb: Knex | undefined;
+    let restorePhase = "load-backup-record";
     try {
       const backupRow = await this.getBackupById(id);
       if (!backupRow) return null;
+      restorePhase = "resolve-backup-file";
       const backupFile = this.resolveBackupFile(backupRow.filepath);
+      restorePhase = "parse-backup-sql";
       const { statements, manifests } = parseBackupSql(fs.readFileSync(backupFile));
+      restorePhase = "connect-to-scratch-database";
       targetDb = knex({
         client: "mysql2",
         connection: {
@@ -488,17 +499,21 @@ export class BackupService {
         pool: { min: 1, max: 1 }
       });
 
+      restorePhase = "verify-scratch-database-connection";
       const databaseResult = await targetDb.raw("SELECT DATABASE() AS databaseName");
       const connectedDatabase = unwrapRawRows<{ databaseName: string }>(databaseResult)[0]?.databaseName;
       if (connectedDatabase !== targetDatabase) throw new Error("Scratch database connection mismatch");
 
+      restorePhase = "clear-scratch-tables";
       await targetDb.raw("SET FOREIGN_KEY_CHECKS=0");
       for (const tableName of await listBaseTables(targetDb)) {
         await targetDb.raw("DROP TABLE IF EXISTS ??", [tableName]);
       }
+      restorePhase = "execute-backup-sql";
       for (const statement of statements) await targetDb.raw(statement);
       await targetDb.raw("SET FOREIGN_KEY_CHECKS=1");
 
+      restorePhase = "verify-restored-manifests";
       if (!(await verifyRestoredTables(targetDb, manifests))) {
         return {
           id,
@@ -509,6 +524,7 @@ export class BackupService {
         };
       }
 
+      restorePhase = "write-restore-audit-event";
       await AuditService.log({
         userId: actor?.user.id,
         userEmail: actor?.user.email,
@@ -529,7 +545,11 @@ export class BackupService {
         message: `Backup restored and verified in scratch database ${targetDatabase}`,
         restoredAt: new Date().toISOString()
       };
-    } catch {
+    } catch (error) {
+      console.error("Scratch backup restore failed", {
+        phase: restorePhase,
+        errorCode: safeRestoreErrorCode(error)
+      });
       return {
         id,
         filename: verification.filename,
