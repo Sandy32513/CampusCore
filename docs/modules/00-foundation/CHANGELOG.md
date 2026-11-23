@@ -1,5 +1,10 @@
 # V0 Foundation: Changelog
 
+## [0.0.4] - 2026-11-23 (backup JSON binding fix, remote validation pending)
+### Fixed
+- Serialize MySQL JSON objects and arrays as scalar JSON text before constructing SQL dump `INSERT` statements.
+- Added a unit test for JSON dump bindings. Local quality and 39/39 unit checks pass; MySQL restore rerun pending.
+
 ## [0.0.3] - 2026-11-23 (integration CI follow-up, remote validation pending)
 ### Fixed
 - Student integration tests now sign in as the seeded linked student, verify their own record, and assert another student's record is hidden.

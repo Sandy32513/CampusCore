@@ -2,11 +2,11 @@
 
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
-### [2026-11-23] PRE-WAVE-8 REMEDIATION VERIFICATION UPDATE
-- **Branch:** `audit/pre-wave8`; source and audit-doc fixes are committed in `f21a7d5`, the CC-F-305 patch is `bed27d9` / `v4.0.1-students`, and follow-up audit metadata is `b5bcb20`.
-- **Validation:** Ten DB-independent unit files pass 38/38; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, and `git diff --check` pass.
+### [2026-11-23] PRE-WAVE-8 RESTORE FIX PREPARED
+- **Branch:** `audit/pre-wave8`; committed patches include `2703c78` for safe restore diagnostics. The CC-F-305 patch is `bed27d9` / `v4.0.1-students`; CC-F-601 patches are tagged through `v0.0.3-foundation`.
+- **Validation:** Ten DB-independent unit files pass 39/39; `npm run typecheck`, `npm run lint`, `npm run build`, frontend inline-script syntax parsing, npm audit (0 advisories), and `git diff --check` pass.
 - **Scope:** Service memory fallbacks are removed; backup serialization/isolated restore, Argon2id with legacy scrypt upgrade, cookie-based frontend auth, request security middleware, configuration guards, and the lint gate have source-level implementations and unit coverage as recorded in `docs/audit/pre-wave8/02-REMEDIATION-LOG.md`.
-- **Limitations:** No authenticated dedicated `sms_audit_*` database is available locally. Remote run `45126125696` passed quality checks, migrations, rollback/reapply, and scratch schema provisioning; 114/115 full-suite tests pass. The remaining backup restore request returns 422 and is under investigation. Live dump/restore comparison, auth matrix, Playwright/axe, and query-plan checks remain outstanding. Gitleaks passed in all three runs. `03-VALIDATION-REPORT.md` is the detailed evidence record.
+- **Limitations:** No authenticated dedicated `sms_audit_*` database is available locally. Remote runs `45126746423`, `45127131705`, and `45127505591` passed quality checks, migrations, rollback/reapply, and scratch schema provisioning; each had 114/115 full-suite tests pass. Run 6 safe diagnostics pinpointed `ER_PARSE_ERROR` on the `audit_logs` insert: mysql2 JSON objects were passed as raw SQL bindings. The local serializer fix and unit coverage pass; remote restore rerun is pending. Gitleaks passed in all six runs. Live dump/restore integrity comparison, auth matrix, Playwright/axe, and query-plan checks remain outstanding. `03-VALIDATION-REPORT.md` is the detailed evidence record.
 - **Gate:** A8 remains NOT READY; no Wave 8 implementation was started.
 
 ### [2026-11-23] DEPENDENCY ADVISORIES CLEARED
@@ -18,14 +18,14 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 ### [2026-11-23] CC-F-305 STUDENT OBJECT-LEVEL ACCESS PATCH
 - **Finding:** The V4 security matrix requires student self-scope and parent-child scope, but authenticated student/parent sessions could read all student PII. No guardian/student relationship exists for safe parent scope.
 - **Fix:** Student list/detail queries are restricted to `students.user_id` for STUDENT sessions. PARENT reads now return 403 until V6 implements the consent-backed link. SUPER_ADMIN, ADMIN, TEACHER, and STAFF retain the documented staff read access.
-- **Validation:** Route authorization and Knex predicate tests pass as part of 38/38 DB-independent tests; typecheck and lint pass. Full MySQL role matrix remains BLOCKED.
+- **Validation:** Route authorization and Knex predicate tests pass as part of 39/39 DB-independent tests; typecheck and lint pass. Full MySQL role matrix remains BLOCKED.
 - **Patch:** Commit `bed27d9` (`fix(v4): scope student reads to linked accounts [CC-F-305]`) and annotated tag `v4.0.1-students`; finding remains PARTIAL until DB-backed authorization validation.
 - **Gate:** Open High/W8-BLOCKER count is now 14 High + 2 Critical; A8 remains NOT READY.
 
 ### [2026-11-23] CC-F-601 CI AND SECRET-SCAN GATE ADDED
 - **Fix:** Added `.github/workflows/ci.yml` with a MySQL 8.4 service, locked install, lint, typecheck, build, npm audit, guarded migration/rollback/reapply, and full test suite. Added full-history Gitleaks v3 on pinned action revisions with read-only repository permissions.
 - **Safety check:** The migration runner rejected `DB_TEST_NAME=sms_test` before opening a connection. No local database was touched.
-- **Validation:** Local 38/38 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. Gitleaks passed in all three runs. Run `45123885129` caught typecheck ordering; run `45124325405` passed typecheck, build, audit, and migration rollback/reapply, then found four test assumptions; run `45126125696` passes 114/115 tests with restore still failing.
+- **Validation:** Local 39/39 DB-independent tests, typecheck, lint, build, npm audit (0 advisories), and diff check pass. Gitleaks passed in all six runs. Run `45123885129` caught typecheck ordering; `45124325405` passed quality and migration checks, then found four test assumptions; runs 3–6 pass 114/115 with the restore parse error described above.
 - **Patch:** Commit `6db835e` (`fix(v0): add CI and secret scanning [CC-F-601]`) and annotated tag `v0.0.1-foundation`; finding remains PARTIAL pending CI follow-up.
 - **Follow-up:** Root typecheck now builds `@campuscore/shared` before workspace checks. Student scope, baseline backup expectation, and isolated scratch provisioning pass; restore verification is being diagnosed.
 - **Gate:** A8 remains NOT READY; no Wave 8 work started.

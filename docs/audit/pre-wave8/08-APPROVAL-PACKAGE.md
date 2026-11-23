@@ -30,16 +30,16 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | `npm run build` | PASS | Shared, backend, and frontend. |
 | Audit migration target guard | PASS (negative check) | `sms_test` is rejected before a database connection is opened. |
 | `npm audit --json` | PASS (0 advisories) | Vitest upgraded to 5.1.1 and Zod to 4.6.7; production and development dependency audit clear. |
-| GitHub Actions CI / Gitleaks | PARTIAL | Run `45126125696`: Gitleaks, lint, typecheck, build, audit, migration rollback/reapply, and isolated scratch provisioning passed. The full suite had 114/115 pass; backup restore remains 422 and is under investigation. |
-| DB-independent unit tests | PASS (38/38) | Ten files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
+| GitHub Actions CI / Gitleaks | PARTIAL | Run `45127505591`: Gitleaks, lint, typecheck, build, audit, migration rollback/reapply, and isolated scratch provisioning passed. Full suite reached 114/115; restore diagnostics identify JSON scalar binding on the `audit_logs` insert as the failure. The local serializer fix awaits rerun. |
+| DB-independent unit tests | PASS (39/39) | Ten files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
 | Frontend inline syntax | PASS | One inline script parsed with Node VM; no browser behavior tested. |
 | `git diff --check` | PASS | No whitespace errors. |
-| Full DB suite / migrations / rollback | BLOCKED | No authenticated, dedicated `sms_audit_*` schema. |
-| Real backup dump and isolated restore | BLOCKED | Serializer tests pass; no MySQL source/restore run. |
+| Full DB suite / migrations / rollback | PARTIAL | Remote MySQL 8.4 migrations and rollback/reapply pass; 114/115 suite cases pass pending the restore fix. Local DB-backed validation is blocked by unavailable credentials. |
+| Real backup dump and isolated restore | PARTIAL | Remote restore reaches the isolated scratch schema and exposed JSON binding failure; local serializer tests pass, pending a green MySQL rerun. |
 | Auth matrix / mutation checks / shuffled suite | BLOCKED | Require the isolated database. |
 | Playwright / axe / viewport checks | BLOCKED | Tooling and authenticated audit API are unavailable. |
 | Target-scale `EXPLAIN ANALYZE` | BLOCKED | No performance database or dataset. |
-| Full-history Gitleaks | PASS | Pinned, full-history GitHub Actions scan passed in runs `45123885129`, `45124325405`, and `45126125696`. |
+| Full-history Gitleaks | PASS | Pinned, full-history GitHub Actions scan passed in all six runs through `45127505591`. |
 
 The historical baseline run was 76/76 before the closed-port test exposed fallback-backed success. That baseline is not evidence that the current DB-backed suite passes.
 

@@ -18,6 +18,6 @@
 
 ## Additional release gates
 
-CC-F-203 and CC-F-204 remain partially remediated pending a full DB suite. CC-F-304 needs live deployment-config validation. CC-F-501 needs browser and accessibility review. CC-F-601's Gitleaks scans and CI quality/migration checks pass; one backup restore integration test remains failing and needs a green rerun. Governance and roadmap requests CC-F-801/802 remain open as recorded in the findings register and decision requests.
+CC-F-203 and CC-F-204 remain partially remediated pending a full DB suite. CC-F-304 needs live deployment-config validation. CC-F-501 needs browser and accessibility review. CC-F-601's Gitleaks scans and CI quality/migration checks pass. CC-F-202 restore validation found raw JSON object binding on the `audit_logs` insert; the local serialization fix needs a green remote rerun. Governance and roadmap requests CC-F-801/802 remain open as recorded in the findings register and decision requests.
 
 Audit remediation commits and patch tags `v4.0.1-students` and `v0.0.1-foundation` are on `audit/pre-wave8`. No Wave 8 implementation, branch, or migration has been started.

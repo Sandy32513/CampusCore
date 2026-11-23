@@ -86,6 +86,15 @@ function safeSqlStatementLabel(statement: string): string {
   return `${operation}:${tableName ?? "NO_TABLE"}`;
 }
 
+export function serializeSqlDumpValue(value: unknown): Knex.RawBinding {
+  if (value === null || value === undefined) return null;
+  if (value instanceof Date || Buffer.isBuffer(value)) return value;
+  if (typeof value === "bigint") return value.toString();
+  if (typeof value === "object") return JSON.stringify(value);
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return value;
+  throw new TypeError("Unsupported value type in SQL backup row");
+}
+
 async function* generateSqlDump(db: Knex, backupType: BackupType): AsyncGenerator<string> {
   const tableResult = await db.raw(
     "SELECT TABLE_NAME AS tableName FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME"
@@ -120,7 +129,7 @@ async function* generateSqlDump(db: Knex, backupType: BackupType): AsyncGenerato
       updateRowHash(tableHash, values);
       rowCount += 1;
       const placeholders = columns.map(() => "?").join(", ");
-      const bindings = [tableName, columns, ...columns.map((column) => values[column])] as Knex.RawBinding[];
+      const bindings = [tableName, columns, ...columns.map((column) => serializeSqlDumpValue(values[column]))] as Knex.RawBinding[];
       const insertSql = db.raw(
         `INSERT INTO ?? (??) VALUES (${placeholders})`,
         bindings

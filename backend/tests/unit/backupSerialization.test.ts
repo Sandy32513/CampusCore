@@ -5,7 +5,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import type { Knex } from "knex";
 import { describe, expect, it, vi } from "vitest";
-import { parseBackupSql, splitBackupSqlStatements, writeSqlDump } from "../../src/services/backupService.js";
+import { parseBackupSql, serializeSqlDumpValue, splitBackupSqlStatements, writeSqlDump } from "../../src/services/backupService.js";
 
 describe("SQL backup serialization", () => {
   it("splits on statement delimiters outside quoted strings and ignores comments", () => {
@@ -17,6 +17,13 @@ describe("SQL backup serialization", () => {
       "INSERT INTO `notes` (`body`) VALUES ('keep; this')",
       "SET FOREIGN_KEY_CHECKS=1"
     ]);
+  });
+
+  it("serializes JSON values as scalar SQL bindings", () => {
+    expect(serializeSqlDumpValue({ message: "System initialized and seeded" })).toBe(
+      '{"message":"System initialized and seeded"}'
+    );
+    expect(serializeSqlDumpValue(["first", "second"])).toBe('["first","second"]');
   });
 
   it("streams table schema and rows, then records a byte checksum and row manifest", async () => {

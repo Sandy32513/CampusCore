@@ -10,7 +10,7 @@ TRD and ADR-000 specify Argon2id; source now uses Node 26 Argon2id while retaini
 
 ## DR-03 — Validate the real backup and restore path
 
-V40 source now streams base-table DDL and data into SQL and restores only into a distinct pre-provisioned `sms_audit_*` schema, then verifies table lists, row counts, and checksums. Unit serialization tests pass. No MySQL dump/restore was run because authorized scratch credentials/schema are unavailable. Recommendation: validate source and restore on MySQL 8.4 and document operational permissions before release; the implementation must continue reporting failure when target setup or integrity checks fail.
+V40 source streams base-table DDL and data into SQL and restores only into a distinct pre-provisioned `sms_audit_*` schema, then verifies table lists, row counts, and checksums. Remote MySQL 8.4 CI executes the restore path but currently fails at an `audit_logs` insert because mysql2 returns JSON values as objects. The serializer now converts JSON objects and arrays to scalar JSON text, and local unit coverage passes; a green remote restore comparison is pending. Record operational permissions and retain failure reporting when target setup or integrity checks fail.
 
 ## DR-04 — Resolve roadmap labels and Gate 0 records
 
@@ -22,4 +22,4 @@ Current frontend is a static HTML document served by a small TypeScript workspac
 
 ## DR-06 — Release gate remediation queue
 
-Lint was initially a no-op; ESLint now runs in each workspace and passes with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. Gitleaks passed in all three remote runs. Run 3 passed quality, migration rollback/reapply, and scratch provisioning with 114/115 tests passing; backup restore remains 422. Student scope, baseline backup, and scratch setup issues are resolved. Recommendation: fix restore verification and complete a green rerun before release. Recommendation: verify a complete green remote run, including MySQL migrations and the full suite, before release.
+Lint runs in each workspace with zero warnings. Upgrading Vitest to 5.1.1 and Zod to 4.6.7 cleared the 7 npm advisories; `npm audit --json` now reports zero. Gitleaks passed in all six remote runs. Runs 3–6 passed quality, migration rollback/reapply, and scratch provisioning, with 114/115 tests passing because restore returned 422. Safe diagnostics pinpointed the `audit_logs` JSON binding parse error; the local serializer fix and unit test pass. Student scope, baseline backup, and scratch setup issues are resolved. Verify a full green remote run, including MySQL migrations and the complete suite, before release.

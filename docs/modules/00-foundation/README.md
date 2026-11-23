@@ -1,6 +1,6 @@
 # V0: Project Foundation
 
-Status: **FROZEN** (`v0.0.0-foundation`) with audit patches `v0.0.1-foundation`, `v0.0.2-foundation`, and `v0.0.3-foundation`; remote Gitleaks, quality checks, and migrations pass, with the integration-test follow-up awaiting a complete green run.
+Status: **FROZEN** (`v0.0.0-foundation`) with audit patches `v0.0.1-foundation` through `v0.0.4-foundation`; remote Gitleaks, quality checks, and migrations pass. The MySQL restore exposed JSON binding syntax in `audit_logs`; the local fix awaits a green remote rerun.
 
 ## Module Summary
 The Project Foundation module establishes the monorepo structure, development standards, shared types, MySQL connection pool, health check APIs, and basic responsive user interface.
