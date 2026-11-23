@@ -1,5 +1,11 @@
 # V4 — Student Management: Changelog
 
+## [4.0.1] - 2026-11-23 (audit patch, validation partial)
+### Security
+- Scoped student list and detail reads for `STUDENT` accounts to their linked `user_id`.
+- Denied `PARENT` reads until a verified consent-backed guardian/student relationship exists; V6 remains a prerequisite.
+- Added route authorization and query-scope unit checks under CC-F-305. MySQL integration validation remains blocked.
+
 ## [4.0.0] - 2026-11-22
 ### Added
 - Created `students` MySQL 8.4 LTS table with enforced foreign keys to `users`, `departments`, `courses`, `semesters`.

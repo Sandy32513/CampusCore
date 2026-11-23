@@ -5,7 +5,7 @@
 ### 1. List Students
 `GET /api/v1/students`
 - **Query Parameters:** `page`, `pageSize`, `departmentId`, `courseId`, `semesterId`, `status`, `q`
-- **Access:** Authenticated users (`SUPER_ADMIN`, `ADMIN`, `TEACHER`, `STAFF`, `STUDENT`)
+- **Access:** `SUPER_ADMIN`, `ADMIN`, `TEACHER`, and `STAFF` may list; `STUDENT` sessions are scoped to their own linked record. Parent reads remain denied until a consent-backed link is implemented in V6.
 - **Response:**
 ```json
 {
@@ -36,6 +36,7 @@
 
 ### 3. Get Student Details
 `GET /api/v1/students/:id`
+- **Access:** Staff roles may read any record; a `STUDENT` may read only the record linked to their user ID. `PARENT` access is deferred until V6 establishes a consent-backed relationship.
 - **Status:** 200 OK / 404 Not Found
 
 ### 4. Update Student

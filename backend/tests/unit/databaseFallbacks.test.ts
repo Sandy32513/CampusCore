@@ -77,7 +77,7 @@ describe("MySQL-only service behavior", () => {
     const databaseError = Object.assign(new Error("connection refused"), { code: "ECONNREFUSED" });
     vi.mocked(getDb).mockReturnValue(createFailingDb(databaseError));
 
-    await expect(StudentService.getStudentById("1")).rejects.toBe(databaseError);
+    await expect(StudentService.getStudentById("1", { kind: "all" })).rejects.toBe(databaseError);
   });
 
   it("does not return a seeded subject after a MySQL failure", async () => {

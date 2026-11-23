@@ -8,7 +8,7 @@
 | `npm run typecheck` | PASS | Reran across shared, backend, and frontend after current edits. |
 | `npm run lint` | PASS | Reran across shared, backend, and frontend; zero errors or warnings. |
 | `npm run build` | PASS | Reran across shared, backend, and frontend after current edits. |
-| `npm run test:unit --workspace=backend` | PASS (27/27) | Eight DB-independent files cover service DB-error propagation, error mapping/redaction, Express async forwarding, SQL dump serialization/manifests, Argon2id and legacy scrypt migration, rate limiting, CSRF checks, and runtime configuration. Ran with `NODE_ENV=test` / `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
+| `npm run test:unit --workspace=backend` | PASS (38/38) | Ten DB-independent files cover service DB-error propagation, error mapping/redaction, Express async forwarding, SQL dump serialization/manifests, Argon2id and legacy scrypt migration, rate limiting, CSRF checks, student object-level read authorization, and runtime configuration. Ran with `NODE_ENV=test` / `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
 | Frontend inline-script syntax parse | PASS | Parsed all inline scripts from `frontend/public/index.html` with Node's VM parser; one inline script found. This is syntax-only, not browser behavior or accessibility validation. |
 | `git diff --check` | PASS | No whitespace errors; Git emitted only its configured LF-to-CRLF working-copy notices. |
 | Baseline full `npm test` | PASS, DB assurance incomplete | Original code: 12 files / 76 tests. Closed-port injection exposed that most passed through memory fallback paths (75 passed, 1 failed). |
@@ -20,7 +20,7 @@
 | Migrate empty / rollback / migrate | BLOCKED | Requires authenticated dedicated audit scratch schema. |
 | Backup restore to isolated scratch | BLOCKED | SQL writer/parser and row-manifest checks pass DB-independent tests; no real MySQL dump or restore could run without the provisioned source/restore scratch schemas. API now requires a distinct pre-provisioned `sms_audit_*` target and does not claim simulation success. |
 | Fallback removal / 15 mutation checks | BLOCKED | Static scan and representative failing-first tests are complete; prompt-required isolated mutations need scratch DB/worktree validation. |
-| Authorization matrix | BLOCKED | Not generated; requires route-by-role integration tests against functioning DB. |
+| Authorization matrix | PARTIAL / BLOCKED | Unit checks cover student self-scoping, parent denial, and teacher access; full route-by-role integration matrix still requires functioning audit DB and all role fixtures. |
 | Playwright + axe at 375/768/1024/1440 | BLOCKED | Browser tooling and authenticated scratch API are unavailable. Static review removed browser token storage/JSON exposure and escapes API data interpolated into HTML. No viewport/a11y pass rate is claimed. |
 | `EXPLAIN ANALYZE` at target scale | BLOCKED | No authenticated audit/performance instance. |
 | Git history/tag inventory | PASS (partial scope) | Full clone; 12 expected tags resolve to expected wave commits; local audit branch exists. Frozen-module path-level audit remains incomplete. |

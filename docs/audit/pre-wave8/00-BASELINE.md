@@ -69,4 +69,4 @@ mysql --protocol=TCP --host=127.0.0.1 --port=3306 --user=sms_app --execute="SELE
 
 ## Current remediation verification (2026-11-23)
 
-After the source changes and dependency remediation, the DB-independent suite passes 27/27 across eight files; typecheck, lint, build, inline-script syntax parsing, and `git diff --check` pass. `npm audit --json` reports zero advisories after upgrading Vitest to 5.1.1 and Zod to 4.6.7. These results supersede the earlier in-progress counts above. Dedicated MySQL 8.4 validation and browser/axe validation remain blocked; no finding is marked fixed and validated.
+After the source changes and dependency remediation, the DB-independent suite passes 38/38 across ten files; typecheck, lint, build, inline-script syntax parsing, and `git diff --check` pass. `npm audit --json` reports zero advisories after upgrading Vitest to 5.1.1 and Zod to 4.6.7. These results supersede the earlier in-progress counts above. Dedicated MySQL 8.4 validation and browser/axe validation remain blocked; no finding is marked fixed and validated.

@@ -14,3 +14,5 @@ Coverage: 100%
 6. `PUT /api/v1/students/:id`: Verify profile metadata updates.
 7. `PATCH /api/v1/students/:id/status`: Verify status change to `SUSPENDED`.
 8. `DELETE /api/v1/students/:id`: Verify deletion by Super Admin and subsequent 404.
+9. A `STUDENT` can only list/read records linked to their own user ID; requests for other student IDs return no record.
+10. A `PARENT` cannot list/read student records before a consent-backed guardian/student link exists.

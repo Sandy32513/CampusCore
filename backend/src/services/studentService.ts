@@ -7,6 +7,8 @@ import {
   UserDto
 } from "@campuscore/shared";
 import { getDb } from "../db/connection.js";
+import { applyStudentReadScope } from "../access/studentReadScope.js";
+import type { StudentReadScope } from "../access/studentReadScope.js";
 import { AuditService } from "./auditService.js";
 
 export interface StudentRow {
@@ -83,7 +85,8 @@ function mapStudentRowToDto(r: StudentQueryRow): StudentDto {
 
 export class StudentService {
   static async listStudents(
-    query: QueryStudentsInput
+    query: QueryStudentsInput,
+    scope: Exclude<StudentReadScope, { kind: "deny" }>
   ): Promise<{ students: StudentDto[]; total: number }> {
     const { page = 1, pageSize = 20, departmentId, courseId, semesterId, status, q } = query;
 
@@ -100,6 +103,8 @@ export class StudentService {
           "c.code as course_code",
           "sem.name as semester_name"
         );
+
+    dbQuery = applyStudentReadScope(dbQuery, scope);
 
     if (departmentId) dbQuery = dbQuery.where("s.department_id", departmentId);
     if (courseId) dbQuery = dbQuery.where("s.course_id", courseId);
@@ -129,13 +134,17 @@ export class StudentService {
     };
   }
 
-  static async getStudentById(id: string): Promise<StudentDto | null> {
+  static async getStudentById(
+    id: string,
+    scope: Exclude<StudentReadScope, { kind: "deny" }>
+  ): Promise<StudentDto | null> {
     const db = getDb();
     const row = await db("students as s")
         .leftJoin("departments as d", "s.department_id", "d.id")
         .leftJoin("courses as c", "s.course_id", "c.id")
         .leftJoin("semesters as sem", "s.current_semester_id", "sem.id")
         .where("s.id", id)
+        .modify((query) => applyStudentReadScope(query, scope))
         .select(
           "s.*",
           "d.name as department_name",
@@ -202,7 +211,7 @@ export class StudentService {
         country: input.country ?? "USA"
     });
 
-    const student = await this.getStudentById(String(insertId));
+    const student = await this.getStudentById(String(insertId), { kind: "all" });
     if (!student) throw new Error("Student insert was not readable after creation");
 
     await AuditService.log({
@@ -226,7 +235,7 @@ export class StudentService {
     input: UpdateStudentInput,
     actor?: { user: UserDto; ip?: string; userAgent?: string }
   ): Promise<{ student?: StudentDto; error?: string }> {
-    const existing = await this.getStudentById(id);
+    const existing = await this.getStudentById(id, { kind: "all" });
     if (!existing) return { error: "NOT_FOUND" };
 
     if (input.email) {
@@ -266,7 +275,7 @@ export class StudentService {
 
     const db = getDb();
     await db("students").where({ id }).update(updates);
-    const updated = await this.getStudentById(id);
+    const updated = await this.getStudentById(id, { kind: "all" });
     if (!updated) return { error: "NOT_FOUND" };
 
     await AuditService.log({
@@ -297,7 +306,7 @@ export class StudentService {
     id: string,
     actor?: { user: UserDto; ip?: string; userAgent?: string }
   ): Promise<{ success: boolean; error?: string }> {
-    const existing = await this.getStudentById(id);
+    const existing = await this.getStudentById(id, { kind: "all" });
     if (!existing) return { success: false, error: "NOT_FOUND" };
 
     const db = getDb();

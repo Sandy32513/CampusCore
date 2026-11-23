@@ -7,6 +7,7 @@ import {
 import { StudentService } from "../services/studentService.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/authorize.js";
+import { studentReadScope } from "../access/studentReadScope.js";
 
 export const studentsRouter = Router();
 
@@ -14,6 +15,15 @@ studentsRouter.use(requireAuth);
 
 // GET /api/v1/students
 studentsRouter.get("/", async (req: Request, res: Response) => {
+  const scope = studentReadScope(req.user!);
+  if (scope.kind === "deny") {
+    res.status(403).json({
+      success: false,
+      error: { code: "STUDENT_ACCESS_UNAVAILABLE", message: "Student access is unavailable until a verified relationship is established" }
+    });
+    return;
+  }
+
   const queryResult = QueryStudentsSchema.safeParse(req.query);
   if (!queryResult.success) {
     res.status(400).json({
@@ -23,7 +33,7 @@ studentsRouter.get("/", async (req: Request, res: Response) => {
     return;
   }
 
-  const { students, total } = await StudentService.listStudents(queryResult.data);
+  const { students, total } = await StudentService.listStudents(queryResult.data, scope);
   const totalPages = Math.ceil(total / queryResult.data.pageSize) || 1;
 
   res.status(200).json({
@@ -98,7 +108,16 @@ studentsRouter.post("/", requireRole(["SUPER_ADMIN", "ADMIN"]), async (req: Requ
 
 // GET /api/v1/students/:id
 studentsRouter.get("/:id", async (req: Request, res: Response) => {
-  const student = await StudentService.getStudentById(req.params.id);
+  const scope = studentReadScope(req.user!);
+  if (scope.kind === "deny") {
+    res.status(403).json({
+      success: false,
+      error: { code: "STUDENT_ACCESS_UNAVAILABLE", message: "Student access is unavailable until a verified relationship is established" }
+    });
+    return;
+  }
+
+  const student = await StudentService.getStudentById(req.params.id, scope);
   if (!student) {
     res.status(404).json({
       success: false,

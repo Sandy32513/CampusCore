@@ -15,6 +15,13 @@ All dispatches, verification gates, integration merges, and gate approvals are r
 - **Validation:** `npm audit --json` now reports 0 advisories. The 27-test DB-independent suite, typecheck, lint, and build pass on the upgraded dependencies.
 - **Remaining:** CI and gitleaks are still unavailable. Database/browser validation remains blocked; Gate A8 is NOT READY.
 
+### [2026-11-23] CC-F-305 STUDENT OBJECT-LEVEL ACCESS PATCH
+- **Finding:** The V4 security matrix requires student self-scope and parent-child scope, but authenticated student/parent sessions could read all student PII. No guardian/student relationship exists for safe parent scope.
+- **Fix:** Student list/detail queries are restricted to `students.user_id` for STUDENT sessions. PARENT reads now return 403 until V6 implements the consent-backed link. SUPER_ADMIN, ADMIN, TEACHER, and STAFF retain the documented staff read access.
+- **Validation:** Route authorization and Knex predicate tests pass as part of 38/38 DB-independent tests; typecheck and lint pass. Full MySQL role matrix remains BLOCKED.
+- **Patch:** `v4.0.1-students` is recorded for this V4 change; finding remains PARTIAL until DB-backed authorization validation.
+- **Gate:** Open High/W8-BLOCKER count is now 14 High + 2 Critical; A8 remains NOT READY.
+
 ### [2026-11-23] PRE-WAVE-8 AUDIT STARTED
 - **Baseline:** Local HEAD `cb1ffbe`; full history present; all 12 version tags resolve to the recorded wave commits.
 - **Branch:** Created local `audit/pre-wave8`; no commits or pushes made.

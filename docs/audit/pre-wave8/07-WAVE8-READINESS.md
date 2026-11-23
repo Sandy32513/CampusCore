@@ -9,6 +9,7 @@
 - **CC-F-301:** Argon2id and legacy scrypt rehash-on-login are implemented with unit coverage. ADR-000 approval evidence and DB login integration remain open.
 - **CC-F-302:** Browser auth uses the HttpOnly cookie and dynamic API markup is escaped. Browser, keyboard, viewport, and axe checks remain blocked.
 - **CC-F-303:** Process-local login throttling and Origin/Fetch-Metadata/custom-header CSRF checks are implemented. Multi-instance behavior and browser integration remain unverified.
+- **CC-F-305:** Student reads now scope student accounts to their linked `user_id`; parent reads are denied until V6 has a consent-backed relationship. Route/query unit checks pass; DB authorization matrix remains blocked.
 - **CC-F-205:** Async auth/session errors and Express 4 promise rejections reach centralized handling in unit checks; DB-backed failure validation remains blocked.
 - **CC-F-401:** Hot-path indexes, target-scale data, and `EXPLAIN ANALYZE` were not verified.
 - **CC-F-901:** Student Profile tab-registry prerequisite remains unresolved.

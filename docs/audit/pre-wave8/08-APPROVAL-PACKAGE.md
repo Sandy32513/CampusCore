@@ -2,14 +2,14 @@
 
 ## 1. Verdict
 
-**NOT READY.** The audit found 2 Critical and 13 High findings. Source remediation is partially implemented on the local `audit/pre-wave8` branch, but no finding is `FIXED+VALIDATED` because the required database-backed checks are unavailable. UI, performance, CI, and secret-scanning evidence is also incomplete. Do not start Wave 8.
+**NOT READY.** The audit found 2 Critical and 14 High findings. Source remediation is partially implemented on `audit/pre-wave8`, but no finding is `FIXED+VALIDATED` because required database-backed checks are unavailable. UI, performance, CI, and secret-scanning evidence is also incomplete. Do not start Wave 8.
 
 ## 2. Scoreboard
 
 | Severity | Found | Fixed + validated | Partial remediation | Blocked / open | Backlog |
 |---|---:|---:|---:|---:|---:|
 | Critical | 2 | 0 | 2 | 2 | 0 |
-| High | 13 | 0 | 9 | 13 | 0 |
+| High | 14 | 0 | 10 | 14 | 0 |
 | Medium | 3 | 0 | 0 | 2 | 1 |
 | Low | 0 | 0 | 0 | 0 | 0 |
 
@@ -29,7 +29,7 @@ CC-F-201 (service DB failure behavior), CC-F-202 (backup/restore), CC-F-203 (tes
 | `npm run lint` | PASS | Real ESLint runs in all three workspaces with zero errors/warnings. |
 | `npm run build` | PASS | Shared, backend, and frontend. |
 | `npm audit --json` | PASS (0 advisories) | Vitest upgraded to 5.1.1 and Zod to 4.6.7; production and development dependency audit clear. |
-| DB-independent unit tests | PASS (27/27) | Eight files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
+| DB-independent unit tests | PASS (38/38) | Ten files; `NODE_ENV=test`, `DB_TEST_NAME=sms_audit_unit`; no DB connection. |
 | Frontend inline syntax | PASS | One inline script parsed with Node VM; no browser behavior tested. |
 | `git diff --check` | PASS | No whitespace errors. |
 | Full DB suite / migrations / rollback | BLOCKED | No authenticated, dedicated `sms_audit_*` schema. |
@@ -63,7 +63,7 @@ DR-01 through DR-06 are in `06-DECISION-REQUESTS.md`: authorized audit tooling/d
 
 ## 10. Reconciliation
 
-Changes and findings are uncommitted on local branch `audit/pre-wave8`. No commits, pushes, or patch tags were created. `STATUS.md` reflects 15 open Critical/High findings; `LOG.md` records the latest validation. ADRs, roadmap drift, and frozen-module path review remain unresolved.
+Audit remediation commits and the CC-F-305 patch tag are on `audit/pre-wave8`. `STATUS.md` reflects 16 open Critical/High findings; `LOG.md` records the latest validation. ADRs, roadmap drift, and frozen-module path review remain unresolved.
 
 ## 11. Approval status
 

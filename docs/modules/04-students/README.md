@@ -22,4 +22,4 @@ Student Management governs student identity, admissions, institutional enrollmen
 - `DELETE /api/v1/students/:id`: Remove student record (`SUPER_ADMIN`).
 
 ## Status
-Status: **FROZEN** (`v4.0.0-students`).
+Status: **FROZEN** (`v4.0.0-students`) with audit security patch `v4.0.1-students`; DB-backed authorization validation remains outstanding.
