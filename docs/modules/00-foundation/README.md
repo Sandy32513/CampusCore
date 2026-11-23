@@ -1,6 +1,6 @@
 # V0: Project Foundation
 
-Status: **FROZEN** (`v0.0.0-foundation`) with audit patches `v0.0.1-foundation` through `v0.0.5-foundation`; CI run `45131257677` passed Gitleaks, quality checks, MySQL 8.4.13 migrations, isolated restore, and three 116/116 full-suite passes (including seeded shuffle).
+Status: **FROZEN** (`v0.0.0-foundation`) with audit patches `v0.0.1-foundation` through `v0.0.6-foundation`; CI run `45165565332` passed Gitleaks, quality checks, MySQL 8.4.13 migrations, isolated restore, and three 117/117 full-suite passes (including seeded shuffle).
 
 ## Module Summary
 The Project Foundation module establishes the monorepo structure, development standards, shared types, MySQL connection pool, health check APIs, and basic responsive user interface.

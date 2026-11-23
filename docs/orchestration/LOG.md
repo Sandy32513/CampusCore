@@ -2,6 +2,12 @@
 
 All dispatches, verification gates, integration merges, and gate approvals are recorded here sequentially.
 
+### [2026-11-23] ROUTE AUTHORIZATION MATRIX AND MUTATION CHECKS VERIFIED
+- **Branch/tag:** `audit/pre-wave8` includes matrix test commit `43d654d`; patch tag `v0.0.6-foundation` records the route authorization evidence.
+- **Validation:** CI run `45165565332` passed both jobs. Quality gates, MySQL 8.4.13 migration/rollback/reapply, isolated backup restore, two standard suites, one seeded shuffle (23 files / 117 tests each), and full-history Gitleaks passed. Eleven DB-independent unit files pass 40/40; local typecheck and lint pass.
+- **Authorization:** Table-driven checks covered 60 route scenarios across unauthenticated access and six roles (420 HTTP requests). Sixteen `requireRole` removal mutations were caught individually in detached worktree `D:\CampusCore-audit-mutation`; all scratch source was restored and no DB was used.
+- **Gate:** A8 remains NOT READY. Live DB failure/recovery and object-scope checks, browser/accessibility, performance, operational permissions, and governance decisions remain open. No Wave 8 implementation was started.
+
 ### [2026-11-23] PRE-WAVE-8 FULL CI AND SHUFFLE VERIFIED
 - **Branch/tags:** `audit/pre-wave8` is pushed through `1d61bc2`; `v0.0.4-foundation` validates the backup JSON binding fix and `v0.0.5-foundation` tags the integration fixture isolation.
 - **Validation:** GitHub Actions run `45131257677` passed both jobs. MySQL 8.4.13 migration/rollback, isolated backup restore, two standard full test runs, and one seeded `--sequence.shuffle` run each passed 22 files / 116 tests. Full-history Gitleaks passed.

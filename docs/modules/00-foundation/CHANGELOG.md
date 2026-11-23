@@ -1,9 +1,15 @@
 # V0 Foundation: Changelog
 
+## [0.0.6] - 2026-11-23 (route authorization matrix and mutation checks, validated)
+### Added
+- Table-driven HTTP authorization coverage for every mounted API route, anonymous requests, and all six roles; CI run `45165565332` passed 420 requests.
+- Sixteen isolated `requireRole` removal mutations were all caught by the matrix.
+- CI passed two standard MySQL 8.4 runs and a seeded shuffle at 117/117 tests per run.
+
 ## [0.0.5] - 2026-11-23 (shuffle-safe integration fixtures, validated)
 ### Fixed
 - Integration tests create the fixtures they need, so create, duplicate, read, update, and delete cases no longer depend on earlier cases.
-- CI runs the full MySQL 8.4 suite twice and once with seeded `--sequence.shuffle`; run `45131257677` passed 116/116 tests on all three passes.
+- CI runs the full MySQL 8.4 suite twice and once with seeded `--sequence.shuffle`; run `45165565332` passed 117/117 tests on all three passes.
 
 ## [0.0.4] - 2026-11-23 (backup JSON binding fix, validated)
 ### Fixed
