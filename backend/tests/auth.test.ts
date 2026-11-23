@@ -1,6 +1,9 @@
+import crypto from "node:crypto";
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
+import { getDb } from "../src/db/connection.js";
+import { verifyPassword } from "../src/utils/crypto.js";
 
 describe("Authentication API Integration Tests", () => {
   const app = createApp();
@@ -23,6 +26,44 @@ describe("Authentication API Integration Tests", () => {
     expect(cookies).toBeDefined();
     expect(cookies[0]).toContain("campuscore_session=");
     expect(cookies[0]).toContain("HttpOnly");
+  });
+
+  it("upgrades a legacy scrypt hash in MySQL before creating an authenticated session", async () => {
+    const adminLogin = await request(app)
+      .post("/api/v1/auth/login")
+      .send({ email: "admin@campuscore.edu", password: "Admin@123456" });
+    expect(adminLogin.status).toBe(200);
+    const adminCookie = adminLogin.headers["set-cookie"][0].split(";")[0];
+
+    const email = `legacy-upgrade.${Date.now()}@campuscore.edu`;
+    const password = "LegacyUpgradePass123!";
+    const userRes = await request(app)
+      .post("/api/v1/users")
+      .set("Cookie", adminCookie)
+      .send({ email, password, firstName: "Legacy", lastName: "Account", role: "STUDENT" });
+    expect(userRes.status).toBe(201);
+    const userId = userRes.body.data.user.id as string;
+
+    const salt = crypto.randomBytes(16).toString("hex");
+    const digest = await new Promise<Buffer>((resolve, reject) => {
+      crypto.scrypt(password, salt, 64, (error, key) => error ? reject(error) : resolve(key));
+    });
+    const legacyHash = `${salt}:${digest.toString("hex")}`;
+    const db = getDb();
+    await db("users").where({ id: userId }).update({ password_hash: legacyHash });
+
+    const login = await request(app).post("/api/v1/auth/login").send({ email, password });
+    expect(login.status).toBe(200);
+    expect(login.body.data.user.id).toBe(userId);
+    const upgradedUser = await db("users").where({ id: userId }).first();
+    expect(upgradedUser?.password_hash).toMatch(/^\$argon2id\$v=19\$/);
+    expect(upgradedUser?.password_hash).not.toBe(legacyHash);
+    expect(await verifyPassword(password, upgradedUser!.password_hash)).toBe(true);
+
+    const sessionCookie = login.headers["set-cookie"][0].split(";")[0];
+    const session = await request(app).get("/api/v1/auth/me").set("Cookie", sessionCookie);
+    expect(session.status).toBe(200);
+    expect(session.body.data.user.id).toBe(userId);
   });
 
   it("POST /api/v1/auth/login with invalid password should return 401 generic error", async () => {
